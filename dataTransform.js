@@ -3,19 +3,8 @@ console.log("---- dataTransform.js")
 // https://paper.dropbox.com/doc/Notes-about-coding-for-results-analysis--BIcFyz4C8sfOP9sNxjJhTANNAQ-2QtCwBvX4Vng9cWFJjlds
 
 var $ = require( "jquery" );
-
-
-// previous approach was to modify the csv directly.
 const csvparser = require('csv-parser');
 const fs = require('fs');
-// fs.createReadStream('data/survey_precise-study_20210410_1500_April 10, 2021_07.36.csv')
-//   .pipe(csv())
-//   .on('data', (row) => {
-//     console.log(row);
-//   })
-//   .on('end', () => {
-//     console.log('CSV file successfully processed');
-//   });
 
 
 // I'm going to transform the csv into json, modify it accordingly, and then create a new csv.
@@ -37,8 +26,6 @@ var storeStartDate="",storeEndDate="",storeProgress="",storeDuration_in_seconds=
 csv()
 .fromFile(csvFilePath)
 .then((jsonObj)=>{
-    // console.log(jsonObj);
-    /* [ {a:"1", b:"2", c:"3"}, {a:"4", b:"5". c:"6"} ] */ 
     for(var k in jsonObj){
         console.log("k: ",k);
         for(var key in jsonObj[k]){
@@ -61,34 +48,28 @@ csv()
                 objGenerated[objGenerated.length-1]["StartDate"]=storeStartDate; objGenerated[objGenerated.length-1]["EndDate"]=storeEndDate;
                 objGenerated[objGenerated.length-1]["Finished"]=storeFinished;objGenerated[objGenerated.length-1]["Duration_in_seconds"]=storeDuration_in_seconds; 
 
-
-                
                 var keyQual = "QID"+numID;
-                // jsonObj[k]["Q"+numID+"_filename"] = QIDtoFilename[keyQual]; 
                 objGenerated[objGenerated.length-1]["filename"]=QIDtoFilename[keyQual]; 
                 var filename = QIDtoFilename[keyQual]
                 var objInfo = extractColumnsFromFilename(filename);
                 for(var infoK in objInfo){
-                    // console.log("infoK",infoK,"objInfo[infoK]",objInfo[infoK])
                     objGenerated[objGenerated.length-1][infoK] = objInfo[infoK];
                 }
-                
 
                 objGenerated[objGenerated.length-1]["FirstClick"]=jsonObj[k][key];
 
-                // console.log('jsonObj[k]["Q'+numID+'_filename"]: ',jsonObj[k]["Q"+numID+"_filename"]); 
             } else if (key.indexOf("_Last Click")!==-1){
                 objGenerated[objGenerated.length-1]["LastClick"]=jsonObj[k][key];
             } else if (key.indexOf("_Page Submit")!==-1){
                 objGenerated[objGenerated.length-1]["PageSubmit"]=jsonObj[k][key];
             } else if ( numID>15 && numID%5==2 ){
-                // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree?
+                // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree
                 // Neither agree nor disagree // Disagree // Agree
                 objGenerated[objGenerated.length-1]["QuestionA"]=(jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'';
             }else if ( numID>15 && numID%5==3 ){
                 objGenerated[objGenerated.length-1]["TrustA"]=jsonObj[k][key];
             }else if ( numID>15 && numID%5==4 ){
-                // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree?
+                // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree
                 objGenerated[objGenerated.length-1]["QuestionB"]=(jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'';
             } else if ( numID>15 && numID%5==0 ){
                 objGenerated[objGenerated.length-1]["TrustB"]=jsonObj[k][key];
@@ -115,9 +96,6 @@ csv()
     });
 
 })
-// console.log(json); // this will show the info it in firebug console
-
-// });
 
 // e.g. idc39-eG-wO-qry_fC_gte_98.05-flips_h0v0-nMasks_2-dMask_easy-dCmplx_EHE-fcs_WHAT_Qn-bsln_t_t-cntrQ_251
 function extractColumnsFromFilename(filename){
