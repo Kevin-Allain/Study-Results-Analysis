@@ -24,37 +24,35 @@ d <- read.table(file="data/transformed/survey_precise-study_1618239841374.csv", 
 ### Bootstrapping for testing hypotheses
 set.seed(112358)
 n <- length(d$ResponseId) # The number of observations to sample
-n.Qn_E <- length(d$ResponseId[d$dComplex_Qn=="E"]) # Number of samples with data complexity Qn as E
-n.Qn_M <- length(d$ResponseId[d$dComplex_Qn=="M"]) # Number of samples with data complexity Qn as M
-n.Qn_H <- length(d$ResponseId[d$dComplex_Qn=="H"]) # Number of samples with data complexity Qn as H
-# ... todo the other categories?
-n.focus_WHAT_Qn <- length(d$ResponseId[d$focus=="WHAT_Qn"]) # Number of samples with the focus being WHAT_Qn
-n.focus_WHAT_Ql <- length(d$ResponseId[d$focus=="WHAT_Ql"]) # Number of samples with the focus being WHAT_Ql
-n.focus_WHERE <- length(d$ResponseId[d$focus=="WHERE"]) # Number of samples with the focus being WHERE
+n.EEE <- length(d$ResponseId[d$ComplexityGroup=="EEE"]) # Number of samples in categories EEE
+n.MMM <- length(d$ResponseId[d$ComplexityGroup=="MMM"]) # Number of samples in categories EEE
+n.HHH <- length(d$ResponseId[d$ComplexityGroup=="HHH"]) # Number of samples in categories HHH
+n.WHAT_Qn <- length(d$ResponseId[d$ConditionType=="WHAT_Qn"]) # Number of samples in categories EEE
+n.WHAT_Ql <- length(d$ResponseId[d$ConditionType=="WHAT_Ql"]) # Number of samples in categories EEE
+n.WHERE <- length(d$ResponseId[d$ConditionType=="WHERE"]) # Number of samples in categories HHH
 B <- 10000 # The number of bootstraps samples
-variable <- d$PageSubmit
+variable <- d$TimeSubmitSeconds
 
 BootstrapSamples <- matrix( sample(variable, size=n*B, replace=TRUE), nrow=n, ncol=B)
 dimBoot <- dim(BootstrapSamples)
 
 # now, get those bootstrap samples (without loops!) ### IMPORTANT PART 1
-# stick each Boot-sample in a column... # Let's make a set of groups of time selection depending on the focus of the question
-Boot.focus_WHAT_Qn <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Qn"], size= B*n.focus_WHAT_Qn, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Qn)
-Boot.focus_WHAT_Ql <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Ql"], size= B*n.focus_WHAT_Ql, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Ql)
-Boot.focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"], size= B*n.focus_WHERE, replace=TRUE), ncol=B, nrow=n.focus_WHERE)
+# stick each Boot-sample in a column...
+Boot.EEE <- matrix( sample(d$TimeSubmitSeconds[d$ComplexityGroup=="EEE"], size= B*n.EEE, replace=TRUE), ncol=B, nrow=n.EEE)
+Boot.MMM <- matrix( sample(d$TimeSubmitSeconds[d$ComplexityGroup=="MMM"], size= B*n.MMM, replace=TRUE), ncol=B, nrow=n.MMM)
+Boot.HHH <- matrix( sample(d$TimeSubmitSeconds[d$ComplexityGroup=="HHH"] , size= B*n.HHH, replace=TRUE), nrow=n.HHH, ncol=B)
 
-# ---- Old down from here. Update in progress
-# Boot.WHAT_Qn <- matrix( sample(d$PageSubmit[d$ConditionType=="WHAT_Qn"], size= B*n.WHAT_Qn, replace=TRUE), ncol=B, nrow=n.WHAT_Qn)
-# Boot.WHAT_Ql <- matrix( sample(d$PageSubmit[d$ConditionType=="WHAT_Ql"], size= B*n.WHAT_Ql, replace=TRUE), ncol=B, nrow=n.WHAT_Ql)
-# Boot.WHERE <- matrix( sample(d$PageSubmit[d$ConditionType=="WHERE"] , size= B*n.WHERE, replace=TRUE), ncol=B, nrow=n.WHERE)
+Boot.WHAT_Qn <- matrix( sample(d$TimeSubmitSeconds[d$ConditionType=="WHAT_Qn"], size= B*n.WHAT_Qn, replace=TRUE), ncol=B, nrow=n.WHAT_Qn)
+Boot.WHAT_Ql <- matrix( sample(d$TimeSubmitSeconds[d$ConditionType=="WHAT_Ql"], size= B*n.WHAT_Ql, replace=TRUE), ncol=B, nrow=n.WHAT_Ql)
+Boot.WHERE <- matrix( sample(d$TimeSubmitSeconds[d$ConditionType=="WHERE"] , size= B*n.WHERE, replace=TRUE), ncol=B, nrow=n.WHERE)
 
 Boot.EEE[1:5,1:5]; Boot.WHERE[1:5,1:5];
 
 # Confidence interval: average +- z score * standard error
 # 95% confidence interval means 2.5% on each side
 #todo: add usage of bootstrap instead of d
-mean(d$PageSubmit)
-dim(d$PageSubmit)
+mean(d$TimeSubmitSeconds)
+dim(d$TimeSubmitSeconds)
 #meanForColumn <- function(data,columnName){
   #df <- data$columnName
   #df
@@ -68,8 +66,8 @@ dim(d$PageSubmit)
 samplemean <- function(x, d) {
   return(mean(x[d]))
 }
-bootDuration_in_seconds = boot(d$PageSubmit, samplemean, R=1000) # 1000 replications
-plot(bootDuration_in_seconds)
+bootTimeSubmitSeconds = boot(d$TimeSubmitSeconds, samplemean, R=1000) # 1000 replications
+plot(bootTimeSubmitSeconds)
 
 bootCorrectAvgEstimation = boot(d$Bool_Avg.Higher, samplemean, R=1000) # 1000 replications
 plot(bootCorrectAvgEstimation)
@@ -79,19 +77,19 @@ plot(bootCorrectVarEstimation)
 
 
 # TIME-global Function to find the bootstrap Confidence Intervals 
-timeCI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", "perc", "bca")) 
+timeCI <- boot.ci(boot.out = bootTimeSubmitSeconds, type = c("norm", "basic", "perc", "bca")) 
 lowerTimeCI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
 vecTimeCI <- c(lowerTimeCI, higherTimeCI)
 
-bootDuration_in_secondsEEE = boot(d$PageSubmit[d$ComplexityGroup=="EEE"], samplemean, R=1000) # 1000 replications
-bootDuration_in_secondsMMM = boot(d$PageSubmit[d$ComplexityGroup=="MMM"], samplemean, R=1000) # 1000 replications
-bootDuration_in_secondsHHH = boot(d$PageSubmit[d$ComplexityGroup=="HHH"], samplemean, R=1000) # 1000 replications
-timeCIEEE <- boot.ci(boot.out = bootDuration_in_secondsEEE, type = c("norm", "basic", "perc", "bca")) 
-timeCIMMM <- boot.ci(boot.out = bootDuration_in_secondsMMM, type = c("norm", "basic", "perc", "bca")) 
-timeCIHHH <- boot.ci(boot.out = bootDuration_in_secondsHHH, type = c("norm", "basic", "perc", "bca")) 
+bootTimeSubmitSecondsEEE = boot(d$TimeSubmitSeconds[d$ComplexityGroup=="EEE"], samplemean, R=1000) # 1000 replications
+bootTimeSubmitSecondsMMM = boot(d$TimeSubmitSeconds[d$ComplexityGroup=="MMM"], samplemean, R=1000) # 1000 replications
+bootTimeSubmitSecondsHHH = boot(d$TimeSubmitSeconds[d$ComplexityGroup=="HHH"], samplemean, R=1000) # 1000 replications
+timeCIEEE <- boot.ci(boot.out = bootTimeSubmitSecondsEEE, type = c("norm", "basic", "perc", "bca")) 
+timeCIMMM <- boot.ci(boot.out = bootTimeSubmitSecondsMMM, type = c("norm", "basic", "perc", "bca")) 
+timeCIHHH <- boot.ci(boot.out = bootTimeSubmitSecondsHHH, type = c("norm", "basic", "perc", "bca")) 
 indexesV <- 1:length(c(timeCIEEE$normal[2],timeCIEEE$normal[3]))
 indexesCategories <- 1:3
-meansCategories <- c(mean(d$PageSubmit[d$ComplexityGroup=="EEE"]), mean(d$PageSubmit[d$ComplexityGroup=="MMM"]), mean(d$PageSubmit[d$ComplexityGroup=="HHH"]))
+meansCategories <- c(mean(d$TimeSubmitSeconds[d$ComplexityGroup=="EEE"]), mean(d$TimeSubmitSeconds[d$ComplexityGroup=="MMM"]), mean(d$TimeSubmitSeconds[d$ComplexityGroup=="HHH"]))
 
 #describe(d) # Entire data frame # bug now... no idea what is happening here
 
@@ -102,20 +100,20 @@ dfCategories <- data.frame(x= c("EEE","MMM","HHH") ,
 ggplot(dfCategories, aes(x = x, y = F)) + geom_point(size = 4) + geom_errorbar(aes(ymax = U, ymin = L))
 
 # AverageCorrect-global Function to find the bootstrap Confidence Intervals 
-timeCI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", "perc", "bca")) 
+timeCI <- boot.ci(boot.out = bootTimeSubmitSeconds, type = c("norm", "basic", "perc", "bca")) 
 lowerTimeCI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
 vecTimeCI <- c(lowerTimeCI, higherTimeCI)
 
-bootDuration_in_secondsEEE = boot(d$PageSubmit[d$ComplexityGroup=="EEE"], samplemean, R=1000) # 1000 replications
-bootDuration_in_secondsMMM = boot(d$PageSubmit[d$ComplexityGroup=="MMM"], samplemean, R=1000) # 1000 replications
-bootDuration_in_secondsHHH = boot(d$PageSubmit[d$ComplexityGroup=="HHH"], samplemean, R=1000) # 1000 replications
-timeCIEEE <- boot.ci(boot.out = bootDuration_in_secondsEEE, type = c("norm", "basic", "perc", "bca")) 
-timeCIMMM <- boot.ci(boot.out = bootDuration_in_secondsMMM, type = c("norm", "basic", "perc", "bca")) 
-timeCIHHH <- boot.ci(boot.out = bootDuration_in_secondsHHH, type = c("norm", "basic", "perc", "bca")) 
+bootTimeSubmitSecondsEEE = boot(d$TimeSubmitSeconds[d$ComplexityGroup=="EEE"], samplemean, R=1000) # 1000 replications
+bootTimeSubmitSecondsMMM = boot(d$TimeSubmitSeconds[d$ComplexityGroup=="MMM"], samplemean, R=1000) # 1000 replications
+bootTimeSubmitSecondsHHH = boot(d$TimeSubmitSeconds[d$ComplexityGroup=="HHH"], samplemean, R=1000) # 1000 replications
+timeCIEEE <- boot.ci(boot.out = bootTimeSubmitSecondsEEE, type = c("norm", "basic", "perc", "bca")) 
+timeCIMMM <- boot.ci(boot.out = bootTimeSubmitSecondsMMM, type = c("norm", "basic", "perc", "bca")) 
+timeCIHHH <- boot.ci(boot.out = bootTimeSubmitSecondsHHH, type = c("norm", "basic", "perc", "bca")) 
 indexesV <- 1:length(c(timeCIEEE$normal[2],timeCIEEE$normal[3]))
 indexesCategories <- 1:3
 # Is that the right means?
-meansCategories <- c(mean(d$PageSubmit[d$ComplexityGroup=="EEE"]), mean(d$PageSubmit[d$ComplexityGroup=="MMM"]), mean(d$PageSubmit[d$ComplexityGroup=="HHH"]))
+meansCategories <- c(mean(d$TimeSubmitSeconds[d$ComplexityGroup=="EEE"]), mean(d$TimeSubmitSeconds[d$ComplexityGroup=="MMM"]), mean(d$TimeSubmitSeconds[d$ComplexityGroup=="HHH"]))
 
 dfCategories <- data.frame(x= c("EEE","MMM","HHH") ,
                            F = meansCategories, L = c(timeCIEEE$normal[2], timeCIMMM$normal[2], timeCIHHH$normal[2]),
