@@ -14,9 +14,13 @@ library(lattice)
 
 
 
-# load file # Remember to move in the right folder
+# load file # Remember to move in the right folder, based on your own computer
+setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # d <- read.table(file="C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis/Pilot V2 Comparative Task with Conditions_October 19, 2020_12.11 - Tidy_Binary_OutlierRemoved_Enriched.csv", TRUE, ",")
 d <- read.table(file="data/transformed/survey_precise-study_1618239841374.csv", TRUE, ",")
+# Example of file with randomly generated data to fill all the categories
+# d <- read.table(file="data/transformed/survey_precise-study_randomlyfilled_1618310604638.csv", TRUE, ",")
+
 # The header of the file:
 #| ResponseId | Progress | RecordedDate | StartDate | EndDate | Finished | Duration_in_seconds | filename | idc | drawnQn | drawnQl | queryString | flips | nMasks | dMask | dComplex_Qn | dComplex_Ql | dComplex_Where | focus | bslnA | bslnB | cntrQ | FirstClick | LastClick | PageSubmit | QuestionA | TrustA | QuestionB | TrustB |
   
@@ -43,14 +47,16 @@ Boot.focus_WHAT_Qn <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Qn"], size= B*n
 Boot.focus_WHAT_Ql <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Ql"], size= B*n.focus_WHAT_Ql, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Ql)
 Boot.focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"], size= B*n.focus_WHERE, replace=TRUE), ncol=B, nrow=n.focus_WHERE)
 
-# ---- Old down from here. Update in progress
-# Boot.WHAT_Qn <- matrix( sample(d$PageSubmit[d$ConditionType=="WHAT_Qn"], size= B*n.WHAT_Qn, replace=TRUE), ncol=B, nrow=n.WHAT_Qn)
-# Boot.WHAT_Ql <- matrix( sample(d$PageSubmit[d$ConditionType=="WHAT_Ql"], size= B*n.WHAT_Ql, replace=TRUE), ncol=B, nrow=n.WHAT_Ql)
-# Boot.WHERE <- matrix( sample(d$PageSubmit[d$ConditionType=="WHERE"] , size= B*n.WHERE, replace=TRUE), ncol=B, nrow=n.WHERE)
 
-Boot.EEE[1:5,1:5]; Boot.WHERE[1:5,1:5];
+Boot.t_focus_WHAT_Qn <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Qn"], size= B*n.focus_WHAT_Qn, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Qn)
+Boot.t_focus_WHAT_Ql <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Ql"], size= B*n.focus_WHAT_Ql, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Ql)
+Boot.t_focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"] , size= B*n.focus_WHERE, replace=TRUE), ncol=B, nrow=n.focus_WHERE)
 
-# Confidence interval: average +- z score * standard error
+# Boot.EEE[1:5,1:5]; Boot.WHERE[1:5,1:5]; # I don't remember why I did this
+
+# Code okay up to that point
+
+# Confidence interval: average +- z score * standard error #### Issue here: our data as it is now doesn't have 
 # 95% confidence interval means 2.5% on each side
 #todo: add usage of bootstrap instead of d
 mean(d$PageSubmit)
