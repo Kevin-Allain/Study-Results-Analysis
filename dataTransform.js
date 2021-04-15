@@ -85,6 +85,9 @@ function generateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoid=f
                     console.log("jsonObj[k][key]==='' && addRandomInfoToFillVoid: ",jsonObj[k][key]==='' && addRandomInfoToFillVoid);
                     objGenerated[objGenerated.length-1]["QuestionA"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? ((rndNumForGen<0.33)?-1:(rndNumForGen<0.66)?0:1)
                     : ((jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'');
+
+                    // Add if answer is correct! 
+                    objGenerated[objGenerated.length-1]["correctA"] = 1*(objGenerated[objGenerated.length-1]["QuestionA"]===objGenerated[objGenerated.length-1]["bslnA"])
                 }else if ( numID>15 && numID%5==3 ){
                     var rndNumForGen = Math.random()
                     objGenerated[objGenerated.length-1]["TrustA"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? (Math.floor(Math.random()*6))
@@ -99,6 +102,8 @@ function generateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoid=f
                     objGenerated[objGenerated.length-1]["TrustB"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? (Math.floor(Math.random()*6))
                     : jsonObj[k][key];
 
+                    // Add if answer is correct!
+                    objGenerated[objGenerated.length-1]["correctB"] = 1*(objGenerated[objGenerated.length-1]["QuestionB"]===objGenerated[objGenerated.length-1]["bslnB"])
                 }
                 
             }
@@ -146,4 +151,5 @@ function extractColumnsFromFilename(filename){
 
 
 // ---- Calls of the functions 
+// generateModifiedCSV(QIDtoFilename,csvFilePath)
 generateModifiedCSV(QIDtoFilename,csvFilePath,true)
