@@ -23,8 +23,7 @@ d <- read.table(file="data/transformed/survey_precise-study_randomlyfilled_16183
 
 # The header of the file:
 # | ResponseId | Progress | RecordedDate | StartDate | EndDate | Finished | Duration_in_seconds | filename | idc | drawnQn | drawnQl | queryString | flips | nMasks | dMask | dComplex_Qn | dComplex_Ql | dComplex_Where | focus | bslnA | bslnB | cntrQ | FirstClick | LastClick | PageSubmit | QuestionA | correctA | TrustA | QuestionB | TrustB | correctB |
-  
-  
+
 
 ### Bootstrapping for testing hypotheses
 set.seed(112358)

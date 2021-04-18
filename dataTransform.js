@@ -39,73 +39,95 @@ function generateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoid=f
     .then((jsonObj)=>{
         for(var k in jsonObj){
             console.log("k: ",k);
+
+            // Keep a boolean to indicate if the QID has a page submit...
+            var pagesubmitExists = false;
+
             for(var key in jsonObj[k]){
                 // console.log("k: ",k,", key: ",key,", jsonObj[k][key]: ", jsonObj[k][key],', key.indexOf("_First Click")!==-1: ',key.indexOf("_First Click")!==-1);
                 
-                if (key==="ResponseId"){storeResponseId=jsonObj[k][key]}
+                if(key==="ResponseId"){storeResponseId=jsonObj[k][key]}
                 if(key==="Progress"){storeProgress=jsonObj[k][key]}
                 if(key==="StartDate"){storeStartDate=jsonObj[k][key]} if(key==="EndDate"){storeEndDate=jsonObj[k][key]}
                 if(key==="Duration (in seconds)"){storeDuration_in_seconds=jsonObj[k][key]}if(key==="Finished"){storeFinished=jsonObj[k][key]}
                 if(key==="RecordedDate"){storeRecordedDate=jsonObj[k][key]}
 
+                // Can I find already if the question has been answered?!
+                // console.log("jsonObj[k]['PageSubmit']", jsonObj[k]['PageSubmit']) // undefined // it's not 'PageSubmit' but something like 'Q'+numID+'_PageSubmit'
 
                 var numID = (key.indexOf('_')!==-1)?Number(key.substr(1,key.indexOf('_')-1)):Number(key.substr(1));
                 // console.log("numID",numID,", numID%5",(numID%5))
 
-                if (key.indexOf("_First Click")!==-1){  // New line for a question
-                    objGenerated.push({})
-                    objGenerated[objGenerated.length-1]["ResponseId"]=storeResponseId;
-                    objGenerated[objGenerated.length-1]["Progress"]=storeProgress; objGenerated[objGenerated.length-1]["RecordedDate"]=storeRecordedDate;
-                    objGenerated[objGenerated.length-1]["StartDate"]=storeStartDate; objGenerated[objGenerated.length-1]["EndDate"]=storeEndDate;
-                    objGenerated[objGenerated.length-1]["Finished"]=storeFinished;objGenerated[objGenerated.length-1]["Duration_in_seconds"]=storeDuration_in_seconds; 
+                // Can we verify based on QID the PageSubmit?!
+                // console.log("jsonObj[k]['Q'+numID+'_Page Submit']: ", jsonObj[k]['Q'+numID+'_Page Submit'] )
+                pagesubmitExists = (typeof jsonObj[k]['Q'+numID+'_Page Submit'] !=="undefined") && (jsonObj[k]['Q'+numID+'_Page Submit'] !== '');
+                console.log("pagesubmitExists: ",pagesubmitExists,", jsonObj[k]['Q'+numID+'_Page Submit']: ",jsonObj[k]['Q'+numID+'_Page Submit']);
 
-                    var keyQual = "QID"+numID;
-                    objGenerated[objGenerated.length-1]["filename"]=QIDtoFilename[keyQual]; 
-                    var filename = QIDtoFilename[keyQual]
-                    var objInfo = extractColumnsFromFilename(filename);
-                    for(var infoK in objInfo){
-                        objGenerated[objGenerated.length-1][infoK] = objInfo[infoK];
+                if (pagesubmitExists || addRandomInfoToFillVoid){
+
+                    if (key.indexOf("_First Click")!==-1){  // New line for a question
+                        var keyQual = "QID"+numID;
+
+
+
+                        objGenerated.push({})
+                        objGenerated[objGenerated.length-1]["ResponseId"]=storeResponseId;
+                        objGenerated[objGenerated.length-1]["Progress"]=storeProgress; objGenerated[objGenerated.length-1]["RecordedDate"]=storeRecordedDate;
+                        objGenerated[objGenerated.length-1]["StartDate"]=storeStartDate; objGenerated[objGenerated.length-1]["EndDate"]=storeEndDate;
+                        objGenerated[objGenerated.length-1]["Finished"]=storeFinished;objGenerated[objGenerated.length-1]["Duration_in_seconds"]=storeDuration_in_seconds; 
+
+
+                        objGenerated[objGenerated.length-1]["filename"]=QIDtoFilename[keyQual]; 
+                        var filename = QIDtoFilename[keyQual]
+                        var objInfo = extractColumnsFromFilename(filename);
+                        for(var infoK in objInfo){
+                            objGenerated[objGenerated.length-1][infoK] = objInfo[infoK];
+                        }
+                        console.log("k: ",k,", key: ",key,", jsonObj[k][key]: ", jsonObj[k][key],', key.indexOf("_First Click")!==-1: ',key.indexOf("_First Click")!==-1,', objGenerated[objGenerated.length-1]: ',objGenerated[objGenerated.length-1]);
+
+                        (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? objGenerated[objGenerated.length-1]["FirstClick"]=Math.random()*20
+                        : objGenerated[objGenerated.length-1]["FirstClick"]=jsonObj[k][key];
+
+                    } else if (key.indexOf("_Last Click")!==-1){
+                        (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? objGenerated[objGenerated.length-1]["LastClick"] = objGenerated[objGenerated.length-1]["FirstClick"]+Math.random()*10
+                        : objGenerated[objGenerated.length-1]["LastClick"]=jsonObj[k][key];
+                    } else if (key.indexOf("_Page Submit")!==-1){
+                        console.log("key with pagesubmit: ",key);
+
+                        (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? objGenerated[objGenerated.length-1]["PageSubmit"] = objGenerated[objGenerated.length-1]["LastClick"]+Math.random()*15
+                        : objGenerated[objGenerated.length-1]["PageSubmit"]=jsonObj[k][key];
+                        
+
+
+                    } else if ( numID>15 && numID%5==2 ){
+                        // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree
+                        // Neither agree nor disagree // Disagree // Agree
+                        var rndNumForGen = Math.random();
+                        console.log("jsonObj[k][key]==='' && addRandomInfoToFillVoid: ",jsonObj[k][key]==='' && addRandomInfoToFillVoid);
+                        objGenerated[objGenerated.length-1]["QuestionA"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? ((rndNumForGen<0.33)?-1:(rndNumForGen<0.66)?0:1)
+                        : ((jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'');
+
+                        // Add if answer is correct! 
+                        objGenerated[objGenerated.length-1]["correctA"] = 1*(objGenerated[objGenerated.length-1]["QuestionA"]===objGenerated[objGenerated.length-1]["bslnA"])
+                    }else if ( numID>15 && numID%5==3 ){
+                        var rndNumForGen = Math.random()
+                        objGenerated[objGenerated.length-1]["TrustA"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? (Math.floor(Math.random()*6))
+                        : jsonObj[k][key];
+                    }else if ( numID>15 && numID%5==4 ){
+                        // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree
+                        var rndNumForGen = Math.random()
+                        objGenerated[objGenerated.length-1]["QuestionB"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? ((rndNumForGen<0.33)?-1:(rndNumForGen<0.66)?0:1)
+                        : ((jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'');
+                    } else if ( numID>15 && numID%5==0 ){
+                        var rndNumForGen = Math.random()
+                        objGenerated[objGenerated.length-1]["TrustB"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? (Math.floor(Math.random()*6))
+                        : jsonObj[k][key];
+
+                        // Add if answer is correct!
+                        objGenerated[objGenerated.length-1]["correctB"] = 1*(objGenerated[objGenerated.length-1]["QuestionB"]===objGenerated[objGenerated.length-1]["bslnB"])
                     }
-                    console.log("k: ",k,", key: ",key,", jsonObj[k][key]: ", jsonObj[k][key],', key.indexOf("_First Click")!==-1: ',key.indexOf("_First Click")!==-1,', objGenerated[objGenerated.length-1]["cntrQ"]: ',objGenerated[objGenerated.length-1]["cntrQ"]);
-
-                    (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? objGenerated[objGenerated.length-1]["FirstClick"]=Math.random()*20
-                    : objGenerated[objGenerated.length-1]["FirstClick"]=jsonObj[k][key];
-
-                } else if (key.indexOf("_Last Click")!==-1){
-                    (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? objGenerated[objGenerated.length-1]["LastClick"] = objGenerated[objGenerated.length-1]["FirstClick"]+Math.random()*10
-                    : objGenerated[objGenerated.length-1]["LastClick"]=jsonObj[k][key];
-                } else if (key.indexOf("_Page Submit")!==-1){
-                    (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? objGenerated[objGenerated.length-1]["PageSubmit"] = objGenerated[objGenerated.length-1]["LastClick"]+Math.random()*15
-                    : objGenerated[objGenerated.length-1]["PageSubmit"]=jsonObj[k][key];
-                } else if ( numID>15 && numID%5==2 ){
-                    // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree
-                    // Neither agree nor disagree // Disagree // Agree
-                    var rndNumForGen = Math.random();
-                    console.log(rndNumForGen)
-                    console.log("jsonObj[k][key]==='' && addRandomInfoToFillVoid: ",jsonObj[k][key]==='' && addRandomInfoToFillVoid);
-                    objGenerated[objGenerated.length-1]["QuestionA"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? ((rndNumForGen<0.33)?-1:(rndNumForGen<0.66)?0:1)
-                    : ((jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'');
-
-                    // Add if answer is correct! 
-                    objGenerated[objGenerated.length-1]["correctA"] = 1*(objGenerated[objGenerated.length-1]["QuestionA"]===objGenerated[objGenerated.length-1]["bslnA"])
-                }else if ( numID>15 && numID%5==3 ){
-                    var rndNumForGen = Math.random()
-                    objGenerated[objGenerated.length-1]["TrustA"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? (Math.floor(Math.random()*6))
-                    : jsonObj[k][key];
-                }else if ( numID>15 && numID%5==4 ){
-                    // Adapt for matching with the baseline as numbers: 1,0 and -1 according to agree, neither and disagree
-                    var rndNumForGen = Math.random()
-                    objGenerated[objGenerated.length-1]["QuestionB"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? ((rndNumForGen<0.33)?-1:(rndNumForGen<0.66)?0:1)
-                    : ((jsonObj[k][key].indexOf("Neither agree nor disagree")!==-1)?0:(jsonObj[k][key].indexOf("Disagree")!==-1)?-1:(jsonObj[k][key].indexOf("Agree")!==-1)?1:'');
-                } else if ( numID>15 && numID%5==0 ){
-                    var rndNumForGen = Math.random()
-                    objGenerated[objGenerated.length-1]["TrustB"] = (jsonObj[k][key]==='' && addRandomInfoToFillVoid)? (Math.floor(Math.random()*6))
-                    : jsonObj[k][key];
-
-                    // Add if answer is correct!
-                    objGenerated[objGenerated.length-1]["correctB"] = 1*(objGenerated[objGenerated.length-1]["QuestionB"]===objGenerated[objGenerated.length-1]["bslnB"])
+                    
                 }
-                
             }
         }
 
@@ -152,4 +174,4 @@ function extractColumnsFromFilename(filename){
 
 // ---- Calls of the functions 
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
-generateModifiedCSV(QIDtoFilename,csvFilePath,true)
+generateModifiedCSV(QIDtoFilename,csvFilePath)
