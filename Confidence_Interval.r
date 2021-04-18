@@ -19,7 +19,10 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # d <- read.table(file="C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis/Pilot V2 Comparative Task with Conditions_October 19, 2020_12.11 - Tidy_Binary_OutlierRemoved_Enriched.csv", TRUE, ",")
 # d <- read.table(file="data/transformed/survey_precise-study_1618325511833.csv", TRUE, ",")
 # Example of file with randomly generated data to fill all the categories
-d <- read.table(file="data/transformed/survey_precise-study_randomlyfilled_1618325521753.csv", TRUE, ",")
+# d <- read.table(file="data/transformed/survey_precise-study_randomlyfilled_1618325521753.csv", TRUE, ",")
+
+# Added a new data file with neither randomly generated data nor empty lines
+d <- read.table(file="data/transformed/survey_precise-study_1618754171875.csv", TRUE, ",")
 
 # The header of the file:
 # | ResponseId | Progress | RecordedDate | StartDate | EndDate | Finished | Duration_in_seconds | filename | idc | drawnQn | drawnQl | queryString | flips | nMasks | dMask | dComplex_Qn | dComplex_Ql | dComplex_Where | focus | bslnA | bslnB | cntrQ | FirstClick | LastClick | PageSubmit | QuestionA | correctA | TrustA | QuestionB | TrustB | correctB |
