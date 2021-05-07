@@ -22,10 +22,20 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # d <- read.table(file="data/transformed/survey_precise-study_randomlyfilled_1618325521753.csv", TRUE, ",")
 
 # Added a new data file with neither randomly generated data nor empty lines
-d <- read.table(file="data/transformed/survey_precise-study_1618754171875.csv", TRUE, ",")
+# d <- read.table(file="data/transformed/survey_precise-study_1618754171875.csv", TRUE, ",")
 
+
+# Example with only 3 answers generated with a slider # No more answerA and correctA. Now it is answerA1,answerA2,answerA3, diffA1,diffA2,diffA3
+d <- read.table(file="data/transformed/survey_precise-study_1620402561191.csv", TRUE, ",")
+
+# OLD
 # The header of the file:
 # | ResponseId | Progress | RecordedDate | StartDate | EndDate | Finished | Duration_in_seconds | filename | idc | drawnQn | drawnQl | queryString | flips | nMasks | dMask | dComplex_Qn | dComplex_Ql | dComplex_Where | focus | bslnA | bslnB | cntrQ | FirstClick | LastClick | PageSubmit | QuestionA | correctA | TrustA | QuestionB | TrustB | correctB |
+
+# NEW
+# The header of the file:
+# ResponseId	Progress	RecordedDate	StartDate	EndDate	Finished	Duration_in_seconds	filename	idc	drawnQn	drawnQl	queryString	flips	nMasks	dMask	dComplex_Qn	dComplex_Ql	dComplex_Where	focus	bslnA1	bslnA2	bslnA3	bslnB	cntrQ	answerA1	answerA2	answerA3	trustA	answerB	trustB	diffA1	diffA2	diffA3	correctB
+
 
 
 ### Bootstrapping for testing hypotheses
@@ -85,8 +95,8 @@ plot(bootDuration_in_seconds)
 
 # Seems ok up to here
 
-bootCorrect_A = boot(d$correctA, samplemean, R=1000) # 1000 replications
-plot(bootCorrect_A)
+# bootCorrect_A = boot(d$correctA, samplemean, R=1000) # 1000 replications
+# plot(bootCorrect_A)
 
 bootCorrect_B = boot(d$correctB, samplemean, R=1000) # 1000 replications
 plot(bootCorrect_B)
@@ -124,7 +134,6 @@ ggplot(dfCategories, aes(x = x, y = F)) + geom_point(size = 4) + geom_errorbar(a
 timeCI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", "perc", "bca")) 
 lowerTimeCI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
 vecTimeCI <- c(lowerTimeCI, higherTimeCI)
-
 
 
 # bootDuration_in_secondsEEE = boot(d$PageSubmit[d$ComplexityGroup=="EEE"], samplemean, R=1000) # 1000 replications
