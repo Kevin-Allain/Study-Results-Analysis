@@ -13,7 +13,8 @@ console.log(Math.random())
 const csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv'
 // $.getJSON("QIDtoFilename.json", function(json) {
 // let rawdata = fs.readFileSync('data/QIDtoFilename.json');
-let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json');
+// let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json');
+let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json');
 
 let QIDtoFilename = JSON.parse(rawdata);
 hashmapAttributesNames_glbl = {
@@ -31,8 +32,6 @@ hashmapAttributesNames_glbl = {
 // ---- Function definitions
 
 function generateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoid=false){
-
-    // console.log(QIDtoFilename);
     var objGenerated=[];
     var cptForBundlingQuestions=0;
     var storeResponseId="";
@@ -231,8 +230,11 @@ function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAt
 // ---- Calls of the functions 
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
-newGenerateModifiedCSV(QIDtoFilename,csvFilePath)
 
+// Commented for tests, but should work
+// newGenerateModifiedCSV(QIDtoFilename,csvFilePath)
+
+generateBaselineCSV(QIDtoFilename)
 
 
 
@@ -328,4 +330,42 @@ function newGenerateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoi
     })
 
 
+}
+
+
+// New function: we need to establish the distribution of baselines.
+function generateBaselineCSV(QIDtoFilename){
+    var hashmapBaselines = [];
+    var objGenerated = []
+    for(var qid in QIDtoFilename){
+        var cntrQ = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-1];
+        if (typeof hashmapBaselines[cntrQ] === "undefined"){
+
+
+            var bslnStr = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-2];
+            var bslnArr =  bslnStr.split('_');
+            var parenthesisBsln = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-2].split('_')[1].split(')');
+            var bslnA =  Number(parenthesisBsln[0]), bslnB = Number(parenthesisBsln[1]),bslnC = Number(parenthesisBsln[2]);
+            var bslnLikert= bslnArr[bslnArr.length-1]==='t'
+            hashmapBaselines[cntrQ]={"bslnA":bslnA,"bslnB":bslnB,"bslnC":bslnC,"bslnLikert":bslnLikert}
+
+            objGenerated.push({})
+            objGenerated[objGenerated.length-1]["cntrQ"] = cntrQ,objGenerated[objGenerated.length-1]["bslnA"] = bslnA,objGenerated[objGenerated.length-1]["bslnB"] = bslnB,objGenerated[objGenerated.length-1]["bslnC"] = bslnC,objGenerated[objGenerated.length-1]["bslnLikert"] = bslnLikert;
+
+
+        }
+    }
+    
+    var itemsN = objGenerated;
+    var replacerN = (key, value) => value === null ? '' : value // specify how you want to handle null values here
+    var headerN = Object.keys(itemsN[0])
+    console.log("headerN: ",headerN);
+    var csvOutputN = [
+    headerN.join(','), // header row first
+    ...itemsN.map(row => headerN.map(fieldName => JSON.stringify(row[fieldName], replacerN)).join(','))
+    ].join('\r\n')
+
+    fs.writeFile("data/transformed/baselines.csv", csvOutputN, function (err, data) {
+        if(err) console.log('error', err);
+    });
 }
