@@ -14,7 +14,9 @@ const csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv'
 // $.getJSON("QIDtoFilename.json", function(json) {
 // let rawdata = fs.readFileSync('data/QIDtoFilename.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json');
-let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json');
+// let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json');
+// let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json');
+let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json');
 
 let QIDtoFilename = JSON.parse(rawdata);
 hashmapAttributesNames_glbl = {
@@ -339,18 +341,31 @@ function generateBaselineCSV(QIDtoFilename){
     var objGenerated = []
     for(var qid in QIDtoFilename){
         var cntrQ = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-1];
+        var arrNames = QIDtoFilename[qid].split('-');
         if (typeof hashmapBaselines[cntrQ] === "undefined"){
-
 
             var bslnStr = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-2];
             var bslnArr =  bslnStr.split('_');
             var parenthesisBsln = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-2].split('_')[1].split(')');
             var bslnA =  Number(parenthesisBsln[0]), bslnB = Number(parenthesisBsln[1]),bslnC = Number(parenthesisBsln[2]);
             var bslnLikert= bslnArr[bslnArr.length-1]==='t'
-            hashmapBaselines[cntrQ]={"bslnA":bslnA,"bslnB":bslnB,"bslnC":bslnC,"bslnLikert":bslnLikert}
+            
+            var fcsSplit = QIDtoFilename[qid].split('-')[QIDtoFilename[qid].split('-').length-3].split('_')
+            var focusStr = "";
+            if (typeof fcsSplit[2] === "undefined"){ focusStr=fcsSplit[1] } else { focusStr=fcsSplit[1]+'_'+fcsSplit[2] }
+            
+            var maskDiff = arrNames[6].split('_')[1]; 
+            var strAllFocusDiff = arrNames[7].split('_')[1]
+            var focusDiff = "";
+            focusDiff= (focusStr === "WHAT_Qn")? strAllFocusDiff[0] : (focusStr === "WHAT_Ql")? strAllFocusDiff[1] : strAllFocusDiff[2];
+            focusDiff=(focusDiff==="E")?"Easy":(focusDiff==="M")?"Medium":"Hard;"
+            
+            hashmapBaselines[cntrQ]={"bslnA":bslnA,"bslnB":bslnB,"bslnC":bslnC,"bslnLikert":bslnLikert,"focus":focusStr,"focusDiff":focusDiff,"maskDiff":maskDiff}
 
             objGenerated.push({})
-            objGenerated[objGenerated.length-1]["cntrQ"] = cntrQ,objGenerated[objGenerated.length-1]["bslnA"] = bslnA,objGenerated[objGenerated.length-1]["bslnB"] = bslnB,objGenerated[objGenerated.length-1]["bslnC"] = bslnC,objGenerated[objGenerated.length-1]["bslnLikert"] = bslnLikert;
+            objGenerated[objGenerated.length-1]["cntrQ"] = cntrQ,objGenerated[objGenerated.length-1]["bslnA"] = bslnA,objGenerated[objGenerated.length-1]["bslnB"] = bslnB,objGenerated[objGenerated.length-1]["bslnC"] = bslnC,
+            objGenerated[objGenerated.length-1]["bslnLikert"] = bslnLikert,objGenerated[objGenerated.length-1]["focus"]=focusStr,objGenerated[objGenerated.length-1]["focusDiff"]=focusDiff,
+            objGenerated[objGenerated.length-1]["totalDiff"]=strAllFocusDiff,objGenerated[objGenerated.length-1]["maskDiff"]=maskDiff;
 
 
         }
