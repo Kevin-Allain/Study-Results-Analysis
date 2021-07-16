@@ -10,7 +10,9 @@ console.log(Math.random())
 // const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36.csv'
 // const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36_modified.csv'
 // slider_noflip_rightParenthesisBsln_headerReduced
-const csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv'
+// var csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv'
+var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv'
+
 // $.getJSON("QIDtoFilename.json", function(json) {
 // let rawdata = fs.readFileSync('data/QIDtoFilename.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json');
@@ -234,9 +236,9 @@ function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAt
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 
 // Commented for tests, but should work
-// newGenerateModifiedCSV(QIDtoFilename,csvFilePath)
+newGenerateModifiedCSV(QIDtoFilename,csvFilePath)
 
-generateBaselineCSV(QIDtoFilename)
+// generateBaselineCSV(QIDtoFilename)
 
 
 
