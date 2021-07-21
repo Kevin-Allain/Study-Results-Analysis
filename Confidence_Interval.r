@@ -5,14 +5,9 @@
 # Author:  Kevin Allain, kevin.allain@city.ac.uk
 # Date:    2020-11-17
 
-# Import library for bootstrap methods 
 library(boot) 
-
-# Import library for plotting 
 library(ggplot2) 
 library(lattice)
-
-
 
 # load file # Remember to move in the right folder, based on your own computer
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
@@ -20,25 +15,16 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # d <- read.table(file="data/transformed/survey_precise-study_1618325511833.csv", TRUE, ",")
 # Example of file with randomly generated data to fill all the categories
 # d <- read.table(file="data/transformed/survey_precise-study_randomlyfilled_1618325521753.csv", TRUE, ",")
-
 # Added a new data file with neither randomly generated data nor empty lines
 # d <- read.table(file="data/transformed/survey_precise-study_1618754171875.csv", TRUE, ",")
-
 
 # Example with only 3 answers generated with a slider # No more answerA and correctA. Now it is answerA1,answerA2,answerA3, diffA1,diffA2,diffA3
 d <- read.table(file="data/transformed/survey_precise-study_1620402561191.csv", TRUE, ",")
 
-# OLD
-# The header of the file:
-# | ResponseId | Progress | RecordedDate | StartDate | EndDate | Finished | Duration_in_seconds | filename | idc | drawnQn | drawnQl | queryString | flips | nMasks | dMask | dComplex_Qn | dComplex_Ql | dComplex_Where | focus | bslnA | bslnB | cntrQ | FirstClick | LastClick | PageSubmit | QuestionA | correctA | TrustA | QuestionB | TrustB | correctB |
-
-# NEW
-# The header of the file:
-# ResponseId	Progress	RecordedDate	StartDate	EndDate	Finished	Duration_in_seconds	filename	idc	drawnQn	drawnQl	queryString	flips	nMasks	dMask	dComplex_Qn	dComplex_Ql	dComplex_Where	focus	bslnA1	bslnA2	bslnA3	bslnB	cntrQ	answerA1	answerA2	answerA3	trustA	answerB	trustB	diffA1	diffA2	diffA3	correctB
 
 
-
-### Bootstrapping for testing hypotheses
+### Bootstrapping for testing hypotheses 
+# ---- We have to do the bootstraping for each category we wish to run... Could we set this up as an array of categories to do?
 set.seed(112358)
 n <- length(d$ResponseId) # The number of observations to sample
 n.Qn_E <- length(d$ResponseId[d$dComplex_Qn=="E"]) # Number of samples with data complexity Qn as E
@@ -65,9 +51,6 @@ Boot.t_focus_WHAT_Qn <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Qn"], size= B
 Boot.t_focus_WHAT_Ql <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Ql"], size= B*n.focus_WHAT_Ql, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Ql)
 Boot.t_focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"] , size= B*n.focus_WHERE, replace=TRUE), ncol=B, nrow=n.focus_WHERE)
 
-# Boot.EEE[1:5,1:5]; Boot.WHERE[1:5,1:5]; # I don't remember why I did this
-
-# Code okay up to that point
 
 # Confidence interval: average +- z score * standard error #### Issue here: our data as it is now doesn't have 
 # 95% confidence interval means 2.5% on each side
@@ -93,10 +76,6 @@ samplemean <- function(x, d) {
 bootDuration_in_seconds = boot(d$PageSubmit, samplemean, R=1000) # 1000 replications
 plot(bootDuration_in_seconds)
 
-# Seems ok up to here
-
-# bootCorrect_A = boot(d$correctA, samplemean, R=1000) # 1000 replications
-# plot(bootCorrect_A)
 
 bootCorrect_B = boot(d$correctB, samplemean, R=1000) # 1000 replications
 plot(bootCorrect_B)
@@ -126,8 +105,6 @@ dfCategories <- data.frame(x= c("WHAT_Qn","WHAT_Ql","WHERE") ,
                            U = c(timeCI_WHAT_Qn$normal[3], timeCI_WHAT_Ql$normal[3], timeCI_WHERE$normal[3])
                            )
 ggplot(dfCategories, aes(x = x, y = F)) + geom_point(size = 4) + geom_errorbar(aes(ymax = U, ymin = L))
-# Seems fine up to here.
-
 
 
 # AverageCorrect-global Function to find the bootstrap Confidence Intervals 
