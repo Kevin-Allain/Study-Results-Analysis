@@ -55,6 +55,7 @@ The technologies that have to be installed are: Node.js and R. We run the code o
 | bslnA2              | Numerical correct value for question A2                      |
 | bslnA3              | Numerical correct value for question A3                      |
 | bslnB               | Categorical correct value for question B                     |
+| t                   | Time in seconds to click on the submit on this one page (the 4 questions and their trust) |
 | cntrQ               | Question counter                                             |
 | answerA1            | Participant answer for question A1                           |
 | answerA2            | Participant answer for question A2                           |

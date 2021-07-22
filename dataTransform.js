@@ -11,14 +11,17 @@ console.log(Math.random())
 // const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36_modified.csv'
 // slider_noflip_rightParenthesisBsln_headerReduced
 // var csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv'
-var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv'
+// var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv'
+// var csvFilePath='data/test_reordered_question_20210721_1547.csv';
+var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv"
 
 // $.getJSON("QIDtoFilename.json", function(json) {
 // let rawdata = fs.readFileSync('data/QIDtoFilename.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json');
-let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json');
+// let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json');
+let rawdata = fs.readFileSync('data/QIDtoFilename_20210722_1136.json');
 
 let QIDtoFilename = JSON.parse(rawdata);
 hashmapAttributesNames_glbl = {
@@ -231,19 +234,9 @@ function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAt
 }
 
 
-// ---- Calls of the functions 
-// generateModifiedCSV(QIDtoFilename,csvFilePath)
-// generateModifiedCSV(QIDtoFilename,csvFilePath)
-
-// Commented for tests, but should work
-newGenerateModifiedCSV(QIDtoFilename,csvFilePath)
-
-// generateBaselineCSV(QIDtoFilename)
-
-
 
 function newGenerateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoid=false){
-
+    // console.log("newGenerateModifiedCSV ",{QIDtoFilename,csvFilePath,addRandomInfoToFillVoid})
     // console.log(QIDtoFilename);
     var objGenerated=[];
     var cptForBundlingQuestions=0;
@@ -255,65 +248,72 @@ function newGenerateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoi
     csv()
     .fromFile(csvFilePath)
     .then((objJson)=>{
+
+        // indx for values which are shared for all the participants. mod is for answers over several questions
+        var indxStartDate=1,indxEndDate=2,indxStatus=3,indxProgress=5,indxDuration_seconds=6,indxFinished=7,indxRecordedDate=8,indxResponseID=9;
+        var fileName=null,idc=null, drawnQn=null, drawnQl=null, queryString=null,flips=null,nMasks=null,dMask=null,dComplex_Qn=null,dComplex_Ql=null,dComplex_Where=null,
+            focus=null,bslnA1=null,bslnA2=null,bslnA3=null,bslnB=null,cntrQ=null;
+        var modAnswerTime=null,modAnswerA1=null,modAnswerA2=null,modAnswerA3=null,modAnswerB=null,modTrustA1=null,modTrustA2=null,modTrustA3=null,modTrustB=null
+
+        console.log("QIDtoFilename: ",QIDtoFilename);
+
+
         for(var k in objJson){
             console.log("k: ",k);
-            // Keep a boolean to indicate if the QID has a page submit...
-            var pagesubmitExists = false;
-            for(var key in objJson[k]){
-                // console.log("k: ",k,", key: ",key,", jsonObj[k][key]: ", jsonObj[k][key],', key.indexOf("_First Click")!==-1: ',key.indexOf("_First Click")!==-1);
-                if(key==="ResponseId"){storeResponseId=objJson[k][key]}
-                if(key==="Progress"){storeProgress=objJson[k][key]}
-                if(key==="StartDate"){storeStartDate=objJson[k][key]} if(key==="EndDate"){storeEndDate=objJson[k][key]}
-                if(key==="Duration (in seconds)"){storeDuration_in_seconds=objJson[k][key]}if(key==="Finished"){storeFinished=objJson[k][key]}
-                if(key==="RecordedDate"){storeRecordedDate=objJson[k][key]}
+            if (k>0){
+                // Keep a boolean to indicate if the QID has a page submit...
+                var begAnswerIndx=null;
+                var firstAnswerGenerated=false;
+                var objShared={};
+                for(var key in objJson[k]){
+                    if (objJson[k][key] !== ''){
+                        if(key[0]!=="Q"){
+                            console.log('key[0]!=="Q"',"__key: ",key,"(typeof key): ",(typeof key),", objJson[k][key]: ",objJson[k][key],", (typeof objJson[k][key]): ",(typeof objJson[k][key]));
+                            // objGenerated[objGenerated.length-1][key]=objJson[k][key]
+                            objShared[key]=objJson[k][key]
+                        } else {
+                            // var strAttr=null;
+                            // (curIndx===1)?strAttr="StartDate":(curIndx===2)?strAttr="EndDate":(curIndx===3)?strAttr="Status":(curIndx===5)?strAttr="Progress":(curIndx===6)?strAttr="Duration_in_seconds" :(curIndx===7)?strAttr="Finished":(curIndx===8)?strAttr="RecordedDate":(curIndx===9)?strAttr="ResponseId":strAttr="";
+                            // if(strAttr!==null)objGenerated[objGenerated.length-1][strAttr]=objJson[k][key];
 
-                //     console.log("k: ",k,", objJson[k]: ",objJson[k])
-                var indxBaseAnswer=-1;
-                var numID = (key.indexOf('_')!==-1)?Number(key.substr(1,key.indexOf('_')-1)):Number(key.substr(1));
+                            var curIndx = (key.indexOf('_')!==-1)?Number(key.substr(1,key.indexOf('_')-1)):Number(key.substr(1));
+                            console.log("key: ",key,"(typeof key): ",(typeof key),", objJson[k][key]: ",objJson[k][key],", (typeof objJson[k][key]): ",(typeof objJson[k][key]),", curIndx: ",curIndx )
 
-                if(typeof numID === "number" && numID>15){
-                //             console.log("numID: ",numID,", key: ",key,", objJson[k][key]: ",objJson[k][key],", indxBaseAnswer: ",indxBaseAnswer,', key.indexOf("_Page Submit:")!==-1: ',(key.indexOf("_Page Submit:")!==-1),', objJson[k][key]!=="": ',objJson[k][key]!=="");
-                    if (key.indexOf("_Page Submit")!==-1 && objJson[k][key]!==""){
+                            if (curIndx>23){
+                                var keyQual = "QID"+curIndx;
+                                var filename = QIDtoFilename[keyQual]
+                                if(key.indexOf("First")!== -1){
+                                    objGenerated.push({});
+                                    for(var sharedK in objShared){objGenerated[objGenerated.length-1][sharedK]=objShared[sharedK]}
+                                    for(var infoKey in objInfo){objGenerated[objGenerated.length-1][infoKey]=objInfo[infoKey]}
+                                }
+                                if(key.indexOf("Submit")!== -1){
+                                    begAnswerIndx=curIndx;
+                                var objInfo = extractColumnsFromFilename(filename);
+                                console.log("objInfo: ",objInfo);
+                                    objGenerated[objGenerated.length-1]['t']=objJson[k][key];
+                                } else {
+                                    if(curIndx>begAnswerIndx){
+                                        (curIndx-begAnswerIndx===1)?objGenerated[objGenerated.length-1]["answerA1"]=objJson[k][key]:
+                                        (curIndx-begAnswerIndx===2)?objGenerated[objGenerated.length-1]["answerA2"]=objJson[k][key]:
+                                        (curIndx-begAnswerIndx===3)?objGenerated[objGenerated.length-1]["answerA3"]=objJson[k][key]:
+                                        (curIndx-begAnswerIndx===4)?objGenerated[objGenerated.length-1]["answerB"]=objJson[k][key]:
+                                        (curIndx-begAnswerIndx===5)?objGenerated[objGenerated.length-1]["trustA1"]=objJson[k][key]:
+                                        (curIndx-begAnswerIndx===6)?objGenerated[objGenerated.length-1]["trustA2"]=objJson[k][key]:
+                                        (curIndx-begAnswerIndx===7)?objGenerated[objGenerated.length-1]["trustA3"]=objJson[k][key]:
+                                        objGenerated[objGenerated.length-1]["trustB"]=objJson[k][key]
+                                    }
+                                }
+                            }
 
-                        var keyQual = "QID"+numID;
-
-                        objGenerated.push({})
-                        objGenerated[objGenerated.length-1]["ResponseId"]=storeResponseId;
-                        objGenerated[objGenerated.length-1]["Progress"]=storeProgress; objGenerated[objGenerated.length-1]["RecordedDate"]=storeRecordedDate;
-                        objGenerated[objGenerated.length-1]["StartDate"]=storeStartDate; objGenerated[objGenerated.length-1]["EndDate"]=storeEndDate;
-                        objGenerated[objGenerated.length-1]["Finished"]=storeFinished;objGenerated[objGenerated.length-1]["Duration_in_seconds"]=storeDuration_in_seconds; 
-                        objGenerated[objGenerated.length-1]["filename"]=QIDtoFilename[keyQual]; 
-                        var filename = QIDtoFilename[keyQual]
-                        var objInfo = extractColumnsFromFilename(filename);
-                        console.log("objInfo: ",objInfo);
-                        for(var infoK in objInfo){
-                            objGenerated[objGenerated.length-1][infoK] = objInfo[infoK];
-                        }
-
-
-                        indxBaseAnswer = numID;
-                        if (indxBaseAnswer!== -1){
-                            console.log("potential keys | Q: ",indxBaseAnswer+1,indxBaseAnswer+2,indxBaseAnswer+3,indxBaseAnswer+4,indxBaseAnswer+5,indxBaseAnswer+6)
-                            console.log("potential vals | Q: ",objJson[k]['Q'+(indxBaseAnswer+1)+'_1'],objJson[k]['Q'+(indxBaseAnswer+2)+'_1'],objJson[k]['Q'+(indxBaseAnswer+3)+'_1'],objJson[k]['Q'+(indxBaseAnswer+4)],objJson[k]['Q'+(indxBaseAnswer+5)],objJson[k]['Q'+(indxBaseAnswer+6)]) 
-
-                            objGenerated[objGenerated.length-1]["answerA1"] = Number(objJson[k]['Q'+(indxBaseAnswer+1)+'_1']) - Number(objGenerated[objGenerated.length-1]["bslnA1"])
-                            objGenerated[objGenerated.length-1]["answerA2"] = Number(objJson[k]['Q'+(indxBaseAnswer+2)+'_1']) - Number(objGenerated[objGenerated.length-1]["bslnA2"])
-                            objGenerated[objGenerated.length-1]["answerA3"] = Number(objJson[k]['Q'+(indxBaseAnswer+3)+'_1']) - Number(objGenerated[objGenerated.length-1]["bslnA3"])
-                            objGenerated[objGenerated.length-1]["trustA"] = Number(objJson[k]['Q'+(indxBaseAnswer+4)])
-                            objGenerated[objGenerated.length-1]["answerB"] = objJson[k]['Q'+(indxBaseAnswer+5)]
-                            objGenerated[objGenerated.length-1]["trustB"] = Number(objJson[k]['Q'+(indxBaseAnswer+6)])
-
-                            // difference for truth? // We have to consider that slider is different... difference is an okay measurement.
-                            objGenerated[objGenerated.length-1]["diffA1"] = Number(objJson[k]['Q'+(indxBaseAnswer+1)+'_1'])
-                            objGenerated[objGenerated.length-1]["diffA2"] = Number(objJson[k]['Q'+(indxBaseAnswer+2)+'_1'])
-                            objGenerated[objGenerated.length-1]["diffA3"] = Number(objJson[k]['Q'+(indxBaseAnswer+3)+'_1'])
-                            objGenerated[objGenerated.length-1]["correctB"] = 1*(objGenerated[objGenerated.length-1]["answerB"]===objGenerated[objGenerated.length-1]["bslnB"])
-                            
+                            // if(strAttr!==null)objGenerated[objGenerated.length-1][strAttr]=objJson[k][key];
                         }
                     }
                 }
             }
         }
+
+        console.log({objGenerated});
 
         // const items = jsonObj;
         const items = objGenerated
@@ -321,8 +321,8 @@ function newGenerateModifiedCSV(QIDtoFilename,csvFilePath,addRandomInfoToFillVoi
         const header = Object.keys(items[0])
         console.log("header: ",header);
         const csvOutput = [
-        header.join(','), // header row first
-        ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
+            header.join(','), // header row first
+            ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
         ].join('\r\n')
         
         // console.log(csvOutput)
@@ -386,3 +386,14 @@ function generateBaselineCSV(QIDtoFilename){
         if(err) console.log('error', err);
     });
 }
+// ---- Calls of the functions 
+// generateModifiedCSV(QIDtoFilename,csvFilePath)
+// generateModifiedCSV(QIDtoFilename,csvFilePath)
+
+// Commented for tests, but should work
+newGenerateModifiedCSV(QIDtoFilename,csvFilePath)
+
+// generateBaselineCSV(QIDtoFilename)
+
+
+
