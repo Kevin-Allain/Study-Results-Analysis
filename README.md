@@ -98,13 +98,15 @@ We also aim to look at the stacked bar charts colored according to self-reported
 
 ## TODO
 
-
-
+- Make a function that generates the graphs according to the desired categories
 - Write the code for the matrix of error bars according to the categories selected.
 - Write the code for the matrix of stacked bar charts according to the categories selected .
-- Potentially, need to update the JavaScript that transforms the raw Qualtrics data. Will not influence the R code.
 
 
+
+## Done
+
+- Update the JavaScript that transforms the raw Qualtrics data. Will not influence the R code. 
 
 
 

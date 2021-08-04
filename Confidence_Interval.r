@@ -19,7 +19,9 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # d <- read.table(file="data/transformed/survey_precise-study_1618754171875.csv", TRUE, ",")
 
 # Example with only 3 answers generated with a slider # No more answerA and correctA. Now it is answerA1,answerA2,answerA3, diffA1,diffA2,diffA3
-d <- read.table(file="data/transformed/survey_precise-study_1620402561191.csv", TRUE, ",")
+# d <- read.table(file="data/transformed/survey_precise-study_1620402561191.csv", TRUE, ",")
+# survey_precise-study_1628072432964
+d <- read.table(file="data/transformed/survey_precise-study_1628072432964.csv", TRUE, ",")
 
 
 
