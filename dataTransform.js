@@ -57,9 +57,13 @@ function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAt
     var bslnA = null;
     var bslnA1 = null, bslnA2 = null, bslnA3 = null;
     if (bslnTot[1].indexOf(')') !== "undefined") {
-        bslnA1 = Number(bslnTot[1].substr(0, bslnTot[1].indexOf(')')));
-        bslnA2 = Number(bslnTot[1].substr(bslnTot[1].indexOf(')') + 1, 5));
-        bslnA3 = Number(bslnTot[1].substr(bslnTot[1].length - 5));
+        var strSplitBlsn = bslnTot[1].split(')')
+        // bslnA1 = Number(bslnTot[1].substr(0, bslnTot[1].indexOf(')')));
+        // bslnA2 = Number(bslnTot[1].substr(bslnTot[1].indexOf(')') + 1, 5));
+        // bslnA3 = Number(bslnTot[1].substr(bslnTot[1].length - 5));
+        bslnA1 = Number(strSplitBlsn[0]);
+        bslnA2 = Number(strSplitBlsn[1]);
+        bslnA3 = Number(strSplitBlsn[2]);
     } else {
         bslnA = (splitFN[9].substr(splitFN[9].indexOf('_') + 1, 1) === 't') ? 1 : -1;
     }
@@ -152,20 +156,39 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillV
                                         console.log("Found Submit, objInfo: ", objInfo);
                                         objGenerated[objGenerated.length - 1]['t'] = objJson[k][key];
                                     } else {
+                                        console.log("begAnswerIndx: ",begAnswerIndx)
                                         if (curIndx > begAnswerIndx) {
+                                            console.log("objGenerated[objGenerated.length - 1]: ",objGenerated[objGenerated.length - 1]);
                                             (curIndx - begAnswerIndx === 1) ? objGenerated[objGenerated.length - 1]["answerA1"] = objJson[k][key] :
-                                                (curIndx - begAnswerIndx === 2) ? objGenerated[objGenerated.length - 1]["answerA2"] = objJson[k][key] :
-                                                    (curIndx - begAnswerIndx === 3) ? objGenerated[objGenerated.length - 1]["answerA3"] = objJson[k][key] :
-                                                        (curIndx - begAnswerIndx === 4) ? objGenerated[objGenerated.length - 1]["answerB"] = objJson[k][key] :
-                                                            (curIndx - begAnswerIndx === 5) ? objGenerated[objGenerated.length - 1]["trustA1"] = objJson[k][key] :
-                                                                (curIndx - begAnswerIndx === 6) ? objGenerated[objGenerated.length - 1]["trustA2"] = objJson[k][key] :
-                                                                    (curIndx - begAnswerIndx === 7) ? objGenerated[objGenerated.length - 1]["trustA3"] = objJson[k][key] :
-                                                                        objGenerated[objGenerated.length - 1]["trustB"] = objJson[k][key]
+                                            (curIndx - begAnswerIndx === 2) ? objGenerated[objGenerated.length - 1]["answerA2"] = objJson[k][key] :
+                                            (curIndx - begAnswerIndx === 3) ? objGenerated[objGenerated.length - 1]["answerA3"] = objJson[k][key] :
+                                            (curIndx - begAnswerIndx === 4) ? objGenerated[objGenerated.length - 1]["answerB"] = objJson[k][key] :
+                                            (curIndx - begAnswerIndx === 5) ? objGenerated[objGenerated.length - 1]["trustA1"] = objJson[k][key] :
+                                            (curIndx - begAnswerIndx === 6) ? objGenerated[objGenerated.length - 1]["trustA2"] = objJson[k][key] :
+                                            (curIndx - begAnswerIndx === 7) ? objGenerated[objGenerated.length - 1]["trustA3"] = objJson[k][key] :
+                                            objGenerated[objGenerated.length - 1]["trustB"] = objJson[k][key]
                                         }
                                     }
                                 }
-
-                                // if(strAttr!==null)objGenerated[objGenerated.length-1][strAttr]=objJson[k][key];
+                                if (typeof objGenerated[objGenerated.length - 1] !== "undefined")
+                                {
+                                    console.log("adding differences; objGenerated[objGenerated.length - 1]: ",objGenerated[objGenerated.length - 1])
+                                    // add differences
+                                    if (typeof objGenerated[objGenerated.length - 1]["answerA1"]!=="undefined"){
+                                        objGenerated[objGenerated.length - 1]["diffA1"] = objGenerated[objGenerated.length - 1]["bslnA1"]-objGenerated[objGenerated.length - 1]["answerA1"]
+                                    } 
+                                    if (typeof objGenerated[objGenerated.length - 1]["answerA2"]!=="undefined"){
+                                        objGenerated[objGenerated.length - 1]["diffA2"] = objGenerated[objGenerated.length - 1]["bslnA2"]-objGenerated[objGenerated.length - 1]["answerA2"]
+                                    } 
+                                    if (typeof objGenerated[objGenerated.length - 1]["answerA3"]!=="undefined"){
+                                        objGenerated[objGenerated.length - 1]["diffA3"] = objGenerated[objGenerated.length - 1]["bslnA3"]-objGenerated[objGenerated.length - 1]["answerA3"]
+                                    } 
+                                    if (typeof objGenerated[objGenerated.length - 1]["answerB"]!=="undefined"){
+                                        var numDerivedB=(objGenerated[objGenerated.length - 1]["answerB"]=="Agree")?1:(objGenerated[objGenerated.length - 1]["answerB"]=="Neither agree nor disagree")?0:-1;
+                                        objGenerated[objGenerated.length - 1]["correctB"] = 1 * objGenerated[objGenerated.length - 1]["blsnB"]==numDerivedB;
+                                    }
+                                    // if(strAttr!==null)objGenerated[objGenerated.length-1][strAttr]=objJson[k][key];
+                                }
                             }
                         }
 
@@ -173,7 +196,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillV
                 }
             }
 
-            // console.log({ objGenerated });
+            console.log({ objGenerated });
 
             // const items = jsonObj;
             const items = objGenerated
@@ -187,6 +210,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillV
 
             // console.log(csvOutput)
             var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : t.getTime();
+            console.log("writing " + "data/transformed/survey_precise-study_" + fileNameTime + ".csv")
             fs.writeFile("data/transformed/survey_precise-study_" + fileNameTime + ".csv", csvOutput, function (err, data) {
                 if (err) console.log('error', err);
             });
