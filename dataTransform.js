@@ -14,7 +14,9 @@ console.log(Math.random())
 // var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv'
 // var csvFilePath='data/test_reordered_question_20210721_1547.csv';
 // var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv"
-var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
+// var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
+var csvFilePath = "data/t16720211305_alt_focus_modif.csv"
+
 
 // $.getJSON("QIDtoFilename.json", function(json) {
 // let rawdata = fs.readFileSync('data/QIDtoFilename.json');
@@ -22,8 +24,9 @@ var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json');
-// let rawdata = fs.readFileSync('data/QIDtoFilename_20210722_1136.json');
-let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json');
+// let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json');
+let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json');
+
 
 let QIDtoFilename = JSON.parse(rawdata);
 hashmapAttributesNames_glbl = {
@@ -47,11 +50,13 @@ function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAt
     var drawnQn = hashmapAttributesNames[splitFN[1]];
     var drawnQl = hashmapAttributesNames[splitFN[2]];
     var queryArr = splitFN[3].split('_');
+    console.log("for queryString... hashmapAttributesNames: ",hashmapAttributesNames+", queryArr[1]: ",queryArr[1],", queryArr[2]: ",queryArr[2],", queryArr[3]: ",queryArr[3],", splitFN: ",splitFN)
     var queryString = hashmapAttributesNames[queryArr[1]] + " " + queryArr[2] + " " + queryArr[3]
     var flips = splitFN[4].substr(splitFN[4].indexOf('_') + 1)
     var nMasks = Number(splitFN[5].substr(splitFN[5].indexOf('_') + 1))
     var dMask = splitFN[6].substr(splitFN[6].indexOf('_') + 1)
-    var dComplex = splitFN[7].substr(splitFN[7].indexOf('_') + 1); var dComplex_Qn = dComplex[0], dComplex_Ql = dComplex[1], dComplex_Where = dComplex[2];
+    var dComplex = splitFN[7].substr(splitFN[7].indexOf('_') + 1); 
+    var dComplex_Qn = dComplex[0], dComplex_Ql = dComplex[1], dComplex_Where = dComplex[2];
     var focus = splitFN[8].substr(splitFN[8].indexOf('_') + 1);
     var bslnTot = splitFN[9].split('_');
     var bslnA = null;
@@ -149,6 +154,14 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillV
                                         for (var infoKey in objInfo) {
                                             objGenerated[objGenerated.length - 1][infoKey] = objInfo[infoKey]
                                         }
+                                        objGenerated[objGenerated.length - 1]["dComplex_focus"] = (objGenerated[objGenerated.length - 1]["focus"]==="WHAT_Qn")?objGenerated[objGenerated.length - 1]["dComplex_Qn"] :  (objGenerated[objGenerated.length - 1]["focus"]==="WHAT_Ql")?objGenerated[objGenerated.length - 1]["dComplex_Ql"] : objGenerated[objGenerated.length - 1]["dComplex_Where"] 
+                                        objGenerated[objGenerated.length - 1]["info_focus_dComplex_dMask"] = objGenerated[objGenerated.length - 1]["focus"]+"_"+objGenerated[objGenerated.length - 1]["dComplex_focus"]+"_"
+                                            + ((objGenerated[objGenerated.length - 1]["dMask"] == "easy")?"E":(objGenerated[objGenerated.length - 1]["dMask"] == "medium")?"M":"H");
+
+                                        objGenerated[objGenerated.length - 1]["info_dComplex_dMask"] = objGenerated[objGenerated.length - 1]["dComplex_focus"]+"_"
+                                            + ((objGenerated[objGenerated.length - 1]["dMask"] == "easy")?"E":(objGenerated[objGenerated.length - 1]["dMask"] == "medium")?"M":"H");
+
+
                                         console.log("Filled after first, ", objGenerated[objGenerated.length - 1])
                                     }
                                     if (key.indexOf("Submit") !== -1) {
@@ -185,7 +198,8 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillV
                                     } 
                                     if (typeof objGenerated[objGenerated.length - 1]["answerB"]!=="undefined"){
                                         var numDerivedB=(objGenerated[objGenerated.length - 1]["answerB"]=="Agree")?1:(objGenerated[objGenerated.length - 1]["answerB"]=="Neither agree nor disagree")?0:-1;
-                                        objGenerated[objGenerated.length - 1]["correctB"] = 1 * objGenerated[objGenerated.length - 1]["blsnB"]==numDerivedB;
+                                        console.log("numDerivedB: ",numDerivedB, ', objGenerated[objGenerated.length - 1]["bslnB"]: ',objGenerated[objGenerated.length - 1]["bslnB"], ', calculation: ', (1 * objGenerated[objGenerated.length - 1]["bslnB"]==numDerivedB) )
+                                        objGenerated[objGenerated.length - 1]["correctB"] = 1 * (objGenerated[objGenerated.length - 1]["bslnB"]==numDerivedB);
                                     }
                                     // if(strAttr!==null)objGenerated[objGenerated.length-1][strAttr]=objJson[k][key];
                                 }

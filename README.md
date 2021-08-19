@@ -57,6 +57,7 @@ The technologies that have to be installed are: Node.js and R. We run the code o
 | bslnB               | Categorical correct value for question B                     |
 | t                   | Time in seconds to click on the submit on this one page (the 4 questions and their trust) |
 | cntrQ               | Question counter                                             |
+| dComplex_focus      | Difficulty of the data which is focused on and necessary to answer the question |
 | answerA1            | Participant answer for question A1                           |
 | answerA2            | Participant answer for question A2                           |
 | answerA3            | Participant answer for question A3                           |
