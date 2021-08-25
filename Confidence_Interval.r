@@ -25,8 +25,39 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # survey_precise-study_1628072432964
 d <- read.table(file="data/transformed/survey_precise-study_1628960451341.csv", TRUE, ",")
 
+<<<<<<< HEAD
 # d_alt <- read.table(file="data/transformed/alt_survey_precise-study_1628960451341.csv", TRUE, ",")
 d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862.csv",TRUE, ",")
+=======
+
+### Bootstrapping for testing hypotheses 
+# ---- We have to do the bootstraping for each category we wish to run... Could we set this up as an array of categories to do?
+set.seed(112358)
+n <- length(d$ResponseId) # The number of observations to sample
+n.Qn_E <- length(d$ResponseId[d$dComplex_Qn=="E"]) # Number of samples with data complexity Qn as E
+n.Qn_M <- length(d$ResponseId[d$dComplex_Qn=="M"]) # Number of samples with data complexity Qn as M
+n.Qn_H <- length(d$ResponseId[d$dComplex_Qn=="H"]) # Number of samples with data complexity Qn as H
+# ... todo the other categories?
+n.focus_WHAT_Qn <- length(d$ResponseId[d$focus=="WHAT_Qn"]) # Number of samples with the focus being WHAT_Qn
+n.focus_WHAT_Ql <- length(d$ResponseId[d$focus=="WHAT_Ql"]) # Number of samples with the focus being WHAT_Ql
+n.focus_WHERE <- length(d$ResponseId[d$focus=="WHERE"]) # Number of samples with the focus being WHERE
+B <- 10000 # The number of bootstraps samples
+variable <- d$PageSubmit
+
+BootstrapSamples <- matrix( sample(variable, size=n*B, replace=TRUE), nrow=n, ncol=B)
+dimBoot <- dim(BootstrapSamples)
+
+# now, get those bootstrap samples (without loops!) ### IMPORTANT PART 1
+# stick each Boot-sample in a column... # Let's make a set of groups of time selection depending on the focus of the question
+Boot.focus_WHAT_Qn <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Qn"], size= B*n.focus_WHAT_Qn, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Qn)
+Boot.focus_WHAT_Ql <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Ql"], size= B*n.focus_WHAT_Ql, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Ql)
+Boot.focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"], size= B*n.focus_WHERE, replace=TRUE), ncol=B, nrow=n.focus_WHERE)
+
+
+Boot.t_focus_WHAT_Qn <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Qn"], size= B*n.focus_WHAT_Qn, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Qn)
+Boot.t_focus_WHAT_Ql <- matrix( sample(d$PageSubmit[d$focus=="WHAT_Ql"], size= B*n.focus_WHAT_Ql, replace=TRUE), ncol=B, nrow=n.focus_WHAT_Ql)
+Boot.t_focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"] , size= B*n.focus_WHERE, replace=TRUE), ncol=B, nrow=n.focus_WHERE)
+>>>>>>> 440affc (Updated the baseline file.)
 
 
 # Confidence interval: average +- z score * standard error #### Issue here: our data as it is now doesn't have 
