@@ -15,7 +15,9 @@ console.log(Math.random())
 // var csvFilePath='data/test_reordered_question_20210721_1547.csv';
 // var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv"
 // var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
-var csvFilePath = "data/t16720211305_alt_focus_modif.csv"
+// var csvFilePath = "data/t16720211305_alt_focus_modif.csv"
+
+var csvFilePath = 'data/t26720211035_attempt_flip1_header_adapted.csv'
 
 
 // $.getJSON("QIDtoFilename.json", function(json) {
@@ -25,7 +27,11 @@ var csvFilePath = "data/t16720211305_alt_focus_modif.csv"
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json');
 // let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json');
 // let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json');
-let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json');
+// let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json');
+
+// let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json');
+// let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json');
+let rawdata = fs.readFileSync('data/QIDtoFilename_t26720211035_attempt_flip1.json')
 
 
 let QIDtoFilename = JSON.parse(rawdata);
@@ -236,7 +242,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillV
 
 
 // New function: we need to establish the distribution of baselines.
-function generateBaselineCSV(QIDtoFilename) {
+function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
     var hashmapBaselines = [];
     var objGenerated = []
     for (var qid in QIDtoFilename) {
@@ -280,7 +286,7 @@ function generateBaselineCSV(QIDtoFilename) {
         ...itemsN.map(row => headerN.map(fieldName => JSON.stringify(row[fieldName], replacerN)).join(','))
     ].join('\r\n')
 
-    fs.writeFile("data/transformed/baselines.csv", csvOutputN, function (err, data) {
+    fs.writeFile("data/transformed/baselines"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
         if (err) console.log('error', err);
     });
 }
@@ -293,9 +299,9 @@ function generateBaselineCSV(QIDtoFilename) {
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 
 // Commented for tests, but should work
-newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
+generateBaselineCSV(QIDtoFilename,"_flip1")
+// newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
 
-// generateBaselineCSV(QIDtoFilename)
 
 
 

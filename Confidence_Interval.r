@@ -151,7 +151,6 @@ groupedPlotDiffA1 <- ggplot(groupedData, aes(x=mean_diffA1,y=focus)) +
 groupedPlotDiffA1
 
 # ---- Stacked bar charts for question B and trust levels
-
 d_alt$dMask = as.character(d_alt$dMask)
 d_alt$dMask[d_alt$dMask == "easy"] = "Mask Easy"
 d_alt$dMask[d_alt$dMask == "medium"] = "Mask Medium"
@@ -160,13 +159,20 @@ d_alt$dComplex_focus = as.character(d_alt$dComplex_focus)
 d_alt$dComplex_focus[d_alt$dComplex_focus == "E"] = "Focus Easy"
 d_alt$dComplex_focus[d_alt$dComplex_focus == "M"] = "Focus Medium"
 d_alt$dComplex_focus[d_alt$dComplex_focus == "H"] = "Focus Hard"
-
 d_alt$orderFocusComplex <- factor(d_alt$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
 d_alt$orderMaskComplex <- factor(d_alt$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
+
+# Question B
 groupedPlotCorrectB <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y=focus)) +
   geom_bar(aes(fill=factor(correctB)),position=position_stack(reverse=TRUE)) +
   theme(legend.position = "top") +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
 groupedPlotCorrectB
+# TrustA1
+groupedPlotTrustA1 <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y=focus)) +
+  geom_bar(aes(fill=factor(trustA1)),position=position_stack(reverse=TRUE)) +
+  theme(legend.position = "top") +
+  facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
+groupedPlotTrustA1
 
