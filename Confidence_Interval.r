@@ -25,7 +25,8 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # survey_precise-study_1628072432964
 d <- read.table(file="data/transformed/survey_precise-study_1628960451341.csv", TRUE, ",")
 
-d_alt <- read.table(file="data/transformed/alt_survey_precise-study_1628960451341.csv", TRUE, ",")
+# d_alt <- read.table(file="data/transformed/alt_survey_precise-study_1628960451341.csv", TRUE, ",")
+d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862.csv",TRUE, ",")
 
 
 # Confidence interval: average +- z score * standard error #### Issue here: our data as it is now doesn't have 
@@ -58,8 +59,7 @@ boot_d_focus_what_qn_DiffA3_mask_easy = boot(d$diffA3[d$focus=="WHAT_Qn" & d$dMa
 
 
 
-
-
+boot_d_focus_what_qn_DiffA1_mask_easy
 
 # TIME-global Function to find the bootstrap Confidence Intervals 
 timeCI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", "perc", "bca")) 
