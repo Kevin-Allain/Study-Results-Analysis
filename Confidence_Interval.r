@@ -36,6 +36,7 @@ d <- read.table(file="data/transformed/survey_precise-study_1628960451341.csv", 
 
 <<<<<<< HEAD
 # d_alt <- read.table(file="data/transformed/alt_survey_precise-study_1628960451341.csv", TRUE, ",")
+<<<<<<< HEAD
 d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862.csv",TRUE, ",")
 =======
 
@@ -72,6 +73,10 @@ Boot.t_focus_WHERE <- matrix( sample(d$PageSubmit[d$focus=="WHERE"] , size= B*n.
 # d_alt <- read.table(file="data/transformed/alt_survey_precise-study_1628960451341.csv", TRUE, ",")
 d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862.csv",TRUE, ",")
 >>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
+=======
+# place holder for the data generation. (for the entirety of the )
+d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862_mods.csv",TRUE, ",")
+>>>>>>> a4b8459 (Fixed some typos)
 
 
 # Confidence interval: average +- z score * standard error #### Issue here: our data as it is now doesn't have 
@@ -481,13 +486,13 @@ l_ci_fcs_where_DiffA3_diff_H_mask_h <- ci_fcs_where_DiffA3_diff_H_mask_h$normal[
 h_ci_fcs_where_DiffA3_diff_H_mask_h <- ci_fcs_where_DiffA3_diff_H_mask_h$normal[3];
 #  ---- ****
 
-plot(boot_d_focus_where_DiffA2_diffFocus_H_mask_medium)
+plot(boot_d_focus_where_DiffA3_diffFocus_H_mask_h)
 # boot_d_focus_what_qn_DiffA1_mask_easy
 # boot_d_focus_what_qn_DiffA1_mask_medium
 # boot_d_focus_what_qn_DiffA1_mask_hard
 # Trying to include the boot in the groupedData one... So we should extract the calculations of the boot.
-boot_d_focus_where_DiffA2_diffFocus_H_mask_medium["t0"]
-boot.ci(boot.out=boot_d_focus_where_DiffA2_diffFocus_H_mask_medium,type=c("norm","basic","perc","bca"))
+boot_d_focus_where_DiffA3_diffFocus_H_mask_h["t0"]
+boot.ci(boot.out=boot_d_focus_where_DiffA3_diffFocus_H_mask_h,type=c("norm","basic","perc","bca"))
 # # This works... but annoying to do that for the 81 combinations existing. And yet that's what we'll do...
 # ci_boot_d_focus_where_DiffA2_diffFocus_H_mask_medium <- boot.ci(boot.out = boot_d_focus_where_DiffA2_diffFocus_H_mask_medium, type = c("norm", "basic", "perc", "bca")) 
 # l_ci_boot_d_focus_where_DiffA2_diffFocus_H_mask_medium <- ci_boot_d_focus_where_DiffA2_diffFocus_H_mask_medium$normal[2];
@@ -642,6 +647,7 @@ ggplot(d_alt, aes(x=diffA1,y=focus)) +
   geom_point(size=4,col="black",fill="black") +
   facet_wrap(~orderAllComplex,ncol=1)
 
+# checking
 # Test for display with facetting
 d$orderFocusComplex <- factor(d$dComplex_focus,c("E","M","H"))
 d$orderMaskComplex <- factor(d$dMask,c("easy","medium","hard"))
@@ -664,7 +670,7 @@ length(numCatEach2)
 
 #  IMPORTANT NOTE: there are apparently 29 cases of info_focus_dComplex_dMaskfocus with 2 repetitions... I don't think this is supposed to happen. Not terrible, but not great...
 groupedData <- d_alt %>%
-  group_by(info_focus_dComplex_dMaskfocus,dComplex_focus,dMask) %>%
+  group_by(info_focus_dComplex_dMask,dComplex_focus,dMask) %>%
   summarize(mean_diffA1 = mean(diffA1), sd_diffA1 = sd(diffA1, na.rm=TRUE), count=n(),se_diffA1=(sd_diffA1/(sqrt(count))),
             mean_diffA2 = mean(diffA2), sd_diffA2 = sd(diffA2, na.rm=TRUE), count=n(),se_diffA2=(sd_diffA2/(sqrt(count))),
             mean_diffA3 = mean(diffA3), sd_diffA3 = sd(diffA3, na.rm=TRUE), count=n(),se_diffA3=(sd_diffA3/(sqrt(count))),
@@ -672,97 +678,98 @@ groupedData <- d_alt %>%
   )
 
 groupedData["low_ci_DiffA1"] <-NA; groupedData["high_ci_DiffA1"] <-NA; groupedData["low_ci_DiffA2"] <-NA; groupedData["high_ci_DiffA2"] <-NA; groupedData["low_ci_DiffA3"] <-NA; groupedData["high_ci_DiffA3"] <-NA;
+groupedData["mean_t0_DiffA1"]<-NA;groupedData["mean_t0_DiffA2"]<-NA;groupedData["mean_t0_DiffA3"]<-NA;
 
 # E_E
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
 # E_M
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_m;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_m;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA1_diff_E_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA1_diff_E_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA2_diff_E_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA2_diff_E_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_m;
 # E_H
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_h;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_h;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA1_diff_E_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA1_diff_E_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA2_diff_E_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA2_diff_E_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_h;
 # M_E
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA1_diff_M_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA1_diff_M_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA2_diff_M_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA2_diff_M_mask_e;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA3_diff_M_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA3_diff_M_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA1_diff_M_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA1_diff_M_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA2_diff_M_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA2_diff_M_mask_e;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- l_ci_fcs_what_ql_DiffA3_diff_M_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- h_ci_fcs_what_ql_DiffA3_diff_M_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA1_diff_M_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA1_diff_M_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA2_diff_M_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA2_diff_M_mask_e;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA3_diff_M_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA3_diff_M_mask_e;
 # M_M
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA1_diff_M_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA1_diff_M_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA2_diff_M_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA2_diff_M_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA3_diff_M_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA3_diff_M_mask_m;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA1_diff_M_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA1_diff_M_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA2_diff_M_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA2_diff_M_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- l_ci_fcs_what_ql_DiffA3_diff_M_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- h_ci_fcs_what_ql_DiffA3_diff_M_mask_m;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA1_diff_M_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA1_diff_M_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA2_diff_M_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA2_diff_M_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA3_diff_M_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA3_diff_M_mask_m;
 # M_H
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA1_diff_M_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA1_diff_M_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA2_diff_M_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA2_diff_M_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA3_diff_M_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA3_diff_M_mask_h;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA1_diff_M_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA1_diff_M_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA2_diff_M_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA2_diff_M_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- l_ci_fcs_what_ql_DiffA3_diff_M_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- h_ci_fcs_what_ql_DiffA3_diff_M_mask_h;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA1_diff_M_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA1_diff_M_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA2_diff_M_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA2_diff_M_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA3_diff_M_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA3_diff_M_mask_h;
 # H_E
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA1_diff_H_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA1_diff_H_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA2_diff_H_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA2_diff_H_mask_e;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA3_diff_H_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA3_diff_H_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA1_diff_H_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA1_diff_H_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA2_diff_H_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA2_diff_H_mask_e;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- l_ci_fcs_what_ql_DiffA3_diff_H_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- h_ci_fcs_what_ql_DiffA3_diff_H_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA1_diff_H_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA1_diff_H_mask_e;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA2_diff_H_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA2_diff_H_mask_e;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA3_diff_H_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA3_diff_H_mask_e;
 # H_M
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA1_diff_H_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA1_diff_H_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA2_diff_H_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA2_diff_H_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA3_diff_H_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA3_diff_H_mask_m;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA1_diff_H_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA1_diff_H_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA2_diff_H_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA2_diff_H_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- l_ci_fcs_what_ql_DiffA3_diff_H_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- h_ci_fcs_what_ql_DiffA3_diff_H_mask_m;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA1_diff_H_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA1_diff_H_mask_m;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA2_diff_H_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA2_diff_H_mask_m;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA3_diff_H_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA3_diff_H_mask_m;
 # H_H
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
-groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
-groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA1_diff_H_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA1_diff_H_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA2_diff_H_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA2_diff_H_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA3_diff_H_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA3_diff_H_mask_h;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA1_diff_H_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA1_diff_H_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA2_diff_H_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA2_diff_H_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- l_ci_fcs_what_ql_DiffA3_diff_H_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- h_ci_fcs_what_ql_DiffA3_diff_H_mask_h;
+groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA1_diff_H_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA1_diff_H_mask_h;
+groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA2_diff_H_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA2_diff_H_mask_h;
+groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA3_diff_H_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA3_diff_H_mask_h;
 
 
 
@@ -796,20 +803,19 @@ groupedPlotDiffA1 <- ggplot(groupedData, aes(x=mean_diffA1,y=focus)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
-
 groupedPlotDiffA2 <- ggplot(groupedData, aes(x=mean_diffA2,y=focus)) +
-  geom_errorbar(aes(xmin=mean_diffA2-se_diffA2, xmax=mean_diffA2+se_diffA2)) +
+  geom_errorbar(aes(xmin=low_ci_DiffA2, xmax=high_ci_DiffA2)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
 groupedPlotDiffA3 <- ggplot(groupedData, aes(x=mean_diffA3,y=focus)) +
-  geom_errorbar(aes(xmin=mean_diffA3-se_diffA3, xmax=mean_diffA3+se_diffA3)) +
+  geom_errorbar(aes(xmin=low_ci_DiffA3, xmax=high_ci_DiffA3)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
 # d_alt[d_alt$dComplex_focus=="E" & d_alt$dMask=="easy"]
 # View(groupedData)
-# groupedPlotDiffA1
+groupedPlotDiffA1
 grid.arrange(groupedPlotDiffA1, groupedPlotDiffA2, groupedPlotDiffA3, ncol=3)
 
 # ---- Stacked bar charts for question B and trust levels
