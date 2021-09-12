@@ -45,8 +45,14 @@ let rawdata=fs.readFileSync('data/QIDtoFilename_complete_20210828_noflip.json')
 =======
 // let rawdata = fs.readFileSync('data/QIDtoFilename_20210722_1136.json');
 // let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json');
+<<<<<<< HEAD
 let rawdata = fs.readFileSync('data/QIDtoFilename_t_distrib_20210824_1921.json');
 >>>>>>> 440affc (Updated the baseline file.)
+=======
+// let rawdata = fs.readFileSync('data/QIDtoFilename_t_distrib_20210824_1921.json');
+
+let rawdata = fs.readFileSync('data/QIDtoFilename_t9820212320_20210910.json');
+>>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
 
 let QIDtoFilename = JSON.parse(rawdata);
 hashmapAttributesNames_glbl = {
@@ -145,6 +151,7 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
 
                                     hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()] = false;
 
+<<<<<<< HEAD
                                 } else {
                                     if ( typeof(hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()]) === "undefined" || hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()]!=false )
                                     {
@@ -171,6 +178,9 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
 }
 
 function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep="", addRandomInfoToFillVoid = false) {
+=======
+function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillVoid = false, baselineFileName=null) {
+>>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
     // console.log("newGenerateModifiedCSV ",{QIDtoFilename,csvFilePath,addRandomInfoToFillVoid})
     // console.log(QIDtoFilename);
     var objGenerated = [];
@@ -388,7 +398,15 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
         ...itemsN.map(row => headerN.map(fieldName => JSON.stringify(row[fieldName], replacerN)).join(','))
     ].join('\r\n')
 
+<<<<<<< HEAD
     fs.writeFile("data/transformed/baselines"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
+=======
+    var d = new Date()
+    var strTime = d.toISOString().substr(0,d.toISOString().indexOf('T')+3)
+
+
+    fs.writeFile("data/transformed/baselines_"+strTime+".csv", csvOutputN, function (err, data) {
+>>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
         if (err) console.log('error', err);
     });
 }
@@ -411,7 +429,7 @@ newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
 // Normally the two functions are called one after the other. Commented for tests, but should work
 
 generateBaselineCSV(QIDtoFilename)
-// newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
+// newGenerateModifiedCSV(QIDtoFilename, csvFilePath,false,baselineFileName)
 
 
 >>>>>>> 440affc (Updated the baseline file.)
