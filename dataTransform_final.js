@@ -7,57 +7,16 @@ const fs = require('fs');
 const csv = require('csvtojson')
 console.log(Math.random())
 // ---- Data sources & global variables
-// const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36.csv'
-// const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36_modified.csv'
-// slider_noflip_rightParenthesisBsln_headerReduced
-// var csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv'
-// var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv'
-// var csvFilePath='data/test_reordered_question_20210721_1547.csv';
-// var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv"
-<<<<<<< HEAD
-// var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
-// var csvFilePath = "data/t16720211305_alt_focus_modif.csv"
-
-// var csvFilePath = 'data/t26720211035_attempt_flip1_header_adapted.csv'
+// const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36.csv' // const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36_modified.csv' // slider_noflip_rightParenthesisBsln_headerReduced // var csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv' // var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv' // var csvFilePath='data/test_reordered_question_20210721_1547.csv'; // var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv" // var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv" // var csvFilePath = "data/t16720211305_alt_focus_modif.csv" // var csvFilePath = 'data/t26720211035_attempt_flip1_header_adapted.csv'
 var csvFilePath = 'data/complete_20210828_noflip_headerAdapted.csv'
-=======
 
-// var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
-var csvFilePath="data/t_distrib_20210824_1921_headfiltered.csv"
->>>>>>> 440affc (Updated the baseline file.)
+// $.getJSON("QIDtoFilename.json", function(json) { // let rawdata = fs.readFileSync('data/QIDtoFilename.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t26720211035_attempt_flip1.json') // let rawdata=fs.readFileSync('data/QIDtoFilename_complete_20210828_noflip.json') // let rawdata=fs.readFileSync("data/QIDtoFilename_t138_2021_09_13_1930.json");
+// let rawdata=fs.readFileSync("data/QIDtoFilename_cmplt_measurement_nf_2021_09_14_0934.json");
+// let QIDtoFilename = JSON.parse(rawdata);
 
-// $.getJSON("QIDtoFilename.json", function(json) {
-// let rawdata = fs.readFileSync('data/QIDtoFilename.json');
-// let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json');
-// let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json');
-// let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json');
-// let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json');
-<<<<<<< HEAD
-// let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json');
-// let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json');
-
-// let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json');
-// let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json');
-// let rawdata = fs.readFileSync('data/QIDtoFilename_t26720211035_attempt_flip1.json')
-let rawdata=fs.readFileSync('data/QIDtoFilename_complete_20210828_noflip.json')
-
-
-=======
-// let rawdata = fs.readFileSync('data/QIDtoFilename_20210722_1136.json');
-// let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json');
-<<<<<<< HEAD
-let rawdata = fs.readFileSync('data/QIDtoFilename_t_distrib_20210824_1921.json');
->>>>>>> 440affc (Updated the baseline file.)
-=======
-// let rawdata = fs.readFileSync('data/QIDtoFilename_t_distrib_20210824_1921.json');
-
-let rawdata = fs.readFileSync('data/QIDtoFilename_t9820212320_20210910.json');
->>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
-
-let QIDtoFilename = JSON.parse(rawdata);
 hashmapAttributesNames_glbl = {
     "eG": "engine temperature",
-    "eT": "engine temperature", // there's a bug in the data generation, but not a big issue
+    "eT": "engine temperature", // there was a bug in the data generation, but not a big issue
     "fC": "fuel consumption",
     "eC": "electricity consumption",
     "sF": "suspension force",
@@ -151,7 +110,6 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
 
                                     hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()] = false;
 
-<<<<<<< HEAD
                                 } else {
                                     if ( typeof(hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()]) === "undefined" || hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()]!=false )
                                     {
@@ -178,9 +136,6 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
 }
 
 function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep="", addRandomInfoToFillVoid = false) {
-=======
-function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, addRandomInfoToFillVoid = false, baselineFileName=null) {
->>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
     // console.log("newGenerateModifiedCSV ",{QIDtoFilename,csvFilePath,addRandomInfoToFillVoid})
     // console.log(QIDtoFilename);
     var objGenerated = [];
@@ -376,7 +331,7 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
             var strAllFocusDiff = arrNames[7].split('_')[1]
             var focusDiff = "";
             focusDiff = (focusStr === "WHAT_Qn") ? strAllFocusDiff[0] : (focusStr === "WHAT_Ql") ? strAllFocusDiff[1] : strAllFocusDiff[2];
-            focusDiff = (focusDiff === "E") ? "Easy" : (focusDiff === "M") ? "Medium" : "Hard;"
+            focusDiff = (focusDiff === "E") ? "Easy" : (focusDiff === "M") ? "Medium" : "Hard"
 
             hashmapBaselines[cntrQ] = { "bslnA": bslnA, "bslnB": bslnB, "bslnC": bslnC, "bslnLikert": bslnLikert, "focus": focusStr, "focusDiff": focusDiff, "maskDiff": maskDiff }
 
@@ -398,15 +353,7 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
         ...itemsN.map(row => headerN.map(fieldName => JSON.stringify(row[fieldName], replacerN)).join(','))
     ].join('\r\n')
 
-<<<<<<< HEAD
-    fs.writeFile("data/transformed/baselines"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
-=======
-    var d = new Date()
-    var strTime = d.toISOString().substr(0,d.toISOString().indexOf('T')+3)
-
-
-    fs.writeFile("data/transformed/baselines_"+strTime+".csv", csvOutputN, function (err, data) {
->>>>>>> 3314768 (First very dirty but successful approach to use the bootstrap to generate the error bars. We noticed some cases of redundancies of categories which need to be verified again. Still, progress!)
+    fs.writeFile("data/transformed/baselines/baselines"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
         if (err) console.log('error', err);
     });
 }
@@ -415,22 +362,46 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 
 
 // ---- Calls of the functions 
-<<<<<<< HEAD
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 
 // Commented for tests, but should work
 /* Write the functions in separate calls. Something much cleanier could be done but we are in a rush */
-// generateBaselineCSV(QIDtoFilename,"_complete_20210828_noflip")
+
+let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_distractor_h_2021_09_17_1815.json");
+let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_distractor_n_2021_09_17_1840.json");
+let rawdata_cmplt_f = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_measurement_f_2021_09_17_1720.json");
+let rawdata_cmplt_nf = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_measurement_nf_2021_09_14_0934.json");
+let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_scaling_0_2021_09_17_1910.json");
+let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_scaling_1_2021_09_17_1920.json");
+let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_scaling_2_2021_09_17_1944.json");
+
+var listQIDtoFileName = []; 
+listQIDtoFileName.push(JSON.parse(rawdata_cmplt_nf)); 
+listQIDtoFileName.push(JSON.parse(rawdata_cmplt_f));
+listQIDtoFileName.push(JSON.parse(rawdata_dist_h)); 
+listQIDtoFileName.push(JSON.parse(rawdata_dist_n));
+listQIDtoFileName.push(JSON.parse(rawdata_scaling_0)); 
+listQIDtoFileName.push(JSON.parse(rawdata_scaling_1));
+listQIDtoFileName.push(JSON.parse(rawdata_scaling_2)); 
+var listStrFilesBsln = [];
+listStrFilesBsln.push("cmplt_nf");
+listStrFilesBsln.push("cmplt_f");
+listStrFilesBsln.push("dist_h");
+listStrFilesBsln.push("dist_n");
+listStrFilesBsln.push("scaling_0");
+listStrFilesBsln.push("scaling_1");
+listStrFilesBsln.push("scaling_2");
+
+var t = new Date()
+// var strAdd_bslnFile = "_measurement_nf_"+t.getFullYear()+"_"+t.getMonth()+"_"+t.getDay()+"_"+t.getHours()+"_"+t.getMinutes()
+for (var i=0; i < listQIDtoFileName.length; i++)
+{
+    generateBaselineCSV(listQIDtoFileName[i],listStrFilesBsln[i]);  
+}
+// generateBaselineCSV(QIDtoFilename,strAdd_bslnFile);
+
 // writeFilterWrongAnswersToIntro(csvFilePath);
-newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
+// newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
 
-=======
-// Normally the two functions are called one after the other. Commented for tests, but should work
-
-generateBaselineCSV(QIDtoFilename)
-// newGenerateModifiedCSV(QIDtoFilename, csvFilePath,false,baselineFileName)
-
-
->>>>>>> 440affc (Updated the baseline file.)
 
