@@ -599,9 +599,6 @@ groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <-
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA2_diff_H_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA2_diff_H_mask_h;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA3_diff_H_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA3_diff_H_mask_h;
 
-
-
-
 # Testing...
 # new <- 42
 # groupedData_new <- cbind(groupedData,new)
@@ -625,6 +622,7 @@ groupedData$dComplex_focus[groupedData$dComplex_focus == "H"] = "Focus Hard"
 groupedData$orderFocusComplex <- factor(groupedData$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
 groupedData$orderMaskComplex <- factor(groupedData$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
 
+# POTENTIALLY: USE t0 INSTEAD OF THE ACTUAL MEAN # https://www.rdocumentation.org/packages/boot/versions/1.3-28/topics/boot
 # Example of previous approach to store...# geom_errorbar(aes(xmin=mean_diffA1-se_diffA1, xmax=mean_diffA1+se_diffA1)) +
 groupedPlotDiffA1 <- ggplot(groupedData, aes(x=mean_diffA1,y=focus)) +
   geom_errorbar(aes(xmin=low_ci_DiffA1, xmax=high_ci_DiffA1)) +
@@ -682,5 +680,12 @@ groupedPlotTrustA3 <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y=focus)) 
   theme(legend.position = "top") +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
-grid.arrange(groupedPlotTrustA1, groupedPlotTrustA2, groupedPlotTrustA3, ncol=3)
+# Trust B # to consider: put in its own display...?
+groupedPlotTrustB <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y=focus)) +
+  geom_bar(aes(fill=factor(trustB)),position=position_stack(reverse=TRUE)) +
+  theme(legend.position = "top") +
+  facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
+
+
+grid.arrange(groupedPlotTrustA1, groupedPlotTrustA2, groupedPlotTrustA3,groupedPlotTrustB, ncol=4)
 
