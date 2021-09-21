@@ -10,6 +10,11 @@ console.log(Math.random())
 // const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36.csv' // const csvFilePath='data/survey_precise-study_20210410_1500_April 10, 2021_07.36_modified.csv' // slider_noflip_rightParenthesisBsln_headerReduced // var csvFilePath='data/slider_noflip_rightParenthesisBsln_headerReduced.csv' // var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv' // var csvFilePath='data/test_reordered_question_20210721_1547.csv'; // var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv" // var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv" // var csvFilePath = "data/t16720211305_alt_focus_modif.csv" // var csvFilePath = 'data/t26720211035_attempt_flip1_header_adapted.csv'
 var csvFilePath = 'data/complete_20210828_noflip_headerAdapted.csv'
 
+var csvFilePathArray = [];
+csvFilePathArray.push("data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_headerAdapted.csv",
+"data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_distractor_n_2021_09_18_headerAdapted.csv",
+"data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_scaling_1_2021_09_19_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_scaling_2_2021_09_19_headerAdapted.csv")
+
 // $.getJSON("QIDtoFilename.json", function(json) { // let rawdata = fs.readFileSync('data/QIDtoFilename.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t26720211035_attempt_flip1.json') // let rawdata=fs.readFileSync('data/QIDtoFilename_complete_20210828_noflip.json') // let rawdata=fs.readFileSync("data/QIDtoFilename_t138_2021_09_13_1930.json");
 // let rawdata=fs.readFileSync("data/QIDtoFilename_cmplt_measurement_nf_2021_09_14_0934.json");
 // let QIDtoFilename = JSON.parse(rawdata);
@@ -75,7 +80,9 @@ function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAt
 
 /* Return not working due to asynchonisity of read in csv. We write the file instead. Put a promise could be done, but we are in a big rush. */
 function writeFilterWrongAnswersToIntro(csvFilePath){
-    console.log("---- filterWrongAnswersToIntro")
+    console.log("---- filterWrongAnswersToIntro, csvFilePath: ",csvFilePath)
+    var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
+
     var baselinesIntro = {
         "Q11":"Down",
         "Q12": "From time 10 to 30 and time 60 to 70",
@@ -91,6 +98,7 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
         .fromFile(csvFilePath)
         // .complete((objJson) => { console.log("in complete part. objJson: ",objJson) })
         .then((objJson) => {
+            console.log("loaded the file csvFilePath: ",csvFilePath)
             for (var k in objJson) {
                 if (k >= 0) {
                     for (var key in objJson[k]) {
@@ -99,13 +107,13 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
                             {
                                 if (objJson[k][key] != baselinesIntro[key])
                                 {
-                                    console.log("key: ",key,", objJson[k][key]: ",objJson[k][key],", baselinesIntro[key]: ",baselinesIntro[key],", objJson[k][key] != baselinesIntro[key]: ",(objJson[k][key] != baselinesIntro[key]),', objJson[k]["Q15"]: ',objJson[k]["Q15"])
+                                    // console.log("key: ",key,", objJson[k][key]: ",objJson[k][key],", baselinesIntro[key]: ",baselinesIntro[key],", objJson[k][key] != baselinesIntro[key]: ",(objJson[k][key] != baselinesIntro[key]),', objJson[k]["Q15"]: ',objJson[k]["Q15"])
                                     // Get the prolific id...
                                     if (toFilterProlificIds.indexOf(objJson[k]["Q15"]) == -1 )
                                     {
                                         toFilterProlificIds.push(objJson[k]["Q15"].toString())
                                         glbl_toFilterProlificIds.push(objJson[k]["Q15"].toString())
-                                        console.log("toFilterProlificIds: ",toFilterProlificIds)
+                                        // console.log("toFilterProlificIds: ",toFilterProlificIds)
                                     }
 
                                     hashmap_toKeepProlificIds[objJson[k]["Q15"].toString()] = false;
@@ -121,9 +129,10 @@ function writeFilterWrongAnswersToIntro(csvFilePath){
                     }
                 }
             }
-            // console.log("endOf then. toFilterProlificIds: ",toFilterProlificIds)
-            // var toFilter_csvPath = "data/toFilter_" + csvFilePath.substr( csvFilePath.indexOf('/')+1 )
-            var toFilter_JSONpath = "data/toFilter_"+csvFilePath.substr( csvFilePath.indexOf('/')+1, csvFilePath.length-".csv".length-(csvFilePath.indexOf('/')+1) )+".json"
+            console.log("endOf then. toFilterProlificIds: ",toFilterProlificIds)
+
+            csvFilePath = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
+            var toFilter_JSONpath = "data/toFilter/toFilter_"+csvFilePath+".json"
             // console.log("hashmap_toKeepProlificIds: ",hashmap_toKeepProlificIds,", toFilter_JSONpath: ", toFilter_JSONpath)
             fs.writeFile(toFilter_JSONpath, JSON.stringify(hashmap_toKeepProlificIds), function (err, data) {
                 if (err) console.log('error', err);
@@ -147,13 +156,13 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
 
     if (fileHashmapToKeep === "")
     {
-        fileHashmapToKeep = "data/toFilter_" + csvFilePath.substr(csvFilePath.indexOf('/')+1,csvFilePath.indexOf('.')-(csvFilePath.indexOf('/')+1)) + ".json"
+        fileHashmapToKeep = "data/toFilter/toFilter_" + csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4) + ".json"
     }
-
+    console.log("trying to load csvFilePath: ",csvFilePath,", fileHashmapToKeep: ",fileHashmapToKeep);
     csv()
         .fromFile(csvFilePath)
         .then((objJson) => {
-
+            console.log("loading done, csvFilePath: ",csvFilePath);
             // indx for values which are shared for all the participants. mod is for answers over several questions
             var indxStartDate = 1, indxEndDate = 2, indxStatus = 3, indxProgress = 5, indxDuration_seconds = 6, indxFinished = 7, indxRecordedDate = 8, indxResponseID = 9;
             var fileName = null, idc = null, drawnQn = null, drawnQl = null, queryString = null, flips = null, nMasks = null, dMask = null, dComplex_Qn = null, dComplex_Ql = null, dComplex_Where = null,
@@ -282,7 +291,6 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
                     }
                 }
             }
-
             console.log({ objGenerated });
 
             // const items = jsonObj;
@@ -295,16 +303,13 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
                 ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
             ].join('\r\n')
 
-            // console.log(csvOutput)
-            var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : t.getTime();
-            console.log("writing " + "data/transformed/survey_precise-study_" + fileNameTime + ".csv")
-            fs.writeFile("data/transformed/survey_precise-study_" + fileNameTime + ".csv", csvOutput, function (err, data) {
+            var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
+            var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : fileStudyBit;
+            console.log("writing " + "data/transformed/survey_" + fileNameTime + ".csv")
+            fs.writeFile("data/transformed/survey_" + fileNameTime + ".csv", csvOutput, function (err, data) {
                 if (err) console.log('error', err);
             });
-
         })
-
-
 }
 
 
@@ -353,7 +358,7 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
         ...itemsN.map(row => headerN.map(fieldName => JSON.stringify(row[fieldName], replacerN)).join(','))
     ].join('\r\n')
 
-    fs.writeFile("data/transformed/baselines/baselines"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
+    fs.writeFile("data/transformed/baselines/baselines_"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
         if (err) console.log('error', err);
     });
 }
@@ -363,18 +368,19 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 
 // ---- Calls of the functions 
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
-// generateModifiedCSV(QIDtoFilename,csvFilePath)
 
 // Commented for tests, but should work
 /* Write the functions in separate calls. Something much cleanier could be done but we are in a rush */
 
-let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_distractor_h_2021_09_17_1815.json");
-let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_distractor_n_2021_09_17_1840.json");
-let rawdata_cmplt_f = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_measurement_f_2021_09_17_1720.json");
-let rawdata_cmplt_nf = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_measurement_nf_2021_09_14_0934.json");
-let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_scaling_0_2021_09_17_1910.json");
-let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_scaling_1_2021_09_17_1920.json");
-let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_17/QIDtoFilename_cmplt_scaling_2_2021_09_17_1944.json");
+let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_h_2021_09_18.json");
+let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_n_2021_09_18.json");
+let rawdata_cmplt_f = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_f_2021_09_18.json");
+let rawdata_cmplt_nf = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_nf_2021_09_18.json");
+let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_18.json");
+let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_18.json");
+let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_18.json");
+
+let d_measurement_nf = fs.readFileSync('data/QIDtoFilename_complete_measurement_nf_2021_09_18.json')
 
 var listQIDtoFileName = []; 
 listQIDtoFileName.push(JSON.parse(rawdata_cmplt_nf)); 
@@ -384,6 +390,7 @@ listQIDtoFileName.push(JSON.parse(rawdata_dist_n));
 listQIDtoFileName.push(JSON.parse(rawdata_scaling_0)); 
 listQIDtoFileName.push(JSON.parse(rawdata_scaling_1));
 listQIDtoFileName.push(JSON.parse(rawdata_scaling_2)); 
+
 var listStrFilesBsln = [];
 listStrFilesBsln.push("cmplt_nf");
 listStrFilesBsln.push("cmplt_f");
@@ -393,15 +400,24 @@ listStrFilesBsln.push("scaling_0");
 listStrFilesBsln.push("scaling_1");
 listStrFilesBsln.push("scaling_2");
 
-var t = new Date()
-// var strAdd_bslnFile = "_measurement_nf_"+t.getFullYear()+"_"+t.getMonth()+"_"+t.getDay()+"_"+t.getHours()+"_"+t.getMinutes()
-for (var i=0; i < listQIDtoFileName.length; i++)
-{
-    generateBaselineCSV(listQIDtoFileName[i],listStrFilesBsln[i]);  
-}
+
+// ---- Generate baselines
+// var t = new Date(); // var strAdd_bslnFile = "_measurement_nf_"+t.getFullYear()+"_"+t.getMonth()+"_"+t.getDay()+"_"+t.getHours()+"_"+t.getMinutes()
+// for (var i=0; i < listQIDtoFileName.length; i++)
+// {
+//     generateBaselineCSV(listQIDtoFileName[i],listStrFilesBsln[i]);  
+// }
 // generateBaselineCSV(QIDtoFilename,strAdd_bslnFile);
 
-// writeFilterWrongAnswersToIntro(csvFilePath);
-// newGenerateModifiedCSV(QIDtoFilename, csvFilePath)
 
+// ---- Filter out answers with wrong intro
+// for (var i=0; i < csvFilePathArray.length;i++){
+//     writeFilterWrongAnswersToIntro(csvFilePathArray[i]);
+// }
+
+// ---- Generate structured files of answers
+for (var i=0; i < listQIDtoFileName.length; i++){
+    console.log("csvFilePathArray[i]: ",csvFilePathArray[i]);
+    newGenerateModifiedCSV(listQIDtoFileName[i], csvFilePathArray[i])
+}
 

@@ -15,7 +15,6 @@ library(dplyr)
 library(lattice)
 library(scales)
 
-
 # load file # Remember to move in the right folder, based on your own computer
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # d <- read.table(file="C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis/Pilot V2 Comparative Task with Conditions_October 19, 2020_12.11 - Tidy_Binary_OutlierRemoved_Enriched.csv", TRUE, ",")
@@ -28,11 +27,12 @@ setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 # Example with only 3 answers generated with a slider # No more answerA and correctA. Now it is answerA1,answerA2,answerA3, diffA1,diffA2,diffA3
 # d <- read.table(file="data/transformed/survey_precise-study_1620402561191.csv", TRUE, ",")
 # survey_precise-study_1628072432964
-d <- read.table(file="data/transformed/survey_precise-study_1628960451341.csv", TRUE, ",")
+# d <- read.table(file="data/transformed/survey_precise-study_1628960451341.csv", TRUE, ",")
 
-# d_alt <- read.table(file="data/transformed/alt_survey_precise-study_1628960451341.csv", TRUE, ",")
 # place holder for the data generation. (for the entirety of the )
-d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862_mods.csv",TRUE, ",")
+# d_alt <- read.table(file="data/transformed/survey_precise-study_1630250403862_mods.csv",TRUE, ",")
+# tests 2021_09_21 
+d_alt <- read.table(file="data/transformed/survey_complete_measurement_f_2021_09_18_headerAdapted.csv",TRUE, ",")
 
 
 # Confidence interval: average +- z score * standard error #### Issue here: our data as it is now doesn't have 
@@ -48,9 +48,9 @@ samplemean <- function(x, d) {
 bootDuration_in_seconds = boot(d_alt$t, samplemean, R=1000) # 1000 replications
 plot(bootDuration_in_seconds)
 
-boot_diffA1 = boot(d$diffA1, samplemean, R=1000) # 1000 replications
+boot_diffA1 = boot(d_alt$diffA1, samplemean, R=1000) # 1000 replications
 
-bootCorrect_B = boot(d$correctB, samplemean, R=1000) # 1000 replications
+bootCorrect_B = boot(d_alt$correctB, samplemean, R=1000) # 1000 replications
 plot(bootCorrect_B)
 # Seems okay up to here
 
@@ -60,14 +60,14 @@ arrMaskDiffs = array(c("easy","medium","hard"))
 # --+-- All the diffs with focus being WHAT_Qn and all focus diffs and all masks
 #  easy diff
 boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
 boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E" ],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="E" ],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
 boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
 
 ci_fcs_what_qn_DiffA1_diff_E_mask_e <- boot.ci(boot.out = boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_what_qn_DiffA1_diff_E_mask_e <- ci_fcs_what_qn_DiffA1_diff_E_mask_e$normal[2];
@@ -102,14 +102,14 @@ h_ci_fcs_what_qn_DiffA3_diff_E_mask_h <- ci_fcs_what_qn_DiffA3_diff_E_mask_h$nor
 
 # medium diff
 boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
 boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M" ],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="M" ],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
 boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
 
 ci_fcs_what_qn_DiffA1_diff_M_mask_e <- boot.ci(boot.out = boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_what_qn_DiffA1_diff_M_mask_e <- ci_fcs_what_qn_DiffA1_diff_M_mask_e$normal[2];
@@ -141,14 +141,14 @@ h_ci_fcs_what_qn_DiffA3_diff_M_mask_h <- ci_fcs_what_qn_DiffA3_diff_M_mask_h$nor
 
 # hard diff
 boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
 boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H" ],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="H" ],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
 boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Qn" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
 
 ci_fcs_what_qn_DiffA1_diff_H_mask_e <- boot.ci(boot.out = boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_what_qn_DiffA1_diff_H_mask_e <- ci_fcs_what_qn_DiffA1_diff_H_mask_e$normal[2];
@@ -181,14 +181,14 @@ h_ci_fcs_what_qn_DiffA3_diff_H_mask_h <- ci_fcs_what_qn_DiffA3_diff_H_mask_h$nor
 # --+-- All the diffs with focus being WHAT_Ql and all masks
 #  easy diff
 boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
 boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E" ],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="E" ],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
 boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
 
 ci_fcs_what_ql_DiffA1_diff_E_mask_e <- boot.ci(boot.out = boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_what_ql_DiffA1_diff_E_mask_e <- ci_fcs_what_ql_DiffA1_diff_E_mask_e$normal[2];
@@ -223,14 +223,14 @@ h_ci_fcs_what_ql_DiffA3_diff_E_mask_h <- ci_fcs_what_ql_DiffA3_diff_E_mask_h$nor
 
 # medium diff
 boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
 boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M" ],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="M" ],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
 boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
 
 ci_fcs_what_ql_DiffA1_diff_M_mask_e <- boot.ci(boot.out = boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_what_ql_DiffA1_diff_M_mask_e <- ci_fcs_what_ql_DiffA1_diff_M_mask_e$normal[2];
@@ -262,14 +262,14 @@ h_ci_fcs_what_ql_DiffA3_diff_M_mask_h <- ci_fcs_what_ql_DiffA3_diff_M_mask_h$nor
 
 # hard diff
 boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
 boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H" ],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="H" ],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
 boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHAT_Ql" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
 
 ci_fcs_what_ql_DiffA1_diff_H_mask_e <- boot.ci(boot.out = boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_what_ql_DiffA1_diff_H_mask_e <- ci_fcs_what_ql_DiffA1_diff_H_mask_e$normal[2];
@@ -301,14 +301,14 @@ h_ci_fcs_what_ql_DiffA3_diff_H_mask_h <- ci_fcs_what_ql_DiffA3_diff_H_mask_h$nor
 # --+-- All the diffs with focus being WHERE and all masks
 #  easy diff
 boot_d_focus_where_DiffA1_diffFocus_E_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_where_DiffA1_diffFocus_E_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_where_DiffA1_diffFocus_E_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_where_DiffA1_diffFocus_E_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_where_DiffA1_diffFocus_E_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
 boot_d_focus_where_DiffA2_diffFocus_E_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_where_DiffA2_diffFocus_E_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E" ],samplemean,R=10000)
-boot_d_focus_where_DiffA2_diffFocus_E_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_where_DiffA2_diffFocus_E_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="E" ],samplemean,R=10000)
+boot_d_focus_where_DiffA2_diffFocus_E_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
 boot_d_focus_where_DiffA3_diffFocus_E_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_where_DiffA3_diffFocus_E_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
-boot_d_focus_where_DiffA3_diffFocus_E_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_where_DiffA3_diffFocus_E_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
+boot_d_focus_where_DiffA3_diffFocus_E_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="E"],samplemean,R=10000)
 
 ci_fcs_where_DiffA1_diff_E_mask_e <- boot.ci(boot.out = boot_d_focus_where_DiffA1_diffFocus_E_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_where_DiffA1_diff_E_mask_e <- ci_fcs_where_DiffA1_diff_E_mask_e$normal[2];
@@ -343,14 +343,14 @@ h_ci_fcs_where_DiffA3_diff_E_mask_h <- ci_fcs_where_DiffA3_diff_E_mask_h$normal[
 
 # medium diff
 boot_d_focus_where_DiffA1_diffFocus_M_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_where_DiffA1_diffFocus_M_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_where_DiffA1_diffFocus_M_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_where_DiffA1_diffFocus_M_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_where_DiffA1_diffFocus_M_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
 boot_d_focus_where_DiffA2_diffFocus_M_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_where_DiffA2_diffFocus_M_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M" ],samplemean,R=10000)
-boot_d_focus_where_DiffA2_diffFocus_M_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_where_DiffA2_diffFocus_M_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="M" ],samplemean,R=10000)
+boot_d_focus_where_DiffA2_diffFocus_M_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
 boot_d_focus_where_DiffA3_diffFocus_M_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_where_DiffA3_diffFocus_M_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
-boot_d_focus_where_DiffA3_diffFocus_M_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_where_DiffA3_diffFocus_M_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
+boot_d_focus_where_DiffA3_diffFocus_M_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="M"],samplemean,R=10000)
 
 ci_fcs_where_DiffA1_diff_M_mask_e <- boot.ci(boot.out = boot_d_focus_where_DiffA1_diffFocus_M_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_where_DiffA1_diff_M_mask_e <- ci_fcs_where_DiffA1_diff_M_mask_e$normal[2];
@@ -382,14 +382,14 @@ h_ci_fcs_where_DiffA3_diff_M_mask_h <- ci_fcs_where_DiffA3_diff_M_mask_h$normal[
 
 # hard diff
 boot_d_focus_where_DiffA1_diffFocus_H_mask_e <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_where_DiffA1_diffFocus_H_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_where_DiffA1_diffFocus_H_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_where_DiffA1_diffFocus_H_mask_m <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="medium"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_where_DiffA1_diffFocus_H_mask_h <- boot(d_alt$diffA1[d_alt$focus=="WHERE" & d_alt$dMask=="hard"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
 boot_d_focus_where_DiffA2_diffFocus_H_mask_e <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy"& d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_where_DiffA2_diffFocus_H_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H" ],samplemean,R=10000)
-boot_d_focus_where_DiffA2_diffFocus_H_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_where_DiffA2_diffFocus_H_mask_m <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="H" ],samplemean,R=10000)
+boot_d_focus_where_DiffA2_diffFocus_H_mask_h <- boot(d_alt$diffA2[d_alt$focus=="WHERE" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
 boot_d_focus_where_DiffA3_diffFocus_H_mask_e <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_where_DiffA3_diffFocus_H_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
-boot_d_focus_where_DiffA3_diffFocus_H_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="easy" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_where_DiffA3_diffFocus_H_mask_m <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="medium" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
+boot_d_focus_where_DiffA3_diffFocus_H_mask_h <- boot(d_alt$diffA3[d_alt$focus=="WHERE" & d_alt$dMask=="hard" & d_alt$dComplex_focus=="H"],samplemean,R=10000)
 
 ci_fcs_where_DiffA1_diff_H_mask_e <- boot.ci(boot.out = boot_d_focus_where_DiffA1_diffFocus_H_mask_e, type = c("norm", "basic", "perc", "bca")) ; 
 l_ci_fcs_where_DiffA1_diff_H_mask_e <- ci_fcs_where_DiffA1_diff_H_mask_e$normal[2];
@@ -420,6 +420,10 @@ l_ci_fcs_where_DiffA3_diff_H_mask_h <- ci_fcs_where_DiffA3_diff_H_mask_h$normal[
 h_ci_fcs_where_DiffA3_diff_H_mask_h <- ci_fcs_where_DiffA3_diff_H_mask_h$normal[3];
 #  ---- ****
 
+# ---- t0 
+boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_e$t0
+
+
 plot(boot_d_focus_where_DiffA3_diffFocus_H_mask_h)
 # boot_d_focus_what_qn_DiffA1_mask_easy
 # boot_d_focus_what_qn_DiffA1_mask_medium
@@ -439,9 +443,9 @@ timeCI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", 
 lowerTimeCI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
 vecTimeCI <- c(lowerTimeCI, higherTimeCI)
 
-bootDuration_in_seconds_WHAT_Qn = boot(d$t[d$focus=="WHAT_Qn"], samplemean, R=1000) # 1000 replications
-bootDuration_in_seconds_WHAT_Ql = boot(d$t[d$focus=="WHAT_Ql"], samplemean, R=1000) # 1000 replications
-bootDuration_in_seconds_WHERE = boot(d$t[d$focus=="WHERE"], samplemean, R=1000) # 1000 replications
+bootDuration_in_seconds_WHAT_Qn = boot(d_alt$t[d$focus=="WHAT_Qn"], samplemean, R=1000) # 1000 replications
+bootDuration_in_seconds_WHAT_Ql = boot(d_alt$t[d$focus=="WHAT_Ql"], samplemean, R=1000) # 1000 replications
+bootDuration_in_seconds_WHERE = boot(d_alt$t[d$focus=="WHERE"], samplemean, R=1000) # 1000 replications
 timeCI_WHAT_Qn <- boot.ci(boot.out = bootDuration_in_seconds_WHAT_Qn, type = c("norm", "basic", "perc", "bca")) 
 timeCI_WHAT_Ql <- boot.ci(boot.out = bootDuration_in_seconds_WHAT_Ql, type = c("norm", "basic", "perc", "bca")) 
 timeCI_WHERE <- boot.ci(boot.out = bootDuration_in_seconds_WHERE, type = c("norm", "basic", "perc", "bca"))
@@ -477,8 +481,8 @@ ggplot(d_alt, aes(x=diffA1,y=focus)) +
 
 # checking
 # Test for display with facetting
-d$orderFocusComplex <- factor(d$dComplex_focus,c("E","M","H"))
-d$orderMaskComplex <- factor(d$dMask,c("easy","medium","hard"))
+d_alt$orderFocusComplex <- factor(d_alt$dComplex_focus,c("E","M","H"))
+d_alt$orderMaskComplex <- factor(d_alt$dMask,c("easy","medium","hard"))
 diffA1CI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", "perc", "bca"))
 lowerdiffA1CI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
 ggplot(d, aes(x=diffA1,y=focus)) +
@@ -518,6 +522,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA1_diff_E_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA1_diff_E_mask_e;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA2_diff_E_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA2_diff_E_mask_e;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- l_ci_fcs_where_DiffA3_diff_E_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- h_ci_fcs_where_DiffA3_diff_E_mask_e;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_E"] <- boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_e$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_E"] <- boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_e$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- boot_d_focus_where_DiffA1_diffFocus_E_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- boot_d_focus_where_DiffA2_diffFocus_E_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_E"] <- boot_d_focus_where_DiffA3_diffFocus_E_mask_e$t0;
 # E_M
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_m;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_m;
@@ -528,6 +536,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA1_diff_E_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA1_diff_E_mask_m;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA2_diff_E_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA2_diff_E_mask_m;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- l_ci_fcs_where_DiffA3_diff_E_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- h_ci_fcs_where_DiffA3_diff_E_mask_m;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_M"] <- boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_m$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_M"] <- boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_m$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- boot_d_focus_where_DiffA1_diffFocus_E_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- boot_d_focus_where_DiffA2_diffFocus_E_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_M"] <- boot_d_focus_where_DiffA3_diffFocus_E_mask_m$t0;
 # E_H
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA1_diff_E_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA1_diff_E_mask_h;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- l_ci_fcs_what_qn_DiffA2_diff_E_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- h_ci_fcs_what_qn_DiffA2_diff_E_mask_h;
@@ -538,6 +550,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA1_diff_E_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA1_diff_E_mask_h;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA2_diff_E_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA2_diff_E_mask_h;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- l_ci_fcs_where_DiffA3_diff_E_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- h_ci_fcs_where_DiffA3_diff_E_mask_h;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- boot_d_focus_what_qn_DiffA1_diffFocus_E_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- boot_d_focus_what_qn_DiffA2_diffFocus_E_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_E_H"] <- boot_d_focus_what_qn_DiffA3_diffFocus_E_mask_h$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- boot_d_focus_what_ql_DiffA1_diffFocus_E_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- boot_d_focus_what_ql_DiffA2_diffFocus_E_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_E_H"] <- boot_d_focus_what_ql_DiffA3_diffFocus_E_mask_h$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- boot_d_focus_where_DiffA1_diffFocus_E_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- boot_d_focus_where_DiffA2_diffFocus_E_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_E_H"] <- boot_d_focus_where_DiffA3_diffFocus_E_mask_h$t0;
 # M_E
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA1_diff_M_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA1_diff_M_mask_e;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- l_ci_fcs_what_qn_DiffA2_diff_M_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- h_ci_fcs_what_qn_DiffA2_diff_M_mask_e;
@@ -548,6 +564,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA1_diff_M_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA1_diff_M_mask_e;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA2_diff_M_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA2_diff_M_mask_e;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- l_ci_fcs_where_DiffA3_diff_M_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- h_ci_fcs_where_DiffA3_diff_M_mask_e;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_E"] <- boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_e$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_E"] <- boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_e$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- boot_d_focus_where_DiffA1_diffFocus_M_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- boot_d_focus_where_DiffA2_diffFocus_M_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_E"] <- boot_d_focus_where_DiffA3_diffFocus_M_mask_e$t0;
 # M_M
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA1_diff_M_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA1_diff_M_mask_m;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- l_ci_fcs_what_qn_DiffA2_diff_M_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- h_ci_fcs_what_qn_DiffA2_diff_M_mask_m;
@@ -558,6 +578,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA1_diff_M_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA1_diff_M_mask_m;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA2_diff_M_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA2_diff_M_mask_m;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- l_ci_fcs_where_DiffA3_diff_M_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- h_ci_fcs_where_DiffA3_diff_M_mask_m;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_M"] <- boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_m$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_M"] <- boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_m$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- boot_d_focus_where_DiffA1_diffFocus_M_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- boot_d_focus_where_DiffA2_diffFocus_M_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_M"] <- boot_d_focus_where_DiffA3_diffFocus_M_mask_m$t0;
 # M_H
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA1_diff_M_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA1_diff_M_mask_h;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- l_ci_fcs_what_qn_DiffA2_diff_M_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- h_ci_fcs_what_qn_DiffA2_diff_M_mask_h;
@@ -568,6 +592,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA1_diff_M_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA1_diff_M_mask_h;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA2_diff_M_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA2_diff_M_mask_h;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- l_ci_fcs_where_DiffA3_diff_M_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- h_ci_fcs_where_DiffA3_diff_M_mask_h;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- boot_d_focus_what_qn_DiffA1_diffFocus_M_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- boot_d_focus_what_qn_DiffA2_diffFocus_M_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_M_H"] <- boot_d_focus_what_qn_DiffA3_diffFocus_M_mask_h$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- boot_d_focus_what_ql_DiffA1_diffFocus_M_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- boot_d_focus_what_ql_DiffA2_diffFocus_M_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_M_H"] <- boot_d_focus_what_ql_DiffA3_diffFocus_M_mask_h$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- boot_d_focus_where_DiffA1_diffFocus_M_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- boot_d_focus_where_DiffA2_diffFocus_M_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_M_H"] <- boot_d_focus_where_DiffA3_diffFocus_M_mask_h$t0;
 # H_E
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA1_diff_H_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA1_diff_H_mask_e;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- l_ci_fcs_what_qn_DiffA2_diff_H_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- h_ci_fcs_what_qn_DiffA2_diff_H_mask_e;
@@ -578,6 +606,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA1_diff_H_mask_e; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA1_diff_H_mask_e;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA2_diff_H_mask_e; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA2_diff_H_mask_e;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- l_ci_fcs_where_DiffA3_diff_H_mask_e; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- h_ci_fcs_where_DiffA3_diff_H_mask_e;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_E"] <- boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_e$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_E"] <- boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_e$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- boot_d_focus_where_DiffA1_diffFocus_H_mask_e$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- boot_d_focus_where_DiffA2_diffFocus_H_mask_e$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_E"] <- boot_d_focus_where_DiffA3_diffFocus_H_mask_e$t0;
 # H_M
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA1_diff_H_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA1_diff_H_mask_m;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- l_ci_fcs_what_qn_DiffA2_diff_H_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- h_ci_fcs_what_qn_DiffA2_diff_H_mask_m;
@@ -588,6 +620,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA1_diff_H_mask_m; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA1_diff_H_mask_m;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA2_diff_H_mask_m; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA2_diff_H_mask_m;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- l_ci_fcs_where_DiffA3_diff_H_mask_m; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- h_ci_fcs_where_DiffA3_diff_H_mask_m;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_M"] <- boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_m$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_M"] <- boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_m$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- boot_d_focus_where_DiffA1_diffFocus_H_mask_m$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- boot_d_focus_where_DiffA2_diffFocus_H_mask_m$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_M"] <- boot_d_focus_where_DiffA3_diffFocus_H_mask_m$t0;
 # H_H
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA1_diff_H_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA1_diff_H_mask_h;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- l_ci_fcs_what_qn_DiffA2_diff_H_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- h_ci_fcs_what_qn_DiffA2_diff_H_mask_h;
@@ -598,6 +634,10 @@ groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] 
 groupedData$low_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA1_diff_H_mask_h; groupedData$high_ci_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA1_diff_H_mask_h;
 groupedData$low_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA2_diff_H_mask_h; groupedData$high_ci_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA2_diff_H_mask_h;
 groupedData$low_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- l_ci_fcs_where_DiffA3_diff_H_mask_h; groupedData$high_ci_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- h_ci_fcs_where_DiffA3_diff_H_mask_h;
+
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- boot_d_focus_what_qn_DiffA2_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"] <- boot_d_focus_what_qn_DiffA3_diffFocus_H_mask_h$t0;
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_h$t0; 
+groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- boot_d_focus_where_DiffA1_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- boot_d_focus_where_DiffA2_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- boot_d_focus_where_DiffA3_diffFocus_H_mask_h$t0;
 
 # Testing...
 # new <- 42
