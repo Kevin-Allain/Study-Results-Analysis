@@ -6,7 +6,7 @@
 # Date:    2020-11-17
 
 # install.packages("name of the package")
-# install.packages("gridExtra")
+# install.packages("ggpmisc")
 library(gridExtra)
 library(grid)
 library(boot) 
@@ -14,6 +14,7 @@ library(ggplot2)
 library(dplyr)
 library(lattice)
 library(scales)
+library(ggpmisc)
 
 # load file # Remember to move in the right folder, based on your own computer
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
@@ -430,17 +431,13 @@ l_ci_fcs_where_DiffA3_diff_H_mask_h <- ci_fcs_where_DiffA3_diff_H_mask_h$normal[
 h_ci_fcs_where_DiffA3_diff_H_mask_h <- ci_fcs_where_DiffA3_diff_H_mask_h$normal[3];
 #  ---- ****
 
-# ---- t0 
-boot_d_focus_what_qn_DiffA1_diffFocus_H_mask_e$t0
-
-
-plot(boot_d_focus_where_DiffA3_diffFocus_H_mask_h)
+# plot(boot_d_focus_where_DiffA3_diffFocus_H_mask_h)
 # boot_d_focus_what_qn_DiffA1_mask_easy
 # boot_d_focus_what_qn_DiffA1_mask_medium
 # boot_d_focus_what_qn_DiffA1_mask_hard
 # Trying to include the boot in the groupedData one... So we should extract the calculations of the boot.
-boot_d_focus_where_DiffA3_diffFocus_H_mask_h["t0"]
-boot.ci(boot.out=boot_d_focus_where_DiffA3_diffFocus_H_mask_h,type=c("norm","basic","perc","bca"))
+# boot_d_focus_where_DiffA3_diffFocus_H_mask_h["t0"]
+# boot.ci(boot.out=boot_d_focus_where_DiffA3_diffFocus_H_mask_h,type=c("norm","basic","perc","bca"))
 # # This works... but annoying to do that for the 81 combinations existing. And yet that's what we'll do...
 # ci_boot_d_focus_where_DiffA2_diffFocus_H_mask_medium <- boot.ci(boot.out = boot_d_focus_where_DiffA2_diffFocus_H_mask_medium, type = c("norm", "basic", "perc", "bca")) 
 # l_ci_boot_d_focus_where_DiffA2_diffFocus_H_mask_medium <- ci_boot_d_focus_where_DiffA2_diffFocus_H_mask_medium$normal[2];
@@ -453,9 +450,9 @@ timeCI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", 
 lowerTimeCI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
 vecTimeCI <- c(lowerTimeCI, higherTimeCI)
 
-bootDuration_in_seconds_WHAT_Qn = boot(d_alt$t[d$focus=="WHAT_Qn"], samplemean, R=1000) # 1000 replications
-bootDuration_in_seconds_WHAT_Ql = boot(d_alt$t[d$focus=="WHAT_Ql"], samplemean, R=1000) # 1000 replications
-bootDuration_in_seconds_WHERE = boot(d_alt$t[d$focus=="WHERE"], samplemean, R=1000) # 1000 replications
+bootDuration_in_seconds_WHAT_Qn = boot(d_alt$t[d_alt$focus=="WHAT_Qn"], samplemean, R=1000) # 1000 replications
+bootDuration_in_seconds_WHAT_Ql = boot(d_alt$t[d_alt$focus=="WHAT_Ql"], samplemean, R=1000) # 1000 replications
+bootDuration_in_seconds_WHERE = boot(d_alt$t[d_alt$focus=="WHERE"], samplemean, R=1000) # 1000 replications
 timeCI_WHAT_Qn <- boot.ci(boot.out = bootDuration_in_seconds_WHAT_Qn, type = c("norm", "basic", "perc", "bca")) 
 timeCI_WHAT_Ql <- boot.ci(boot.out = bootDuration_in_seconds_WHAT_Ql, type = c("norm", "basic", "perc", "bca")) 
 timeCI_WHERE <- boot.ci(boot.out = bootDuration_in_seconds_WHERE, type = c("norm", "basic", "perc", "bca"))
@@ -495,7 +492,8 @@ d_alt$orderFocusComplex <- factor(d_alt$dComplex_focus,c("E","M","H"))
 d_alt$orderMaskComplex <- factor(d_alt$dMask,c("easy","medium","hard"))
 diffA1CI <- boot.ci(boot.out = bootDuration_in_seconds, type = c("norm", "basic", "perc", "bca"))
 lowerdiffA1CI <- timeCI$normal[2];higherTimeCI <- timeCI$normal[3]
-ggplot(d, aes(x=diffA1,y=focus)) +
+
+ggplot(d_alt, aes(x=diffA1,y=focus)) +
   geom_point(size=4,col="black",fill="black") +
   facet_grid(orderMaskComplex ~ orderFocusComplex)
 
@@ -649,7 +647,7 @@ groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Qn_H_H"]
 groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- boot_d_focus_what_ql_DiffA1_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- boot_d_focus_what_ql_DiffA2_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHAT_Ql_H_H"] <- boot_d_focus_what_ql_DiffA3_diffFocus_H_mask_h$t0; 
 groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- boot_d_focus_where_DiffA1_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA2[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- boot_d_focus_where_DiffA2_diffFocus_H_mask_h$t0; groupedData$mean_t0_DiffA3[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <- boot_d_focus_where_DiffA3_diffFocus_H_mask_h$t0;
 
-# Testing...
+# ---- #### Testing...
 # new <- 42
 # groupedData_new <- cbind(groupedData,new)
 # groupedData['new'] <- new
@@ -659,6 +657,24 @@ groupedData$mean_t0_DiffA1[groupedData$info_focus_dComplex_dMask=="WHERE_H_H"] <
 # d_alt <- d_alt %>% group_by(focus,dComplex_focus,dMask)
 # d_alt_grouped <- d_alt %>% group_by(focus,dComplex_focus,dMask)
 # d_alt_grouped 
+# Create a function to print squares of numbers in sequence.
+func <- function(a) {
+  for(i in 1:length(a)) {
+    b <- i^2
+    print(b)
+  }
+}
+
+funcTest <- function(a,data) {
+  data[a]   
+}
+
+# Call the function new.function supplying 6 as an argument.
+func( c("WHAT_Qn_H_E","WHAT_Qn_H_M","WHAT_Qn_H_H") )
+funcTest("info_focus_dComplex_dMask",groupedData)
+
+
+# ---- ####
 
 # Rename the categories for readability
 groupedData$dMask = as.character(groupedData$dMask)
@@ -672,26 +688,31 @@ groupedData$dComplex_focus[groupedData$dComplex_focus == "H"] = "Focus Hard"
 groupedData$orderFocusComplex <- factor(groupedData$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
 groupedData$orderMaskComplex <- factor(groupedData$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
 
-# POTENTIALLY: USE t0 INSTEAD OF THE ACTUAL MEAN # https://www.rdocumentation.org/packages/boot/versions/1.3-28/topics/boot
+# Updated: USE t0 INSTEAD OF THE ACTUAL MEAN # https://www.rdocumentation.org/packages/boot/versions/1.3-28/topics/boot
 # Example of previous approach to store...# geom_errorbar(aes(xmin=mean_diffA1-se_diffA1, xmax=mean_diffA1+se_diffA1)) +
 groupedPlotDiffA1 <- ggplot(groupedData, aes(x=mean_diffA1,y=focus)) +
+  geom_vline(xintercept = 0) +
   geom_errorbar(aes(xmin=low_ci_DiffA1, xmax=high_ci_DiffA1)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
-  facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
+  xlim(c(-40,40)) +
+  facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1) 
 
 groupedPlotDiffA2 <- ggplot(groupedData, aes(x=mean_diffA2,y=focus)) +
+  geom_vline(xintercept = 0) +
   geom_errorbar(aes(xmin=low_ci_DiffA2, xmax=high_ci_DiffA2)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
+  xlim(c(-40,40)) +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
 groupedPlotDiffA3 <- ggplot(groupedData, aes(x=mean_diffA3,y=focus)) +
+  geom_vline(xintercept = 0) +    
   geom_errorbar(aes(xmin=low_ci_DiffA3, xmax=high_ci_DiffA3)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
+  xlim(c(-40,40)) +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
 
 # d_alt[d_alt$dComplex_focus=="E" & d_alt$dMask=="easy"]
 # View(groupedData)
-groupedPlotDiffA1
 grid.arrange(groupedPlotDiffA1, groupedPlotDiffA2, groupedPlotDiffA3, ncol=3)
 
 # ---- Stacked bar charts for question B and trust levels
@@ -707,7 +728,7 @@ d_alt$orderFocusComplex <- factor(d_alt$dComplex_focus,c("Focus Easy","Focus Med
 d_alt$orderMaskComplex <- factor(d_alt$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
 
 # Question B
-groupedPlotCorrectB <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y=focus)) +
+groupedPlotCorrectB <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y= focus )) +
   geom_bar(aes(fill=factor(correctB)),position=position_stack(reverse=TRUE)) +
   theme(legend.position = "top") +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1)
@@ -740,4 +761,178 @@ groupedPlotTrustB <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y=focus)) +
 grid.arrange(groupedPlotTrustA1, groupedPlotTrustA2, groupedPlotTrustA3,groupedPlotTrustB, ncol=4)
 
 # #### Measurement study
+# Focus differences
+sumCorrectB <- d_alt %>% 
+  group_by(focus, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+ggplot(sumCorrectB, aes(x = factor(focus), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "focus", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
 
+sumTrustA1 <- d_alt %>% 
+  group_by(focus, trustA1) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_fcs_trust_A1 <- ggplot(sumTrustA1, aes(x = factor(focus), y = perc*100, fill = factor(trustA1))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "focus", y = "percent", fill = "trustA1") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+sumTrustA2 <- d_alt %>% 
+  group_by(focus, trustA2) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_fcs_trust_A2 <- ggplot(sumTrustA2, aes(x = factor(focus), y = perc*100, fill = factor(trustA2))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "focus", y = "percent", fill = "trustA2") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+sumTrustA3 <- d_alt %>% 
+  group_by(focus, trustA3) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_fcs_trust_A3 <- ggplot(sumTrustA3, aes(x = factor(focus), y = perc*100, fill = factor(trustA3))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "focus", y = "percent", fill = "trustA3") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+sumTrustB <- d_alt %>% 
+  group_by(focus, trustB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_fcs_trust_B <- ggplot(sumTrustB, aes(x = factor(focus), y = perc*100, fill = factor(trustB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "focus", y = "percent", fill = "trustB") +
+  theme_minimal(base_size = 14) + 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+grid.arrange(plot_fcs_trust_A1, plot_fcs_trust_A2, plot_fcs_trust_A3,plot_fcs_trust_B, ncol=4)
+
+# Mask differences
+sumCorrectB <- d_alt %>% 
+  group_by(dMask, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+ggplot(sumCorrectB, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+sumTrustA1 <- d_alt %>% 
+  group_by(dMask, trustA1) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_dMask_trust_A1 <- ggplot(sumTrustA1, aes(x = factor(dMask), y = perc*100, fill = factor(trustA1))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "trustA1") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+sumTrustA2 <- d_alt %>% 
+  group_by(dMask, trustA2) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_dMask_trust_A2 <- ggplot(sumTrustA2, aes(x = factor(dMask), y = perc*100, fill = factor(trustA2))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "trustA2") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+sumTrustA3 <- d_alt %>% 
+  group_by(dMask, trustA3) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_dMask_trust_A3 <- ggplot(sumTrustA3, aes(x = factor(dMask), y = perc*100, fill = factor(trustA3))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "trustA3") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+sumTrustB <- d_alt %>% 
+  group_by(dMask, trustB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plot_dMask_trust_B <- ggplot(sumTrustB, aes(x = factor(dMask), y = perc*100, fill = factor(trustB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "trustB") +
+  theme_minimal(base_size = 14) + 
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+grid_maskDiff <- grid.arrange(plot_dMask_trust_A1, plot_dMask_trust_A2, plot_dMask_trust_A3,plot_dMask_trust_B, ncol=4)
+
+
+# #### Scaling study
+d_scl0 <-  read.table(file="data/transformed/survey_complete_scaling_0_2021_09_19_headerAdapted.csv",TRUE, ",")
+d_scl1 <-  read.table(file="data/transformed/survey_complete_scaling_1_2021_09_19_headerAdapted.csv",TRUE, ",")
+d_scl2 <-  read.table(file="data/transformed/survey_complete_scaling_2_2021_09_19_headerAdapted.csv",TRUE, ",")
+
+
+
+sumCorrectB_scl0 <- d_scl0 %>% 
+  group_by(dMask, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plotCorrectB_scl0 <- ggplot(sumCorrectB_scl0, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+sumCorrectB_scl1 <- d_scl1 %>% 
+  group_by(dMask, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plotCorrectB_scl1 <- ggplot(sumCorrectB_scl1, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+sumCorrectB_scl2 <- d_scl2 %>% 
+  group_by(dMask, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plotCorrectB_scl2 <- ggplot(sumCorrectB_scl2, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+grid_maskDiff <- grid.arrange(plotCorrectB_scl0, plotCorrectB_scl1, plotCorrectB_scl2, ncol=3)
+
+
+# #### Distractor study
+d_dist_n <- read.table(file="data/transformed/survey_complete_distractor_n_2021_09_18_headerAdapted.csv",TRUE, ",")
+d_dist_h <- read.table(file="data/transformed/survey_complete_distractor_h_2021_09_18_headerAdapted.csv",TRUE, ",")
+
+sumCorrectB_dist_n <- d_dist_n %>% 
+  group_by(dMask, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plotCorrectB_dist_n <- ggplot(sumCorrectB_dist_n, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+sumCorrectB_dist_h <- d_dist_h %>% 
+  group_by(dMask, correctB) %>% 
+  summarise(count = n()) %>% 
+  mutate(perc = count/sum(count))
+plotCorrectB_dist_h <- ggplot(sumCorrectB_dist_h, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+  geom_bar(stat="identity", width = 0.7) +
+  labs(x = "dMask", y = "percent", fill = "correctB") +
+  theme_minimal(base_size = 14)+ 
+  theme(text = element_text(size = 10)) +
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+
+grid_maskDiff <- grid.arrange(plotCorrectB_dist_n,plotCorrectB_dist_h,ncol=2)

@@ -364,8 +364,6 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 }
 
 
-
-
 // ---- Calls of the functions 
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 
@@ -376,9 +374,9 @@ let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_compl
 let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_n_2021_09_18.json");
 let rawdata_cmplt_f = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_f_2021_09_18.json");
 let rawdata_cmplt_nf = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_nf_2021_09_18.json");
-let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_18.json");
-let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_18.json");
-let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_18.json");
+let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_19.json");
+let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_19.json");
+let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_19.json");
 
 let d_measurement_nf = fs.readFileSync('data/QIDtoFilename_complete_measurement_nf_2021_09_18.json')
 
@@ -407,7 +405,7 @@ listStrFilesBsln.push("scaling_2");
 // {
 //     generateBaselineCSV(listQIDtoFileName[i],listStrFilesBsln[i]);  
 // }
-// generateBaselineCSV(QIDtoFilename,strAdd_bslnFile);
+// old // generateBaselineCSV(QIDtoFilename,strAdd_bslnFile);
 
 
 // ---- Filter out answers with wrong intro
