@@ -11,9 +11,12 @@ console.log(Math.random())
 var csvFilePath = 'data/complete_20210828_noflip_headerAdapted.csv'
 
 var csvFilePathArray = [];
-csvFilePathArray.push("data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_headerAdapted.csv",
-"data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_distractor_n_2021_09_18_headerAdapted.csv",
-"data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_scaling_1_2021_09_19_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_scaling_2_2021_09_19_headerAdapted.csv")
+// Added the _MMM_replaced for some elements that were missing a category
+csvFilePathArray.push(
+"data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_headerAdapted.csv",
+"data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted_MMM_replaced.csv","data/participants_answers_headerAdapted_untransformed/complete_distractor_n_2021_09_18_headerAdapted_MMM_replaced.csv",
+"data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted_MMM_replaced.csv","data/participants_answers_headerAdapted_untransformed/complete_scaling_1_2021_09_19_headerAdapted_MMM_replaced.csv", "data/participants_answers_headerAdapted_untransformed/complete_scaling_2_2021_09_19_headerAdapted_MMM_replaced.csv"
+)
 
 // $.getJSON("QIDtoFilename.json", function(json) { // let rawdata = fs.readFileSync('data/QIDtoFilename.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t26720211035_attempt_flip1.json') // let rawdata=fs.readFileSync('data/QIDtoFilename_complete_20210828_noflip.json') // let rawdata=fs.readFileSync("data/QIDtoFilename_t138_2021_09_13_1930.json");
 // let rawdata=fs.readFileSync("data/QIDtoFilename_cmplt_measurement_nf_2021_09_14_0934.json");
@@ -35,6 +38,7 @@ hashmapAttributesNames_glbl = {
 
 // e.g. idc39-eG-wO-qry_fC_gte_98.05-flips_h0v0-nMasks_2-dMask_easy-dCmplx_EHE-fcs_WHAT_Qn-bsln_t_t-cntrQ_251
 function extractColumnsFromFilename(filename, hashmapAttributesNames = hashmapAttributesNames_glbl) {
+    console.log("extractColumnsFromFilename: ",filename);
     var idc = Number(filename.substr("idc".length, filename.indexOf('-') - "idc".length));
     var splitFN = filename.split('-');
     var drawnQn = hashmapAttributesNames[splitFN[1]];
@@ -182,7 +186,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
 
             for (var k in objJson) {
                 // console.log("k: ", k,", objJson[k]: ",objJson[k]);
-                console.log("objJson[0]: ",objJson[0])
+                // console.log("objJson[0]: ",objJson[0])
                 if (k >= 0) {
 
                     // Verify if not an object to filter out!
@@ -194,7 +198,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
                         var begAnswerIndx = null;
                         var firstAnswerGenerated = false;
                         var objShared = {};
-                        console.log("objJson[k][0]: ",objJson[k][0],', objJson[k]["StartDate"]: ', objJson[k]["StartDate"])
+                        // console.log("objJson[k][0]: ",objJson[k][0],', objJson[k]["StartDate"]: ', objJson[k]["StartDate"])
                         for (var key in objJson[k]) {
                             // console.log("objJson[k]: ",objJson[k],", key: ",key);
                             // console.log("k: ",k,", key: ",key);
@@ -210,10 +214,11 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
                                     // if(strAttr!==null)objGenerated[objGenerated.length-1][strAttr]=objJson[k][key];
 
                                     var curIndx = (key.indexOf('_') !== -1) ? Number(key.substr(1, key.indexOf('_') - 1)) : Number(key.substr(1));
-                                    console.log("key: ", key, "(typeof key): ", (typeof key), ", objJson[k][key]: ", objJson[k][key], ", (typeof objJson[k][key]): ", (typeof objJson[k][key]), ", curIndx: ", curIndx)
+                                    // console.log("key: ", key, "(typeof key): ", (typeof key), ", objJson[k][key]: ", objJson[k][key], ", (typeof objJson[k][key]): ", (typeof objJson[k][key]), ", curIndx: ", curIndx)
 
                                     if (curIndx > 23) {
                                         var keyQual = "QID" + curIndx;
+                                        // console.log("curIndx: ",curIndx,", QIDtoFilename: ",QIDtoFilename);
                                         var filename = QIDtoFilename[keyQual]
                                         if (key.indexOf("First") !== -1) {
                                             var objInfo = extractColumnsFromFilename(filename);
@@ -236,11 +241,11 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
                                                 + ((objGenerated[objGenerated.length - 1]["dMask"] == "easy")?"E":(objGenerated[objGenerated.length - 1]["dMask"] == "medium")?"M":"H");
 
 
-                                            console.log("Filled after first, ", objGenerated[objGenerated.length - 1])
+                                            // console.log("Filled after first, ", objGenerated[objGenerated.length - 1])
                                         }
                                         if (key.indexOf("Submit") !== -1) {
                                             begAnswerIndx = curIndx;
-                                            console.log("Found Submit, objInfo: ", objInfo);
+                                            // console.log("Found Submit, objInfo: ", objInfo);
                                             objGenerated[objGenerated.length - 1]['t'] = objJson[k][key];
                                         } else {
                                             // console.log("begAnswerIndx: ",begAnswerIndx)
@@ -369,14 +374,19 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 
 // Commented for tests, but should work
 /* Write the functions in separate calls. Something much cleanier could be done but we are in a rush */
-
-let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_h_2021_09_18.json");
-let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_n_2021_09_18.json");
 let rawdata_cmplt_f = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_f_2021_09_18.json");
 let rawdata_cmplt_nf = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_nf_2021_09_18.json");
-let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_19.json");
-let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_19.json");
-let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_19.json");
+// let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_h_2021_09_18.json");
+// let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_n_2021_09_18.json");
+// let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_19.json");
+// let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_19.json");
+// let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_19.json");
+let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_distractor_h_replaced_mix.json");
+let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_distractor_n_replaced_mix.json");
+let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_0_replaced_mix.json");
+let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_1_replaced_mix.json");
+let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_2_replaced_mix.json");
+
 
 let d_measurement_nf = fs.readFileSync('data/QIDtoFilename_complete_measurement_nf_2021_09_18.json')
 
@@ -413,7 +423,8 @@ listStrFilesBsln.push("scaling_2");
 //     writeFilterWrongAnswersToIntro(csvFilePathArray[i]);
 // }
 
-// ---- Generate structured files of answers
+// // // ---- Generate structured files of answers
+// console.log("csvFilePathArray: ",csvFilePathArray)
 for (var i=0; i < listQIDtoFileName.length; i++){
     console.log("csvFilePathArray[i]: ",csvFilePathArray[i]);
     newGenerateModifiedCSV(listQIDtoFileName[i], csvFilePathArray[i])

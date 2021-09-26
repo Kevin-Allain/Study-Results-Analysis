@@ -690,13 +690,17 @@ groupedData$orderMaskComplex <- factor(groupedData$dMask,c("Mask Easy","Mask Med
 
 # Updated: USE t0 INSTEAD OF THE ACTUAL MEAN # https://www.rdocumentation.org/packages/boot/versions/1.3-28/topics/boot
 # Example of previous approach to store...# geom_errorbar(aes(xmin=mean_diffA1-se_diffA1, xmax=mean_diffA1+se_diffA1)) +
+
+groupedData_focusSplit <- data.frame(WHAT_Qn = groupedData[groupedData$focus=="WHAT_Qn",], WHAT_Ql = groupedData[groupedData$focus=="WHAT_Ql",], WHERE = groupedData[groupedData$focus=="WHERE",])
+groupedData_focusSplit
+
 groupedPlotDiffA1 <- ggplot(groupedData, aes(x=mean_diffA1,y=focus)) +
   geom_vline(xintercept = 0) +
   geom_errorbar(aes(xmin=low_ci_DiffA1, xmax=high_ci_DiffA1)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
   xlim(c(-40,40)) +
   facet_wrap( ~ orderMaskComplex + orderFocusComplex  , dir="v", ncol=1) 
-
+# groupedPlotDiffA1
 groupedPlotDiffA2 <- ggplot(groupedData, aes(x=mean_diffA2,y=focus)) +
   geom_vline(xintercept = 0) +
   geom_errorbar(aes(xmin=low_ci_DiffA2, xmax=high_ci_DiffA2)) +
@@ -728,6 +732,7 @@ d_alt$orderFocusComplex <- factor(d_alt$dComplex_focus,c("Focus Easy","Focus Med
 d_alt$orderMaskComplex <- factor(d_alt$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
 
 # Question B
+# WRONG 
 groupedPlotCorrectB <- ggplot(d_alt, aes(x=(..count../sum(..count..)), y= focus )) +
   geom_bar(aes(fill=factor(correctB)),position=position_stack(reverse=TRUE)) +
   theme(legend.position = "top") +
@@ -779,6 +784,7 @@ sumTrustA1 <- d_alt %>%
   mutate(perc = count/sum(count))
 plot_fcs_trust_A1 <- ggplot(sumTrustA1, aes(x = factor(focus), y = perc*100, fill = factor(trustA1))) +
   geom_bar(stat="identity", width = 0.7) +
+  scale_fill_manual("trustA1", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
   labs(x = "focus", y = "percent", fill = "trustA1") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
@@ -788,6 +794,7 @@ sumTrustA2 <- d_alt %>%
   mutate(perc = count/sum(count))
 plot_fcs_trust_A2 <- ggplot(sumTrustA2, aes(x = factor(focus), y = perc*100, fill = factor(trustA2))) +
   geom_bar(stat="identity", width = 0.7) +
+  scale_fill_manual("trustA2", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
   labs(x = "focus", y = "percent", fill = "trustA2") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
@@ -797,6 +804,7 @@ sumTrustA3 <- d_alt %>%
   mutate(perc = count/sum(count))
 plot_fcs_trust_A3 <- ggplot(sumTrustA3, aes(x = factor(focus), y = perc*100, fill = factor(trustA3))) +
   geom_bar(stat="identity", width = 0.7) +
+  scale_fill_manual("trustA3", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
   labs(x = "focus", y = "percent", fill = "trustA3") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
@@ -807,6 +815,7 @@ sumTrustB <- d_alt %>%
   mutate(perc = count/sum(count))
 plot_fcs_trust_B <- ggplot(sumTrustB, aes(x = factor(focus), y = perc*100, fill = factor(trustB))) +
   geom_bar(stat="identity", width = 0.7) +
+  scale_fill_manual("trustB", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
   labs(x = "focus", y = "percent", fill = "trustB") +
   theme_minimal(base_size = 14) + 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
@@ -815,51 +824,55 @@ grid.arrange(plot_fcs_trust_A1, plot_fcs_trust_A2, plot_fcs_trust_A3,plot_fcs_tr
 
 # Mask differences
 sumCorrectB <- d_alt %>% 
-  group_by(dMask, correctB) %>% 
+  group_by(orderMaskComplex, correctB) %>% 
   summarise(count = n()) %>% 
   mutate(perc = count/sum(count))
-ggplot(sumCorrectB, aes(x = factor(dMask), y = perc*100, fill = factor(correctB))) +
+ggplot(sumCorrectB, aes(x = factor(orderMaskComplex), y = perc*100, fill = factor(correctB))) +
   geom_bar(stat="identity", width = 0.7) +
   labs(x = "dMask", y = "percent", fill = "correctB") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10)) +
-  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
+  theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
 
 sumTrustA1 <- d_alt %>% 
-  group_by(dMask, trustA1) %>% 
+  group_by(orderMaskComplex, trustA1) %>% 
   summarise(count = n()) %>% 
   mutate(perc = count/sum(count))
-plot_dMask_trust_A1 <- ggplot(sumTrustA1, aes(x = factor(dMask), y = perc*100, fill = factor(trustA1))) +
+plot_dMask_trust_A1 <- ggplot(sumTrustA1, aes(x = factor(orderMaskComplex), y = perc*100, fill = factor(trustA1)),colour = rhg_cols) +
   geom_bar(stat="identity", width = 0.7) +
-  labs(x = "dMask", y = "percent", fill = "trustA1") +
+  scale_fill_manual("trustA1", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
+  labs(x = "orderMaskComplex", y = "percent", fill = "trustA1") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
 sumTrustA2 <- d_alt %>% 
-  group_by(dMask, trustA2) %>% 
+  group_by(orderMaskComplex, trustA2) %>% 
   summarise(count = n()) %>% 
   mutate(perc = count/sum(count))
-plot_dMask_trust_A2 <- ggplot(sumTrustA2, aes(x = factor(dMask), y = perc*100, fill = factor(trustA2))) +
+plot_dMask_trust_A2 <- ggplot(sumTrustA2, aes(x = factor(orderMaskComplex), y = perc*100, fill = factor(trustA2)),colour = rhg_cols) +
   geom_bar(stat="identity", width = 0.7) +
-  labs(x = "dMask", y = "percent", fill = "trustA2") +
+  scale_fill_manual("trustA2", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
+  labs(x = "orderMaskComplex", y = "percent", fill = "trustA2") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
 sumTrustA3 <- d_alt %>% 
-  group_by(dMask, trustA3) %>% 
+  group_by(orderMaskComplex, trustA3) %>% 
   summarise(count = n()) %>% 
   mutate(perc = count/sum(count))
-plot_dMask_trust_A3 <- ggplot(sumTrustA3, aes(x = factor(dMask), y = perc*100, fill = factor(trustA3))) +
+plot_dMask_trust_A3 <- ggplot(sumTrustA3, aes(x = factor(orderMaskComplex), y = perc*100, fill = factor(trustA3)),colour = rhg_cols) +
   geom_bar(stat="identity", width = 0.7) +
-  labs(x = "dMask", y = "percent", fill = "trustA3") +
+  scale_fill_manual("trustA3", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
+  labs(x = "orderMaskComplex", y = "percent", fill = "trustA3") +
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
 
 sumTrustB <- d_alt %>% 
-  group_by(dMask, trustB) %>% 
+  group_by(orderMaskComplex, trustB) %>% 
   summarise(count = n()) %>% 
   mutate(perc = count/sum(count))
-plot_dMask_trust_B <- ggplot(sumTrustB, aes(x = factor(dMask), y = perc*100, fill = factor(trustB))) +
+plot_dMask_trust_B <- ggplot(sumTrustB, aes(x = factor(orderMaskComplex), y = perc*100, fill = factor(trustB)),colour = rhg_cols) +
   geom_bar(stat="identity", width = 0.7) +
-  labs(x = "dMask", y = "percent", fill = "trustB") +
+  scale_fill_manual("trustB", values = c("0" = "#771C19", "1" = "orange", "2" = "cyan","3"="#AAAA42","4"="#E25033","5"="purple")) +
+  labs(x = "orderMaskComplex", y = "percent", fill = "trustB") +
   theme_minimal(base_size = 14) + 
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
 
