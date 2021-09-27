@@ -30,7 +30,6 @@ arrCategories_measurement <- c("EEE", "EME", "EHE", "MEE", "MME", "MHE", "HEE", 
 arrCategories_distractor <- c("EEE", "EHE", "HEE", "MMM", "HHH")
 arrCategories_scaling <- c("EE", "EH", "HE", "MM", "HH")
 
-boot(d_sclAll$diffA1,samplemean,10000)
 # ---- Functions
 samplemean <- function(x, d) {
   return(mean(x[d]))
@@ -52,8 +51,7 @@ genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
     boot_d <- boot(d[[question]][d$dComplex_focus == dComplex_focus],samplemean,R)
   } else if (focus=="" & dMask != "" & dComplex_focus !=""){
     boot_d <- boot(d[[question]][d$dComplex_focus == dComplex_focus & d$dMask == dMask],samplemean,R)
-  } 
-  else if (focus!="" & dMask == "" & dComplex_focus ==""){
+  } else if (focus!="" & dMask == "" & dComplex_focus ==""){
     boot_d <- boot(d[[question]][d$focus == focus],samplemean,R)
   } else if (focus!="" & dMask != "" & dComplex_focus ==""){
     boot_d <- boot(d[[question]][d$focus == focus & d$dMask == dMask],samplemean,R)
@@ -63,49 +61,8 @@ genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
     boot_d <- boot(d[[question]][d$focus == focus & d$dMask == dMask & d$dComplex_focus == dComplex_focus],samplemean,R)
   }
 
-  #   else if (dMask == "" & dComplex_focus ==""){
-  #   if (question == "diffA1"){
-  #     boot_d <- boot(d$diffA1[d$focus==focus],samplemean,R)
-  #   }else if (question == "diffA2"){
-  #     boot_d <- boot(d$diffA2[d$focus==focus],samplemean,R)
-  #   } else {
-  #     boot_d <- boot(d$diffA3[d$focus==focus],samplemean,R)
-  #   }
-  # } 
-  # else if (dMask != "" & dComplex_focus ==""){
-  #   if (question == "diffA1"){
-  #     boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask],samplemean,R)
-  #   }else if (question == "diffA2"){
-  #     boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask],samplemean,R)
-  #   } else {
-  #     boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask],samplemean,R)
-  #   }
-  # } 
-  # else if (dMask == "" & dComplex_focus !=""){
-  #   if (question == "diffA1"){
-  #     boot_d <- boot(d$diffA1[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-  #   }else if (question == "diffA2"){
-  #     boot_d <- boot(d$diffA2[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-  #   } else {
-  #     boot_d <- boot(d$diffA3[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-  #   }
-  # } 
-  # else {
-  #   if (question == "diffA1"){
-  #     boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-  #   }else if (question == "diffA2"){
-  #     boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-  #   } else {
-  #     boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-  #   }
-  # }
-  
   return (boot_d)
 }
-
-genBoot(d_sclAll,"diffA2","WHAT_Ql","easy","H")
-
-boot(d_sclAll[["diffA3"]][d_sclAll$dMask == "medium"],samplemean,10000)
 
 getMean_lowCI_highCI <- function (boot_d){
   ci <- boot.ci(boot.out = boot_d, type = c("norm", "basic", "perc", "bca"));
@@ -116,9 +73,6 @@ getMean_lowCI_highCI <- function (boot_d){
   cat("in getMean_lowCI_highCI, mean: ",mean,", l_ci:",l_ci,", h_ci: ",h_ci);
   return (res);
 }
-
-d_s1 <- d_sclAll[d_sclAll$scaling==1,]
-dim(d_s1)
 
 make_gensMean_lowCI_highCI_sclDependent <- function (d,question, focus="", dMask="",dComplex_focus="",R=10000){
   cat("-- make_gensMean_lowCI_highCI_sclDependent; question : ",question,", focus: ",focus,", dMask: ",dMask,", dComplex_focus: ",dComplex_focus);
@@ -146,60 +100,32 @@ make_gensMean_lowCI_highCI_sclDependent <- function (d,question, focus="", dMask
   return( c(gens_s0,gens_s1,gens_s2) )
 }
 
-
-
-d_sclAll[d_sclAll$info_focus_dComplex_dMask == "WHAT_Ql_M_E" & d_sclAll$focus=="WHAT_Ql" & d_sclAll$scaling==1,]
-d_sclAll[d_sclAll$focus=="WHAT_Ql" & d_sclAll$dMask=="easy" & d_sclAll$dComplex_focus == "M" & d_sclAll$scaling==1,]
-
-boot(d_sclAll$diffA1[d_sclAll$dMask=="easy" & d_sclAll$dComplex_focus=="M" & d_sclAll$scaling==1 & d_sclAll$focus=="WHAT_Ql"],samplemean,10000)
-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Ql","","M") # works! # arrData <- list(d_scl0,d_scl1,d_scl2); groupedData_scl0; boots_diffA1_focus_WHAT_Qn <- list(scl_0=genBoot(d_scl0,"diffA1","WHAT_Qn"),scl_1=genBoot(d_scl1,"diffA1","WHAT_Qn"),scl_2=genBoot(d_scl2,"diffA1","WHAT_Qn")); boots_diffA1_focus_WHAT_Qn; as.data.frame(boots_diffA1_focus_WHAT_Qn); ggplot(as.data.frame(vals_scl0_fcs_WHAT_Qn),(aes(x=vals_scl0_fcs_WHAT_Qn[1],y=10))) + geom_point() +  geom_point(data=as.data.frame(vals_scl1_fcs_WHAT_Qn),colour='red') + xlim(-30, 30)
-
-genDifferencesBoot <- function(d,d2,question,focus,dMask="",dComplex_focus="",R=10000){
+genDifferencesBoot <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000){
   boot_d <- c();boot_d2 <- c();
-  if (dMask == "" & dComplex_focus ==""){
-    if (question == "diffA1"){
-      boot_d <- boot(d$diffA1[d$focus==focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA1[d2$focus==focus],samplemean,R)
-    }else if (question == "diffA2"){
-      boot_d <- boot(d$diffA2[d$focus==focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA2[d2$focus==focus],samplemean,R)
-    } else {
-      boot_d <- boot(d$diffA3[d$focus==focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA3[d2$focus==focus],samplemean,R)
-    }
-  } else if (dMask != "" & dComplex_focus ==""){
-    if (question == "diffA1"){
-      boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask],samplemean,R)
-      boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-    }else if (question == "diffA2"){
-      boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask],samplemean,R)
-      boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-    } else {
-      boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask],samplemean,R)
-      boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-    }
-  } else if (dMask == "" & dComplex_focus !=""){
-    if (question == "diffA1"){
-      boot_d <- boot(d$diffA1[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-    }else if (question == "diffA2"){
-      boot_d <- boot(d$diffA2[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-    } else {
-      boot_d <- boot(d$diffA3[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-    }
+  if (focus=="" & dMask=="" & dComplex_focus==""){
+    boot_d <- boot(d[[question]],samplemean,R)
+    boot_d2 <- boot(d2[[question]],samplemean,R)
+  } else if (focus =="" & dMask != "" & dComplex_focus ==""){
+    boot_d <- boot(d[[question]][d$dMask==dMask],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$dMask==dMask],samplemean,R)
+  } else if (focus =="" & dMask == "" & dComplex_focus !=""){
+    boot_d <- boot(d[[question]][d$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$dComplex_focus==dComplex_focus],samplemean,R)
+  } else if (focus =="" & dMask != "" & dComplex_focus !=""){
+    boot_d <- boot(d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus],samplemean,R)
+  } else if (focus !="" & dMask == "" & dComplex_focus ==""){
+    boot_d <- boot(d[[question]][d$focus==focus],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$focus==focus],samplemean,R)
+  } else if (focus!="" & dMask != "" & dComplex_focus ==""){
+    boot_d <- boot(d[[question]][d$focus==focus & d$dMask==dMask],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dMask==dMask],samplemean,R)
+  } else if (focus!="" & dMask == "" & dComplex_focus !=""){
+    boot_d <- boot(d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
   } else {
-    if (question == "diffA1"){
-      boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-    }else if (question == "diffA2"){
-      boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-    } else {
-      boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-      boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-    }
+    boot_d <- boot(d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
   }
   
   sumD <- getMean_lowCI_highCI(boot_d)
@@ -215,210 +141,166 @@ getDifferencesBoot <- function (boot_d,boot_d2){
   return (sumAbsDiffs)
 }
 
-# we need a function to display differences between scaling groups...! With confidence intervals...
-# potential approach 1: get the values according to groups, then make substractions according to their shared cntrQ NO
-# potential approach 2: get the values according to groups, make boot for each group, make the sample proportion, and then put it as the middle
+# we need a function to display differences between scaling groups...! With confidence intervals... get the values according to groups, make boot for each group, make the sample proportion, and then put it as the middle
 # https://online.stat.psu.edu/stat100/lesson/9/9.3
-bootQuestionsDifferences <- function(d,d2,question,focus,dMask="",dComplex_focus="",R=10000){
+bootQuestionsDifferences <- function(d,d2,question="",focus="",dMask="",dComplex_focus="",R=10000){
   boot_d <- c();boot_d2 <- c();
   sampleSize <- -1; sampleSize2 <- -1;
-  if (dMask == "" & dComplex_focus ==""){
-    if (question == "diffA1"){
-      if (length(d2$diffA1[d2$focus==focus])==0){
-        boot_d <- boot(d$diffA1[d$focus==focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d2$diffA1[d2$focus==focus])==0){
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        print("should reach here")
-        boot_d <- boot(d$diffA1[d$focus==focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus],samplemean,R)
-        sampleSize <- length(d$diffA1[d$focus==focus]); sampleSize2 <- length(d2$diffA1[d2$focus==focus]);
-        print("ran the boot")
-      }
-    }else if (question == "diffA2"){
-      if (length(d2$diffA2[d2$focus==focus])==0){
-        boot_d <- boot(d$diffA2[d$focus==focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA2[d$focus==focus])==0){
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA2[d$focus==focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus],samplemean,R)
-        sampleSize <- length(d$diffA2[d$focus==focus]); sampleSize2 <- length(d2$diffA2[d2$focus==focus]);
-      }
-    } else {
-      if (length(d2$diffA3[d2$focus==focus])==0){
-        boot_d <- boot(d$diffA3[d$focus==focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA3[d$focus==focus])==0){
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA3[d$focus==focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus],samplemean,R)
-        sampleSize <- length(d$diffA3[d$focus==focus]); sampleSize2 <- length(d2$diffA3[d2$focus==focus]);
-      }
-    }
+  
+  if (focus=="" & dMask == "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]]); 
+    sampleSize2 <- length(d2[[question]]); 
   } 
-  else if (dMask != "" & dComplex_focus ==""){
-    if (question == "diffA1"){
-      if (length(d2$diffA1[d2$focus==focus & d2$dMask==dMask])==0){
-        boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA1[d$focus==focus & d$dMask==dMask])==0) {
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      }  else{
-        boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask],samplemean,R)
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-        sampleSize <- length(d$diffA1[d$focus==focus & d$dMask==dMask]); sampleSize2 <- length(d2$diffA1[d2$focus==focus & d2$dMask==dMask]);
-      }
-    }else if (question == "diffA2"){
-      if (length(d2$diffA2[d2$focus==focus & d2$dMask==dMask])==0){
-        boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA2[d$focus==focus & d$dMask==dMask])==0) {
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      }  else{
-        boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask],samplemean,R)
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-        sampleSize <- length(d$diffA2[d$focus==focus & d$dMask==dMask]); sampleSize2 <- length(d2$diffA2[d2$focus==focus & d2$dMask==dMask]);
-      }
-    } else {
-      if (length(d2$diffA3[d2$focus==focus & d2$dMask==dMask])==0){
-        boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA3[d$focus==focus & d$dMask==dMask])==0) {
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      }  else{
-        boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask],samplemean,R)
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dMask==dMask],samplemean,R)
-        sampleSize <- length(d$diffA3[d$focus==focus & d$dMask==dMask]); sampleSize2 <- length(d2$diffA3[d2$focus==focus & d2$dMask==dMask]);
-      }
-    }
+  else if (focus=="" & dMask != "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]][d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d$dMask == dMask]); 
   } 
-  else if (dMask == "" & dComplex_focus !=""){
-    if (question == "diffA1"){
-      if (length(d2$diffA1[d2$focus==focus & d2$dComplex_focus==dComplex_focus]) == 0){
-        boot_d <- boot(d$diffA1[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA1[d$focus==focus & d$dComplex_focus==dComplex_focus]) == 0){
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA1[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sampleSize <- length(d$diffA1[d$focus==focus & d$dComplex_focus==dComplex_focus]); sampleSize2 <- length(d2$diffA1[d2$focus==focus & d2$dComplex_focus==dComplex_focus]);
-      }
-    }else if (question == "diffA2"){
-      if (length(d2$diffA2[d2$focus==focus & d2$dComplex_focus==dComplex_focus]) == 0){
-        boot_d <- boot(d$diffA2[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA2[d$focus==focus & d$dComplex_focus==dComplex_focus]) == 0){
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA2[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sampleSize <- length(d$diffA2[d$focus==focus & d$dComplex_focus==dComplex_focus]); sampleSize2 <- length(d2$diffA2[d2$focus==focus & d2$dComplex_focus==dComplex_focus]);
-      }
-    } else {
-      if (length(d2$diffA3[d2$focus==focus & d2$dComplex_focus==dComplex_focus]) == 0){
-        boot_d <- boot(d$diffA3[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA3[d$focus==focus & d$dComplex_focus==dComplex_focus]) == 0){
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA3[d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sampleSize <- length(d$diffA3[d$focus==focus & d$dComplex_focus==dComplex_focus]); sampleSize2 <- length(d2$diffA3[d2$focus==focus & d2$dComplex_focus==dComplex_focus]);
-      }
-    }
+  else if (focus=="" & dMask == "" & dComplex_focus !=""){
+    sampleSize <- length(d[[question]][d$dComplex_focus == dComplex_focus]); 
+    sampleSize2 <- length(d2[[question]][d$dComplex_focus == dComplex_focus]); 
+  } 
+  else if (focus=="" & dMask != "" & dComplex_focus !=""){
+    sampleSize <- length(d[[question]][d$dComplex_focus == dComplex_focus & d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d2$dComplex_focus == dComplex_focus & d2$dMask == dMask]); 
+  } 
+  else if (focus!="" & dMask == "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]][d$focus]);
+    sampleSize2 <- length(d2[[question]][d2$focus]);
+  } 
+  else if (focus!="" & dMask != "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]][d$focus == focus & d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dMask == dMask]);    
+  } 
+  else if (focus!="" & dMask == "" & dComplex_focus !=""){
+    sampleSize <- length(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus]); 
+    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dComplex_focus == dComplex_focus]);    
   } 
   else {
-    if (question == "diffA1"){
-      if(length(d2$diffA1[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus])==0){
-        boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA1[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus])==0) {
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA1[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA1[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sampleSize <- length(d$diffA1[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]); sampleSize2 <- length(d2$diffA1[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus]);
+    sampleSize <- length(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus & d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dComplex_focus == dComplex_focus & d2$dMask == dMask]);
+  }
+
+  if (sampleSize == 0 & sampleSize2 == 0){ return (-1) }
+  else if (sampleSize == 0) {
+    boot_d2 <- genBoot(d2,question,focus,dMask,dComplex_focus,R)
+    return (boot_d2);    
+  } 
+  else if (sampleSize2 == 0) {
+    boot_d <- genBoot(d,question,focus,dMask,dComplex_focus,R)
+    return (boot_d)
+  } 
+  else {
+    boot_d <- genBoot(d,question,focus,dMask,dComplex_focus,R)
+    boot_d2 <- genBoot(d2,question,focus,dMask,dComplex_focus,R)
+    
+    # calculate the differences and sample proportions...
+    sumD <- getMean_lowCI_highCI(boot_d)
+    sumD2 <- getMean_lowCI_highCI(boot_d2)
+    meanDiff <- sumD[1]-sumD2[1]
+    # print(meanDiff)
+    stdErr_d <- -1;stdErr_d2 <- -1
+    stdErr_d <- sd(boot_d$t);stdErr_d2 <- sd(boot_d2$t);
+    # print(stdErr_d)
+    SEM_d <- stdErr_d/sqrt(sampleSize); SEM_d2 <- stdErr_d2/sqrt(sampleSize2);
+    # print(SEM_d);print(SEM_d2);
+    std_Error_Difference <- sqrt(SEM_d*SEM_d + SEM_d2*SEM_d2)
+    res <- c(meanDiff, meanDiff - std_Error_Difference, meanDiff + std_Error_Difference)
+    return (res)
+  }
+}
+
+# Rename the categories for readability
+renameGroupedData <- function(groupedData_all) {  
+  groupedData_all$dMask = as.character(groupedData_all$dMask)
+  groupedData_all$dMask[groupedData_all$dMask == "easy"] = "Mask Easy"
+  groupedData_all$dMask[groupedData_all$dMask == "medium"] = "Mask Medium"
+  groupedData_all$dMask[groupedData_all$dMask == "hard"] = "Mask Hard"
+  groupedData_all$dComplex_focus = as.character(groupedData_all$dComplex_focus)
+  groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "E"] = "Focus Easy"
+  groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "M"] = "Focus Medium"
+  groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "H"] = "Focus Hard"
+  groupedData_all$orderFocusComplex <- factor(groupedData_all$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
+  groupedData_all$orderMaskComplex <- factor(groupedData_all$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
+  return (groupedData_all);
+}
+
+generateGroupedData <- function (d_sclAll){
+  groupedData_all <- d_sclAll %>%
+  group_by(focus,info_focus_dComplex_dMask,dComplex_focus,dMask,scaling) %>%
+  summarize(mean_diffA1 = mean(diffA1), sd_diffA1 = sd(diffA1, na.rm=TRUE), count=n(),se_diffA1=(sd_diffA1/(sqrt(count))),
+            mean_diffA2 = mean(diffA2), sd_diffA2 = sd(diffA2, na.rm=TRUE), count=n(),se_diffA2=(sd_diffA2/(sqrt(count))),
+            mean_diffA3 = mean(diffA3), sd_diffA3 = sd(diffA3, na.rm=TRUE), count=n(),se_diffA3=(sd_diffA3/(sqrt(count))),
+            mean_correctB = mean(correctB), sd_correctB = sd(correctB, na.rm=TRUE), count=n(),se_correctB=(sd_correctB/(sqrt(count)))
+  )
+  groupedData_all["low_ci_DiffA1"] <- NA; groupedData_all["high_ci_DiffA1"] <-NA; 
+  groupedData_all["low_ci_DiffA2"] <-NA; groupedData_all["high_ci_DiffA2"] <-NA; 
+  groupedData_all["low_ci_DiffA3"] <-NA; groupedData_all["high_ci_DiffA3"] <-NA;
+  groupedData_all["mean_t0_DiffA1"]<-NA;groupedData_all["mean_t0_DiffA2"]<-NA;groupedData_all["mean_t0_DiffA3"]<-NA;
+  return (groupedData_all)
+}
+
+# We make the assumption that scaling is the minimal element to split the data with?
+setGroupDataCI <- function(groupedData_all,scaling=TRUE,distractor=FALSE,focus=FALSE,dMask=FALSE,dComplex_focus=FALSE){
+  arrFocus <- c("WHAT_Qn","WHAT_Ql");
+  arrDMask <- c("easy","medium","hard");
+  arrDComplex_focus <- c("E","M","H");
+  for (k in 1:3){
+    strDiff <- paste("diffA",k,sep="");
+    strMean_t0 <- paste("mean_t0_DiffA",k,sep="");strlow_ci <- paste("low_ci_DiffA",k,sep=""); strhigh_ci <- paste("high_ci_DiffA",k,sep="");
+    
+    if (scaling & !focus & !dMask & !dComplex_focus)
+    {
+      summ_sclAll_diffAx <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,strDiff)
+      cat("\n ~~~~ in setGroupDataCI, summ_sclAll_diffAx: ",summ_sclAll_diffAx,"\n strMean_t0: ",strMean_t0,", strlow_ci: ",strlow_ci,", strhigh_ci: ",strhigh_ci);
+      for (j in 1:3){
+        groupedData_all[[strMean_t0]][groupedData_all$scaling == (j-1) ] <- rep(summ_sclAll_diffAx[1+(3*(j-1))], dim(groupedData_all[groupedData_all$scaling == (j-1),])[1])
+        groupedData_all[[strlow_ci]][groupedData_all$scaling == (j-1)] <- rep(summ_sclAll_diffAx[2+(3*(j-1))], dim(groupedData_all[groupedData_all$scaling == (j-1),])[1])
+        groupedData_all[[strhigh_ci]][groupedData_all$scaling == (j-1)] <- rep(summ_sclAll_diffAx[3+(3*(j-1))], dim(groupedData_all[groupedData_all$scaling == (j-1),])[1])
       }
-    }else if (question == "diffA2"){
-      if(length(d2$diffA2[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus])==0){
-        boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA2[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus])==0) {
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA2[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA2[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sampleSize <- length(d$diffA2[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]); sampleSize2 <- length(d2$diffA2[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus]);
+    } else if (scaling & !focus & dMask & !dComplex_focus) {
+      # & groupedData_all$scaling == arrDMask[i]
+      for (i in 1:length(arrDMask)){        
+        summ_sclAll_diffAx <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,strDiff,"",arrDMask[i])
+        cat("\n ~~~~ in setGroupDataCI MASK, summ_sclAll_diffAx: ",summ_sclAll_diffAx,"\n strMean_t0: ",strMean_t0,", strlow_ci: ",strlow_ci,", strhigh_ci: ",strhigh_ci,", arrDMask[i]: ",arrDMask[i]);
+        for (j in 1:3){
+          rep_t0 <- rep(summ_sclAll_diffAx[1+(3*(j-1))], dim(groupedData_all[groupedData_all$scaling == (j-1) & groupedData_all$dMask == arrDMask[i],])[1])
+          cat("\n rep_t0: ",rep_t0)
+          rep_lowi_ci <- rep(summ_sclAll_diffAx[2+(3*(j-1))], dim(groupedData_all[groupedData_all$scaling == (j-1) & groupedData_all$dMask == arrDMask[i],])[1])
+          cat("\n rep_lowi_ci: ",rep_lowi_ci)
+          rep_high_ci <- rep(summ_sclAll_diffAx[3+(3*(j-1))], dim(groupedData_all[groupedData_all$scaling == (j-1) & groupedData_all$dMask == arrDMask[i],])[1])
+          cat("\n rep_high_ci: ",rep_high_ci)
+          groupedData_all[[strMean_t0]][groupedData_all$scaling == (j-1) & groupedData_all$dMask == arrDMask[i] ] <- rep_t0
+          groupedData_all[[strlow_ci]][groupedData_all$scaling == (j-1) & groupedData_all$dMask == arrDMask[i] ] <- rep_lowi_ci
+          groupedData_all[[strhigh_ci]][groupedData_all$scaling == (j-1) & groupedData_all$dMask == arrDMask[i] ] <- rep_high_ci
+        }
       }
-    } else {
-      if(length(d2$diffA3[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus])==0){
-        boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD <- getMean_lowCI_highCI(boot_d)
-        return(sumD)
-      } else if (length(d$diffA3[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus])==0) {
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sumD2 <- getMean_lowCI_highCI(boot_d2)
-        return(sumD2)
-      } else {
-        boot_d <- boot(d$diffA3[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-        boot_d2 <- boot(d2$diffA3[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
-        sampleSize <- length(d$diffA3[d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]); sampleSize2 <- length(d2$diffA3[d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus]);
+    } 
+    else if (scaling & focus & !dMask & dComplex_focus) {
+      for (f in 1:length(arrFocus)){
+        for(cf in 1:length(arrDComplex_focus)){
+          summ_sclAll_diffAx <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,strDiff,arrFocus[f],"",arrDComplex_focus[cf])
+          for (j in 1:3){
+            groupedData_all[[strMean_t0]][groupedData_all$scaling== (j-1) & groupedData_all$focus == arrFocus[f] & groupedData_all$dcomplex_focus == arrDComplex_focus[cf]] <- rep(summ_sclAll_diffAx[1], dim(groupedData_all[groupedData_all$scaling == (j-1) & groupedData_all$scaling == arrDMask[i],])[1])
+            groupedData_all[[strlow_ci]][groupedData_all$scaling== (j-1) & groupedData_all$focus == arrFocus[f] & groupedData_all$dcomplex_focus == arrDComplex_focus[cf]] <- rep(summ_sclAll_diffAx[2], dim(groupedData_all[groupedData_all$scaling == (j-1) & groupedData_all$scaling == arrDMask[i],])[1])
+            groupedData_all[[strhigh_ci]][groupedData_all$scaling== (j-1) & groupedData_all$focus == arrFocus[f] & groupedData_all$dcomplex_focus == arrDComplex_focus[cf]] <- rep(summ_sclAll_diffAx[3], dim(groupedData_all[groupedData_all$scaling == (j-1) & groupedData_all$scaling == arrDMask[i],])[1])
+          }
+        }
       }
+    } 
+    else {
+      cat("TODO other cases")      
     }
   }
   
-  # calculate the differences and sample proportions...
-  sumD <- getMean_lowCI_highCI(boot_d)
-  sumD2 <- getMean_lowCI_highCI(boot_d2)
-  meanDiff <- sumD[1]-sumD2[1]
-  print(meanDiff)
-  stdErr_d <- -1;stdErr_d2 <- -1
-  stdErr_d <- sd(boot_d$t);stdErr_d2 <- sd(boot_d2$t);
-  print(stdErr_d)
-  SEM_d <- stdErr_d/sqrt(sampleSize); SEM_d2 <- stdErr_d2/sqrt(sampleSize2);
-  print(SEM_d);print(SEM_d2);
-  std_Error_Difference <- sqrt(SEM_d*SEM_d + SEM_d2*SEM_d2)
-  res <- c(meanDiff, meanDiff - std_Error_Difference, meanDiff + std_Error_Difference)
-  return (res)
+  return (groupedData_all);
 }
+
+dim(groupedData_all[groupedData_all$scaling == 0 & groupedData_all$dMask == "medium",])
+
+groupedData_all <- generateGroupedData(d_sclAll)
+# dim(groupedData_all[groupedData_all$scaling == 0,])[1]; dim(groupedData_all[groupedData_all$scaling == 1,])[1]; dim(groupedData_all[groupedData_all$scaling == 2,])[1]
+groupedData_all <- setGroupDataCI(groupedData_all)
+groupedData_all <- setGroupDataCI(groupedData_all,TRUE,FALSE,FALSE,TRUE,FALSE)
 
 
 # ---- Test calls
@@ -437,91 +319,27 @@ diffsTest <- getDifferencesBoot(boot_diffA1_scl0,boot_diffA1_scl1)
 sum_boot_diffA1_scl0
 sum_boot_diffA1_scl1
 diffsTest
+genBoot(d_sclAll,"diffA2","WHAT_Ql","easy","H")
+boot(d_sclAll[["diffA3"]][d_sclAll$dMask == "medium"],samplemean,10000)
+boot(d_sclAll$diffA1[d_sclAll$dMask=="easy" & d_sclAll$dComplex_focus=="M" & d_sclAll$scaling==1 & d_sclAll$focus=="WHAT_Ql"],samplemean,10000)
+summBoot_scl_diffA1 <- make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Ql","","M") # works! # arrData <- list(d_scl0,d_scl1,d_scl2); groupedData_scl0; boots_diffA1_focus_WHAT_Qn <- list(scl_0=genBoot(d_scl0,"diffA1","WHAT_Qn"),scl_1=genBoot(d_scl1,"diffA1","WHAT_Qn"),scl_2=genBoot(d_scl2,"diffA1","WHAT_Qn")); boots_diffA1_focus_WHAT_Qn; as.data.frame(boots_diffA1_focus_WHAT_Qn); ggplot(as.data.frame(vals_scl0_fcs_WHAT_Qn),(aes(x=vals_scl0_fcs_WHAT_Qn[1],y=10))) + geom_point() +  geom_point(data=as.data.frame(vals_scl1_fcs_WHAT_Qn),colour='red') + xlim(-30, 30)
+summBoot_scl_diffA1
+d_s1 <- d_sclAll[d_sclAll$scaling==1,]
+dim(d_s1)
+d_sclAll[d_sclAll$info_focus_dComplex_dMask == "WHAT_Ql_M_E" & d_sclAll$focus=="WHAT_Ql" & d_sclAll$scaling==1,]
+d_sclAll[d_sclAll$focus=="WHAT_Ql" & d_sclAll$dMask=="easy" & d_sclAll$dComplex_focus == "M" & d_sclAll$scaling==1,]
+boot(d_sclAll$diffA1,samplemean,10000)
+bootQuestionsDifferences(d_scl0,d_scl1,"diffA1")
 
 # ---- Data transform
 d_scl0<- orderData(d_scl0); d_scl1 <- orderData(d_scl1); d_scl2 <- orderData(d_scl2);
 
 summaryCI_diffA1 <- make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Ql")
+summaryCI_diffA1
 
 # group
-summ_sclAll_diffA1_WHAT_Qn <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Qn")
-summ_sclAll_diffA1_WHAT_Ql <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Ql")
-summ_sclAll_diffA2_WHAT_Qn <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA2","WHAT_Qn")
-summ_sclAll_diffA2_WHAT_Ql <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA2","WHAT_Ql")
-summ_sclAll_diffA3_WHAT_Qn <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA3","WHAT_Qn")
-summ_sclAll_diffA3_WHAT_Ql <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA3","WHAT_Ql")
-
-# summ_diffA1_sclAll_WHAT_Qn <-getMean_lowCI_highCI(genBoot(d_sclAll,"diffA1","WHAT_Qn"));summ_diffA1_sclAll_WHAT_Ql <-getMean_lowCI_highCI(genBoot(d_sclAll,"diffA1","WHAT_Ql"));#getMean_lowCI_highCI(genBoot(d_sclAll,"diffA1","WHERE")); summ_diffA2_sclAll_WHAT_Qn <-getMean_lowCI_highCI(genBoot(d_sclAll,"diffA2","WHAT_Qn"));summ_diffA2_sclAll_WHAT_Ql <-getMean_lowCI_highCI(genBoot(d_sclAll,"diffA2","WHAT_Ql"));#getMean_lowCI_highCI(genBoot(d_sclAll,"diffA2","WHERE")); summ_diffA3_sclAll_WHAT_Qn <-getMean_lowCI_highCI(genBoot(d_sclAll,"diffA3","WHAT_Qn"));summ_diffA3_sclAll_WHAT_Ql <-getMean_lowCI_highCI(genBoot(d_sclAll,"diffA3","WHAT_Ql"));#getMean_lowCI_highCI(genBoot(d_sclAll,"diffA3","WHERE"));
-
-groupedData_all <- d_sclAll %>%
-  group_by(focus,info_focus_dComplex_dMask,dComplex_focus,dMask,scaling) %>%
-  summarize(mean_diffA1 = mean(diffA1), sd_diffA1 = sd(diffA1, na.rm=TRUE), count=n(),se_diffA1=(sd_diffA1/(sqrt(count))),
-            mean_diffA2 = mean(diffA2), sd_diffA2 = sd(diffA2, na.rm=TRUE), count=n(),se_diffA2=(sd_diffA2/(sqrt(count))),
-            mean_diffA3 = mean(diffA3), sd_diffA3 = sd(diffA3, na.rm=TRUE), count=n(),se_diffA3=(sd_diffA3/(sqrt(count))),
-            mean_correctB = mean(correctB), sd_correctB = sd(correctB, na.rm=TRUE), count=n(),se_correctB=(sd_correctB/(sqrt(count)))
-  )
-groupedData_all["low_ci_DiffA1"] <- NA; groupedData_all["high_ci_DiffA1"] <-NA; 
-groupedData_all["low_ci_DiffA2"] <-NA; groupedData_all["high_ci_DiffA2"] <-NA; 
-groupedData_all["low_ci_DiffA3"] <-NA; groupedData_all["high_ci_DiffA3"] <-NA;
-groupedData_all["mean_t0_DiffA1"]<-NA;groupedData_all["mean_t0_DiffA2"]<-NA;groupedData_all["mean_t0_DiffA3"]<-NA;
-
-# groupedData_all$mean_t0_DiffA1[groupedData_all$focus=="WHAT_Qn"][groupedData_all$scaling==0] <- summ_sclAll_diffA1_WHAT_Qn[1]; # groupedData_all$low_ci_DiffA1[groupedData_all$focus=="WHAT_Qn"][groupedData_all$scaling==0] <- summ_sclAll_diffA1_WHAT_Qn[2];# groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Qn"][groupedData_all$scaling==0] <- summ_sclAll_diffA1_WHAT_Qn[3];
-print("pre changes"); groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling== 1]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling== 2]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling== 1]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling== 2]
-# TODO add also summary according to difficulty of the focus and to the mask difficulty. By putting it in a function...
-# a function like init_groupedData_all
-for (i in 1:3){
-  groupedData_all$mean_t0_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA1_WHAT_Qn[1+(3*(i-1))];
-  groupedData_all$low_ci_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1) ] <- summ_sclAll_diffA1_WHAT_Qn[2+(3*(i-1))]; 
-  groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA1_WHAT_Qn[3+(3*(i-1))];
-  groupedData_all$mean_t0_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA1_WHAT_Ql[1+(3*(i-1))]; 
-  groupedData_all$low_ci_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1) ] <- summ_sclAll_diffA1_WHAT_Ql[2+(3*(i-1))]; 
-  groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA1_WHAT_Ql[3+(3*(i-1))];
-  groupedData_all$mean_t0_DiffA2[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA2_WHAT_Qn[1+(3*(i-1))]; 
-  groupedData_all$low_ci_DiffA2[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1) ] <- summ_sclAll_diffA2_WHAT_Qn[2+(3*(i-1))]; 
-  groupedData_all$high_ci_DiffA2[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA2_WHAT_Qn[3+(3*(i-1))];
-  groupedData_all$mean_t0_DiffA2[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA2_WHAT_Ql[1+(3*(i-1))]; 
-  groupedData_all$low_ci_DiffA2[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1) ] <- summ_sclAll_diffA2_WHAT_Ql[2+(3*(i-1))]; 
-  groupedData_all$high_ci_DiffA2[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA2_WHAT_Ql[3+(3*(i-1))];
-  groupedData_all$mean_t0_DiffA3[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA3_WHAT_Qn[1+(3*(i-1))]; 
-  groupedData_all$low_ci_DiffA3[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1) ] <- summ_sclAll_diffA3_WHAT_Qn[2+(3*(i-1))]; 
-  groupedData_all$high_ci_DiffA3[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA3_WHAT_Qn[3+(3*(i-1))];
-  groupedData_all$mean_t0_DiffA3[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA3_WHAT_Ql[1+(3*(i-1))]; 
-  groupedData_all$low_ci_DiffA3[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1) ] <- summ_sclAll_diffA3_WHAT_Ql[2+(3*(i-1))]; 
-  groupedData_all$high_ci_DiffA3[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling == (i-1)] <- summ_sclAll_diffA3_WHAT_Ql[3+(3*(i-1))];
-}
-print ("post changes");groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling== 1]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Qn" & groupedData_all$scaling== 2]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling== 1]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Ql" & groupedData_all$scaling== 2]
-# groupedData_all$mean_t0_DiffA1[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA1_sclAll_WHAT_Ql[1]; groupedData_all$low_ci_DiffA1[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA1_sclAll_WHAT_Ql[2]; groupedData_all$high_ci_DiffA1[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA1_sclAll_WHAT_Ql[3]; groupedData_all$mean_t0_DiffA2[groupedData_all$focus=="WHAT_Qn"] <- summ_diffA2_sclAll_WHAT_Qn[1];  groupedData_all$low_ci_DiffA2[groupedData_all$focus=="WHAT_Qn"] <- summ_diffA2_sclAll_WHAT_Qn[2];  groupedData_all$high_ci_DiffA2[groupedData_all$focus=="WHAT_Qn"] <- summ_diffA2_sclAll_WHAT_Qn[3]; groupedData_all$mean_t0_DiffA2[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA2_sclAll_WHAT_Ql[1];  groupedData_all$low_ci_DiffA2[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA2_sclAll_WHAT_Ql[2];  groupedData_all$high_ci_DiffA2[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA2_sclAll_WHAT_Ql[3]; groupedData_all$mean_t0_DiffA3[groupedData_all$focus=="WHAT_Qn"] <- summ_diffA3_sclAll_WHAT_Qn[1];  groupedData_all$low_ci_DiffA3[groupedData_all$focus=="WHAT_Qn"] <- summ_diffA3_sclAll_WHAT_Qn[2];  groupedData_all$high_ci_DiffA3[groupedData_all$focus=="WHAT_Qn"] <- summ_diffA3_sclAll_WHAT_Qn[3]; groupedData_all$mean_t0_DiffA3[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA3_sclAll_WHAT_Ql[1];  groupedData_all$low_ci_DiffA3[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA3_sclAll_WHAT_Ql[2];  groupedData_all$high_ci_DiffA3[groupedData_all$focus=="WHAT_Ql"] <- summ_diffA3_sclAll_WHAT_Ql[3];
-
-
-groupedData_scl0 <- d_scl0 %>%
-  group_by(focus,info_focus_dComplex_dMask,dComplex_focus,dMask) %>%
-  summarize(mean_diffA1 = mean(diffA1), sd_diffA1 = sd(diffA1, na.rm=TRUE), count=n(),se_diffA1=(sd_diffA1/(sqrt(count))),
-            mean_diffA2 = mean(diffA2), sd_diffA2 = sd(diffA2, na.rm=TRUE), count=n(),se_diffA2=(sd_diffA2/(sqrt(count))),
-            mean_diffA3 = mean(diffA3), sd_diffA3 = sd(diffA3, na.rm=TRUE), count=n(),se_diffA3=(sd_diffA3/(sqrt(count))),
-            mean_correctB = mean(correctB), sd_correctB = sd(correctB, na.rm=TRUE), count=n(),se_correctB=(sd_correctB/(sqrt(count)))
-  )
-groupedData_scl0["low_ci_DiffA1"] <-NA; groupedData_scl0["high_ci_DiffA1"] <-NA; groupedData_scl0["low_ci_DiffA2"] <-NA; groupedData_scl0["high_ci_DiffA2"] <-NA; groupedData_scl0["low_ci_DiffA3"] <-NA; groupedData_scl0["high_ci_DiffA3"] <-NA;
-groupedData_scl0["mean_t0_DiffA1"]<-NA;groupedData_scl0["mean_t0_DiffA2"]<-NA;groupedData_scl0["mean_t0_DiffA3"]<-NA;
-
-groupedData_scl1 <- d_scl1 %>%
-  group_by(focus,info_focus_dComplex_dMask,dComplex_focus,dMask) %>%
-  summarize(mean_diffA1 = mean(diffA1), sd_diffA1 = sd(diffA1, na.rm=TRUE), count=n(),se_diffA1=(sd_diffA1/(sqrt(count))),
-            mean_diffA2 = mean(diffA2), sd_diffA2 = sd(diffA2, na.rm=TRUE), count=n(),se_diffA2=(sd_diffA2/(sqrt(count))),
-            mean_diffA3 = mean(diffA3), sd_diffA3 = sd(diffA3, na.rm=TRUE), count=n(),se_diffA3=(sd_diffA3/(sqrt(count))),
-            mean_correctB = mean(correctB), sd_correctB = sd(correctB, na.rm=TRUE), count=n(),se_correctB=(sd_correctB/(sqrt(count)))
-  )
-groupedData_scl1["low_ci_DiffA1"] <-NA; groupedData_scl1["high_ci_DiffA1"] <-NA; groupedData_scl1["low_ci_DiffA2"] <-NA; groupedData_scl1["high_ci_DiffA2"] <-NA; groupedData_scl1["low_ci_DiffA3"] <-NA; groupedData_scl1["high_ci_DiffA3"] <-NA;
-groupedData_scl1["mean_t0_DiffA1"]<-NA;groupedData_scl1["mean_t0_DiffA2"]<-NA;groupedData_scl1["mean_t0_DiffA3"]<-NA;
-
-groupedData_scl2 <- d_scl2 %>%
-  group_by(focus,info_focus_dComplex_dMask,dComplex_focus,dMask) %>%
-  summarize(mean_diffA1 = mean(diffA1), sd_diffA1 = sd(diffA1, na.rm=TRUE), count=n(),se_diffA1=(sd_diffA1/(sqrt(count))),
-            mean_diffA2 = mean(diffA2), sd_diffA2 = sd(diffA2, na.rm=TRUE), count=n(),se_diffA2=(sd_diffA2/(sqrt(count))),
-            mean_diffA3 = mean(diffA3), sd_diffA3 = sd(diffA3, na.rm=TRUE), count=n(),se_diffA3=(sd_diffA3/(sqrt(count))),
-            mean_correctB = mean(correctB), sd_correctB = sd(correctB, na.rm=TRUE), count=n(),se_correctB=(sd_correctB/(sqrt(count)))
-  )
-groupedData_scl2["low_ci_DiffA1"] <-NA; groupedData_scl2["high_ci_DiffA1"] <-NA; groupedData_scl2["low_ci_DiffA2"] <-NA; groupedData_scl2["high_ci_DiffA2"] <-NA; groupedData_scl2["low_ci_DiffA3"] <-NA; groupedData_scl2["high_ci_DiffA3"] <-NA;
-groupedData_scl2["mean_t0_DiffA1"]<-NA;groupedData_scl2["mean_t0_DiffA2"]<-NA;groupedData_scl2["mean_t0_DiffA3"]<-NA;
+summ_sclAll_diffA1 <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1"); summ_sclAll_diffA2 <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA2"); summ_sclAll_diffA3 <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA3")
+summ_sclAll_diffA1_WHAT_Qn <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Qn"); summ_sclAll_diffA1_WHAT_Ql <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA1","WHAT_Ql"); summ_sclAll_diffA2_WHAT_Qn <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA2","WHAT_Qn"); summ_sclAll_diffA2_WHAT_Ql <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA2","WHAT_Ql"); summ_sclAll_diffA3_WHAT_Qn <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA3","WHAT_Qn"); summ_sclAll_diffA3_WHAT_Ql <-make_gensMean_lowCI_highCI_sclDependent(d_sclAll,"diffA3","WHAT_Ql")
 
 
 # diffA1
@@ -621,31 +439,32 @@ sumCorrectB_scl2_overAll <- d_scl2 %>%
   summarise(count = n()) %>% 
   mutate(perc = count/sum(count))
 
-# # Rename the categories for readability
-# groupedData_all$dMask = as.character(groupedData_all$dMask)
-# groupedData_all$dMask[groupedData_all$dMask == "easy"] = "Mask Easy"
-# groupedData_all$dMask[groupedData_all$dMask == "medium"] = "Mask Medium"
-# groupedData_all$dMask[groupedData_all$dMask == "hard"] = "Mask Hard"
-# groupedData_all$dComplex_focus = as.character(groupedData_all$dComplex_focus)
-# groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "E"] = "Focus Easy"
-# groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "M"] = "Focus Medium"
-# groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "H"] = "Focus Hard"
-# groupedData_all$orderFocusComplex <- factor(groupedData_all$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
-# groupedData_all$orderMaskComplex <- factor(groupedData_all$dMask,c("Mask Easy","Mask Medium","Mask Hard"))
-
-# groupedData_all[groupedData_all$focus=="WHAT_Qn",]$low_ci_DiffA1
-# groupedData_all[groupedData_all$focus=="WHAT_Qn",]$low_ci_DiffA2
-
 # ---- Plots
-# diffA1 according to scale
-groupedPlotDiffA1 <- ggplot(groupedData_all[groupedData_all$focus=="WHAT_Qn",], aes(x=mean_t0_DiffA1,y=scaling)) +
+# diffA1 according to scaling X orderMaskComplex
+# Set up
+groupedData_all <- generateGroupedData(d_sclAll)
+groupedData_all <- setGroupDataCI(groupedData_all,TRUE,FALSE,FALSE,TRUE)
+groupedData_all <- renameGroupedData(groupedData_all)
+groupedPlotDiffA1 <- ggplot(groupedData_all, aes(x=mean_t0_DiffA1,y=scaling)) +
   geom_vline(xintercept = 0) +
-  geom_errorbar(aes(xmin=low_ci_DiffA1, xmax=high_ci_DiffA1)) +
+  geom_errorbar(aes(xmin=groupedData_all$low_ci_DiffA1, xmax=groupedData_all$high_ci_DiffA1)) +
   geom_point(size=3,col="black",fill="white", shape=1) +
-  xlim(c(-20,20))  +
-  facet_wrap( ~ dMask , dir="v", ncol=1)
-groupedPlotDiffA1
-# potential approach: use plot_layout?
+  xlim(c(-30,30))  +
+  facet_wrap( ~ orderMaskComplex , dir="v", ncol=1) 
+#   ggtitle("Confidence interval of answers A1 split according to scaling and mask complexity.")
+groupedPlotDiffA2 <- ggplot(groupedData_all, aes(x=mean_t0_DiffA2,y=scaling)) +
+  geom_vline(xintercept = 0) +
+  geom_errorbar(aes(xmin=groupedData_all$low_ci_DiffA2, xmax=groupedData_all$high_ci_DiffA2)) +
+  geom_point(size=3,col="black",fill="white", shape=1) +
+  xlim(c(-30,30))  +
+  facet_wrap( ~ orderMaskComplex , dir="v", ncol=1)
+groupedPlotDiffA3 <- ggplot(groupedData_all, aes(x=mean_t0_DiffA3,y=scaling)) +
+  geom_vline(xintercept = 0) +
+  geom_errorbar(aes(xmin=groupedData_all$low_ci_DiffA3, xmax=groupedData_all$high_ci_DiffA3)) +
+  geom_point(size=3,col="black",fill="white", shape=1) +
+  xlim(c(-30,30))  +
+  facet_wrap( ~ orderMaskComplex , dir="v", ncol=1)
+
 
 # trusts -overAll
 plotTrustA1_scl0_overAll <- ggplot(sumTrustA1_scl0_overAll, aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
@@ -787,10 +606,6 @@ plotCorrectB_scl2_dFocus <- ggplot(sumCorrectB_scl2_dComplex_focus, aes(x = fact
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
 
 # Plots aggregations
-# diffA1
-
-
-
 # trust
 # grid_overAll_trusts <-grid.arrange(plotTrustA1_scl0_overAll, plotTrustA1_scl1_overAll, plotTrustA1_scl2_overAll, plotTrustA2_scl0_overAll, plotTrustA2_scl1_overAll, plotTrustA2_scl2_overAll, plotTrustA3_scl0_overAll, plotTrustA3_scl1_overAll, plotTrustA3_scl2_overAll, plotTrustB_scl0_overAll, plotTrustB_scl1_overAll, plotTrustB_scl2_overAll, ncol=12, top = textGrob("overall",gp=gpar(fontsize=20,font=3)))
 # plot_grid(plotTrustA1_scl0_overAll, plotTrustA1_scl1_overAll, plotTrustA1_scl2_overAll, align = "v")
