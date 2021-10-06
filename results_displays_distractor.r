@@ -204,18 +204,18 @@ genAndPlotTrust_distractor_focus(d_h,d_n)
 
 
 # confidence intervals differences
-dfCI_global_distractorStudy_distractorXfocus_dMask <- genAndPlot_differences_scaling_factorBased(d=d_distr_all,
-                                                                                                 factorDifference = "dMask",
-                                                                                                 factorScaling = FALSE, 
-                                                                                                 factorDistractor = TRUE,
-                                                                                                 factorFocus = TRUE,
-                                                                                                 factorDMask= FALSE, 
-                                                                                                 factorDComplex_focus=FALSE)
+dfCI_global_distractorStudy_distractorXfocus_dMask <- genAndPlot_differences_factorBased(d=d_distr_all,
+                                                 factorDifference = "dMask",
+                                                 factorScaling = FALSE, 
+                                                 factorDistractor = TRUE,
+                                                 factorFocus = TRUE,
+                                                 factorDMask= FALSE, 
+                                                 factorDComplex_focus=FALSE)
 
-dfCI_global_distractorStudy_focus_distractor <- genAndPlot_differences_scaling_factorBased(d=d_distr_all,
-                                                                                           factorDifference = "distractor",
-                                                                                           factorScaling = FALSE, 
-                                                                                           factorDistractor = FALSE,
-                                                                                           factorFocus = TRUE,
-                                                                                           factorDMask= FALSE, 
-                                                                                           factorDComplex_focus=FALSE)
+dfCI_global_distractorStudy_focus_distractor <- genAndPlot_differences_factorBased(d=d_distr_all,
+                                                 factorDifference = "distractor",
+                                                 factorScaling = FALSE, 
+                                                 factorDistractor = FALSE,
+                                                 factorFocus = FALSE,
+                                                 factorDMask= FALSE, 
+                                                 factorDComplex_focus=FALSE)

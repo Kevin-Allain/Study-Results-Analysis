@@ -58,6 +58,15 @@ samplemean <- function(x, d) {
 bootDuration_in_seconds = boot(d_alt$t, samplemean, R=1000) # 1000 replications
 plot(bootDuration_in_seconds)
 
+bootDuration_in_minutes_total = boot(d_alt$Duration_in_seconds/60, samplemean, R=1000) # 1000 replications
+plot(bootDuration_in_minutes_total)
+plot(d_alt$Duration_in_seconds/60)
+plot(d_alt_Right$Duration_in_seconds/60)
+
+d_alt_enrichedFilter <- modify_d_OkOrNot(d_alt)
+plot(unique(d_alt_enrichedFilter$Duration_in_seconds/60), col=factor(d_alt_enrichedFilter$passedFilter))
+legend("topleft", legend=paste("passed filter: ",unique(d_alt_enrichedFilter$passedFilter)), col=factor(unique(d_alt_enrichedFilter$passedFilter)),bty="n",pch=19)
+
 boot_diffA1 = boot(d_alt$diffA1, samplemean, R=1000) # 1000 replications
 
 bootCorrect_B = boot(d_alt$correctB, samplemean, R=1000) # 1000 replications

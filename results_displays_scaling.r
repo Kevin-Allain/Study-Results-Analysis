@@ -18,9 +18,9 @@ source("functions_dataStudies.r")
 # d_scl1 <-  read.table(file="data/transformed/survey_complete_scaling_1_2021_09_19_headerAdapted.csv",TRUE, ",")
 # d_scl2 <-  read.table(file="data/transformed/survey_complete_scaling_2_2021_09_19_headerAdapted.csv",TRUE, ",")
 # d_sclAll <- read.table(file="data/transformed/survey_complete_scaling_all_2021_09_19_headerAdapted.csv",TRUE, ",")
-d_scl0 <-  read.table(file="data/transformed/survey_complete_scaling_0_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE, ",")
-d_scl1 <-  read.table(file="data/transformed/survey_complete_scaling_1_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE, ",")
-d_scl2 <-  read.table(file="data/transformed/survey_complete_scaling_2_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE, ",")
+# d_scl0 <-  read.table(file="data/transformed/survey_complete_scaling_0_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE, ",")
+# d_scl1 <-  read.table(file="data/transformed/survey_complete_scaling_1_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE, ",")
+# d_scl2 <-  read.table(file="data/transformed/survey_complete_scaling_2_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE, ",")
 d_sclAll <- read.table(file="data/transformed/survey_complete_scaling_all_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE,",")
 d_sclAll <- na.omit(d_sclAll)
 d_scl0 <- d_sclAll[d_sclAll$scaling==0,] 
@@ -35,31 +35,31 @@ arrCategories_distractor <- c("EEE", "EHE", "HEE", "MMM", "HHH")
 arrCategories_scaling <- c("EE", "EH", "HE", "MM", "HH")
 
 # ---- Plots 
-dfCI_global_scalingStudy_scalingXfocus_dMask <- genAndPlot_differences_scaling_factorBased(d=d_sclAll,factorDifference = "dMask",
+dfCI_global_scalingStudy_scalingXfocus_dMask <- genAndPlot_differences_factorBased(d=d_sclAll,factorDifference = "dMask",
                                                           factorScaling = TRUE, 
                                                           factorFocus = TRUE,
                                                           factorDMask= FALSE, 
                                                           factorDComplex_focus=FALSE)
 
-dfCI_global_scalingStudy_scalingXdMask_focus <- genAndPlot_differences_scaling_factorBased(d=d_sclAll,factorDifference = "focus",
+dfCI_global_scalingStudy_scalingXdMask_focus <- genAndPlot_differences_factorBased(d=d_sclAll,factorDifference = "focus",
                                                                               factorScaling = TRUE, 
                                                                               factorFocus = FALSE,
                                                                               factorDMask= TRUE, 
                                                                               factorDComplex_focus=FALSE)
 
-dfCI_global_scalingStudy_focusXdMask_scaling <- genAndPlot_differences_scaling_factorBased(d=d_sclAll,factorDifference = "scaling",
+dfCI_global_scalingStudy_focusXdMask_scaling <- genAndPlot_differences_factorBased(d=d_sclAll,factorDifference = "scaling",
                                                                               factorScaling = FALSE, 
                                                                               factorFocus = TRUE,
                                                                               factorDMask= TRUE, 
                                                                               factorDComplex_focus=FALSE)
 
-dfCI_global_scalingStudy_dMask_scaling <- genAndPlot_differences_scaling_factorBased(d=d_sclAll,factorDifference = "scaling",
+dfCI_global_scalingStudy_dMask_scaling <- genAndPlot_differences_factorBased(d=d_sclAll,factorDifference = "scaling",
                                                                               factorScaling = FALSE, 
                                                                               factorFocus = FALSE,
                                                                               factorDMask= TRUE, 
                                                                               factorDComplex_focus=FALSE)
 
-dfCI_global_scalingStudy_noFactor_scaling <- genAndPlot_differences_scaling_factorBased(d=d_sclAll,factorDifference = "scaling",
+dfCI_global_scalingStudy_noFactor_scaling <- genAndPlot_differences_factorBased(d=d_sclAll,factorDifference = "scaling",
                                                                                      factorScaling = FALSE, 
                                                                                      factorFocus = FALSE,
                                                                                      factorDMask= FALSE, 
@@ -70,7 +70,13 @@ dfCI_global_scalingStudy_noFactor_scaling <- genAndPlot_differences_scaling_fact
 # ~~~~ diffAx according to scaling X orderMaskComplex (modified for test: dMask X focus) (reminder function attr: groupedData_all,scaling=TRUE,distractor=FALSE,focus=FALSE,dMask=FALSE,dComplex_focus=FALSE)
 # Set up
 groupedData_all <- generateGroupedData(d_sclAll)
-groupedData_all <- setGroupDataCI(groupedData_all,d_sclAll,TRUE,FALSE,FALSE,TRUE)
+groupedData_all <- setGroupDataCI(groupedData_all,d_sclAll,
+                    scaling=TRUE,
+                    distractor=FALSE,
+                    focus=FALSE,
+                    dMask=TRUE,
+                    dComplex_focus=FALSE)
+# groupedData_all <- setGroupDataCI(groupedData_all,d_sclAll,TRUE,FALSE,FALSE,TRUE)
 groupedData_all <- renameGroupedData(groupedData_all)
 factorA <- "orderMaskComplex"
 factorB <- "focus"

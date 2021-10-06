@@ -39,7 +39,7 @@ genAndPlot_errorRate_correctB(d_alt)
 
 # Plot diffs
 
-dfCI_global_measurementStudy_focusXdComplex_focus_dMask <- genAndPlot_differences_scaling_factorBased(
+dfCI_global_measurementStudy_focusXdComplex_focus_dMask <- genAndPlot_differences_factorBased(
   d=d_alt,
   factorDifference = "dComplex_focus",
   factorScaling = FALSE, 
@@ -48,7 +48,7 @@ dfCI_global_measurementStudy_focusXdComplex_focus_dMask <- genAndPlot_difference
   factorDMask= TRUE, 
   factorDComplex_focus=FALSE)
 
-dfCI_global_measurementStudy_dComplex_focusXdMask_focus <- genAndPlot_differences_scaling_factorBased(
+dfCI_global_measurementStudy_dComplex_focusXdMask_focus <- genAndPlot_differences_factorBased(
   d=d_alt,
   factorDifference = "focus",
   factorScaling = FALSE, 
@@ -57,7 +57,14 @@ dfCI_global_measurementStudy_dComplex_focusXdMask_focus <- genAndPlot_difference
   factorDMask= TRUE, 
   factorDComplex_focus=TRUE)
 
- 
+dfCI_global_measurementStudy_activeForScreenshots <- genAndPlot_differences_factorBased(
+  d=d_alt,
+  factorDifference = "dComplex_focus",
+  factorScaling = FALSE, 
+  factorDistractor = FALSE,
+  factorFocus = TRUE,
+  factorDMask= FALSE, 
+  factorDComplex_focus=FALSE)
 
 # ~~~~ diffAx according to scaling x focus (reminder function attr: groupedData_all,scaling=TRUE,0=FALSE,focus=FALSE,dMask=FALSE,dComplex_focus=FALSE)
 groupedData_all <- generateGroupedData(d_alt)

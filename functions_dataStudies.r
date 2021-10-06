@@ -8,6 +8,7 @@ library(scales)
 library(cowplot)
 library(patchwork)
 library(stringr)
+library(rlist)
 
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 
@@ -212,8 +213,8 @@ bootQuestionsDifferences_unorthodox <- function(d,d2,question="",focus="",dMask=
   }
 }
 
-genAndPlot_differences_scaling_factorBased <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
-  cat("\ngenAndPlot_differences_scaling_factorBased")
+genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
+  cat("\ngenAndPlot_differences_factorBased")
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");
   if (factorScaling | factorDifference=="scaling"){arrFocus <- c("WHAT_Qn","WHAT_Ql")}  
   arrQuestions <- c("diffA1","diffA2","diffA3");
@@ -840,7 +841,39 @@ generateGroupedData <- function (d){
   return (groupedData_all)
 }
 
-# potentially buggy!!!
+# TODO work in progress
+# overall question: do we disregard the entire set of answers from a participant when they provide one problematic answer, or do we keep the rest? Let's start by being throrough in the data removal.
+# about the reported trust: do we disregard the whole set of answers of a participant if they once answered 0 to all trust records for one stimuli, or only for that one stimuli...?
+# impossibilities: we know of the cases for WHAT_Ql, but are there other impossiblilities?
+filter_getRightParticipants <- function (d){
+  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  d <- d[which(!(d$ResponseId %in% toFilter_ResponsesId)),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
+  return (d)
+}
+
+filter_getWrongParticipants <- function (d){
+  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  d <- d[which(d$ResponseId %in% toFilter_ResponsesId),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
+  return (d)
+}
+
+modify_d_OkOrNot <-function (d){
+  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  d$passedFilter <- NA
+  d$passedFilter[which(d$ResponseId %in% toFilter_ResponsesId)] <- FALSE
+  d$passedFilter[which(!(d$ResponseId %in% toFilter_ResponsesId))] <- TRUE
+  return (d)
+}
+
+d_alt_enrichedFilter <- modify_d_OkOrNot(d_alt)
+d_alt_Right <- filter_getRightParticipants(d_alt)
+d_alt_Right
+d_alt_Wrong <- filter_getWrongParticipants(d_alt)
+d_alt_Wrong
+
+
+# TODO FIX!!! potentially buggy!!! 
+# TODO take pieces of the code from genAndPlot_differences_factorBased to adapt the factoring dynamically but with the generation (and display?) of each category
 setGroupDataCI <- function(groupedData_all,d,scaling=FALSE,distractor=FALSE,focus=FALSE,dMask=FALSE,dComplex_focus=FALSE){
   arrFocus_scaling <- c("WHAT_Qn","WHAT_Ql");
   arrFocus_measurement <- c("WHAT_Qn","WHAT_Ql","WHERE");
