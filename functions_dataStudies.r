@@ -213,6 +213,7 @@ bootQuestionsDifferences_unorthodox <- function(d,d2,question="",focus="",dMask=
   }
 }
 
+# TODO /Moral Orel/ work in progress regarding labels and texts for the graphs reporting results. We have an Inkscape file reccently made by the supervisor as an inspiration. Maybe we will mix up the R code and Inkscape additions  to the resulting images, as scaling is going to be annoying with the columns being the same width, without any regard to presence of text or labels... 
 # Inspired by the function genAndPlot_differences_factorBased 
 genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FALSE,factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorVariation="dMask") {
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
@@ -616,8 +617,13 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA1") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      ggtitle("CI for diffA1") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
+      labs(title = 'CI for diffA1', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank()
+      )
     # groupedPlotCI_1
     # dfCI_global[dfCI_global$question=="diffA1" & dfCI_global$scaling==0 & dfCI_global$dMask=="Mask Easy" & dfCI_global$category_combination=="dMask , easy _ medium",]
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -626,14 +632,22 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Differences for diffA2") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'CI for diffA2', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      )
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA3") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      ggtitle("CI for diffA3") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
+      labs(title = 'CI for diffA3', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
     grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3)
   } 
   else {
@@ -663,9 +677,9 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
   
   return (dfCI_global);
 }
-
 dfCI_test <- genAndPlotCI_factorBased(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorVariation="dMask")
-dfCI_test$orderCategoryCombination
+# cat("",toString(dfCI_test[0,]))
+# cat("",colnames(dfCI_test))
 
 genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
   cat("\ngenAndPlot_differences_factorBased")
@@ -1044,7 +1058,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Differences for diffA1") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
     # groupedPlotCI_1
     # dfCI_global[dfCI_global$question=="diffA1" & dfCI_global$scaling==0 & dfCI_global$dMask=="Mask Easy" & dfCI_global$category_combination=="dMask , easy _ medium",]
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -1092,6 +1106,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
 
 
 combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
+  factorVariation <- factorDifference
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
   if (factorScaling | factorVariation=="scaling"){arrFocus <- c("WHAT_Qn","WHAT_Ql")}  
   arrQuestions <- c("diffA1","diffA2","diffA3");
@@ -1613,6 +1628,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   
   
   dfCI_global <- renameGroupedData(dfCI_global)
+  dfCI_global_differences <- renameGroupedData(dfCI_global_differences)
   cat("\nrenaming done...")
   if (numFactor ==3 ){
     if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
@@ -1676,6 +1692,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   
   groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL;groupedPlotCI_3<- NULL;
   group_differencesedPlotCI_1<-NULL;group_differencesedPlotCI_2<-NULL;group_differencesedPlotCI_3<-NULL;
+  cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global))
+  cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
   
   if (numFactor!=0){  
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -1765,6 +1783,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   grid.arrange(groupedPlotCI_1, group_differencesedPlotCI_1,groupedPlotCI_2,group_differencesedPlotCI_2,groupedPlotCI_3,group_differencesedPlotCI_3, ncol=6)  
   cat("not sure what to return")
 }
+dfCombinationCI <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+
 
 returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE){
   res <- c(NULL,NULL,NULL,NULL)
