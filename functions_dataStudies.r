@@ -2053,7 +2053,7 @@ generateGroupedData <- function (d){
 # about the reported trust: do we disregard the whole set of answers of a participant if they once answered 0 to all trust records for one stimuli, or only for that one stimuli...?
 # impossibilities: we know of the cases for WHAT_Ql, but are there other impossiblilities?
 filter_getRightParticipants <- function (d){
-  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  toFilter_ResponsesId <- unique(d$ResponseId[ (d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
   d <- d[which(!(d$ResponseId %in% toFilter_ResponsesId)),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
   return (d)
 }
@@ -2073,12 +2073,13 @@ modify_d_OkOrNot <-function (d){
 }
 
 d_alt_enrichedFilter <- modify_d_OkOrNot(d_alt)
+dim(d_alt)
 d_alt_Right <- filter_getRightParticipants(d_alt)
-d_alt_Right
+dim(d_alt_Right)
 d_alt_Wrong <- filter_getWrongParticipants(d_alt)
-d_alt_Wrong
+dim(d_alt_Wrong)
 
-
+# TODO do we need this anymore?
 # TODO FIX!!! potentially buggy!!! 
 # TODO take pieces of the code from genAndPlot_differences_factorBased to adapt the factoring dynamically but with the generation (and display?) of each category
 setGroupDataCI <- function(groupedData_all,d,scaling=FALSE,distractor=FALSE,focus=FALSE,dMask=FALSE,dComplex_focus=FALSE){
