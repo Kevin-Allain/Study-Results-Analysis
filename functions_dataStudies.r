@@ -423,7 +423,7 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
               # warning: remember that factorVariation can be distractor
               dfTest_CI <- NULL
               if (length(arrFactorVariations)== 2){
-                cat("length(arrFactorVariations)== 2")
+                # cat("length(arrFactorVariations)== 2")
                 selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
                 selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
                 group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
@@ -472,7 +472,7 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
             # warning: remember that factorVariation can be distractor
             dfTest_CI <- NULL
             if (length(arrFactorVariations)== 2){
-              cat("length(arrFactorVariations)== 2")
+              # cat("length(arrFactorVariations)== 2")
               selec1 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[1] ,]
               selec2 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[2] ,]
               group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
@@ -482,19 +482,19 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
               dfTest_CI <- data.frame(group1_CI,group2_CI);
             } 
             else {
-              cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1,", factorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
+              # cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1,", factorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
               selec1 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[1] ,]
               selec2 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[2] ,]
               selec3 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[3] ,]
-              cat("\n dim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2),", dim(selec3): ",dim(selec3))
+              # cat("\n dim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2),", dim(selec3): ",dim(selec3))
               group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
               group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
               group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
-              cat("\n dim(group1_CI): ",dim(group1_CI),", dim(group2_CI): ",dim(group2_CI),", dim(group3_CI): ",dim(group3_CI))
+              # cat("\n dim(group1_CI): ",dim(group1_CI),", dim(group2_CI): ",dim(group2_CI),", dim(group3_CI): ",dim(group3_CI))
               group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1] ,sep="") )
               group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2] ,sep="") )
               group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3] ,sep="") )
-              cat("\nand added the strings. Might be a typo in all the cases of this code...")
+              # cat("\nand added the strings. Might be a typo in all the cases of this code...")
               dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
             }
             is.numeric(dfTest_CI$mean_CI[2])
@@ -617,23 +617,21 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("CI for diffA1") +
+      ggtitle("Mean with Mask") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
-      labs(title = 'CI for diffA1', y = "" ) +
+      labs(title = 'Mean with Mask', y = "" ) +
       theme(
         strip.background = element_blank(),
         strip.text.x = element_blank()
       )
-    # groupedPlotCI_1
-    # dfCI_global[dfCI_global$question=="diffA1" & dfCI_global$scaling==0 & dfCI_global$dMask=="Mask Easy" & dfCI_global$category_combination=="dMask , easy _ medium",]
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA2") +
+      ggtitle("Overall Mean") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
-      labs(title = 'CI for diffA2', y = "" ) +
+      labs(title = 'Overall Mean', y = "" ) +
       theme(
         strip.background = element_blank(),
         strip.text.x = element_blank(),
@@ -644,11 +642,11 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("CI for diffA3") +
+      ggtitle("Mask Proportion") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
-      labs(title = 'CI for diffA3', y = "" ) +
+      labs(title = 'Mask Proportion', y = "" ) +
       theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
-    grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3)
+    grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3,top=textGrob(paste("Confidence intervals for ",factorVariation,", factored by ",toString(factorArr),sep="")))
   } 
   else {
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -656,28 +654,26 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA1")
-    # groupedPlotCI_1
-    # dfCI_global[dfCI_global$question=="diffA1" & dfCI_global$scaling==0 & dfCI_global$dMask=="Mask Easy" & dfCI_global$category_combination=="dMask , easy _ medium",]
+      ggtitle("Differences for mean with Mask")
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA2") 
+      ggtitle("Differences for overall mean") 
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Differences for diffA3")
-    grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3)
+    grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3,top=textGrob(paste("Confidence intervals for ",factorVariation,sep="")))
   }
-  
   
   return (dfCI_global);
 }
 dfCI_test <- genAndPlotCI_factorBased(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorVariation="dMask")
+dfCI_test
 # cat("",toString(dfCI_test[0,]))
 # cat("",colnames(dfCI_test))
 
@@ -879,7 +875,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
               # warning: remember that factorDifference can be distractor
               dfTest_CI <- NULL
               if (length(arrFactorDifferences)== 2){
-                cat("length(arrFactorDifferences)== 2")
+                # cat("length(arrFactorDifferences)== 2")
                 selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
                 selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
                 group1_CI<- bootQuestionsDifferences_conservative(d=selec1, d2= selec2,question=curQuestion);
@@ -887,7 +883,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
                 dfTest_CI <- data.frame(group1_CI);
               } 
               else {
-                cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1," factor2: ",factor2,", curFactor2: ",curFactor2,", factorDifference: ",factorDifference,", arrFactorDifferences: ",toString(arrFactorDifferences))
+                # cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1," factor2: ",factor2,", curFactor2: ",curFactor2,", factorDifference: ",factorDifference,", arrFactorDifferences: ",toString(arrFactorDifferences))
                 selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
                 selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
                 selec3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[3] ,]
@@ -925,7 +921,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
             # numFactor==1
             # warning: remember that factorDifference can be distractor
             dfTest_CI <- NULL
-            cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1,", factorDifference: ",factorDifference,", arrFactorDifferences: ",toString(arrFactorDifferences))
+            # cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1,", factorDifference: ",factorDifference,", arrFactorDifferences: ",toString(arrFactorDifferences))
             if (length(arrFactorDifferences)== 2){
               selec1 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[1] ,]
               selec2 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[2] ,]
@@ -1005,7 +1001,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
       absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
       strSentence <- paste("Differences of confidence intervals, ",curQuestion)
       dfCI_global <- rbind(dfCI_global, dfTest_CI)
-      cat("\ngenerated the data to display, factorDifference-",factorDifference)
+      # cat("\ngenerated the data to display, factorDifference-",factorDifference)
     }
   }
   cat("\n####about to draw, how are the plots: ",(is.null(groupedPlotCI_1)),", ",(is.null(groupedPlotCI_2)),", ",(is.null(groupedPlotCI_3)) )
@@ -1051,61 +1047,107 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
     # no wrapping.
   } 
   
+  # A call should be made to ensure the data generated has the info whether difference is significativee
+  dfCI_global<-addInfoCiDifferenceSignificant(dfCI_global)
+  
+  passedBoolTest_1 <- TRUE
+  passedBoolTest_2 <- FALSE
+  
   if (numFactor!=0){  
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA1") +
+      ggtitle("Differences for Mean with Mask") +
+      labs(title = 'Differences for Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position="none"
+      ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
-    # groupedPlotCI_1
-    # dfCI_global[dfCI_global$question=="diffA1" & dfCI_global$scaling==0 & dfCI_global$dMask=="Mask Easy" & dfCI_global$category_combination=="dMask , easy _ medium",]
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA2") +
+      ggtitle("Differences for Overall Means")  + 
+      labs(title = 'Differences for Overall Means', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+        legend.position="none"
+      )+
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA3") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
-    grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3)
+      ggtitle("Differences for Mask Proportion") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
+      labs(title = 'Differences for Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
+    
+    grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3), ncol=3,top=textGrob(paste("Confidence intervals for ",factorDifference,", factored by ",toString(factorArr),sep="")))
   } 
   else {
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA1")
-    # groupedPlotCI_1
-    # dfCI_global[dfCI_global$question=="diffA1" & dfCI_global$scaling==0 & dfCI_global$dMask=="Mask Easy" & dfCI_global$category_combination=="dMask , easy _ medium",]
+      ggtitle("Differences for Mean with Mask") +
+      labs(title = 'Differences for Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position="none"
+      )
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA2") 
+      ggtitle("Differences for Overall Means")  + 
+      labs(title = 'Differences for Overall Means', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+        legend.position="none"
+      )
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Differences for diffA3")
-    grid.arrange(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3, ncol=3)
+      ggtitle("Differences for Mask Proportion") +
+      labs(title = 'Differences for Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
+    
+    grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_2,groupedPlotCI_3), ncol=3,top=textGrob(paste("Confidence intervals for ",factorDifference,sep="")))
   }
-  
   return (dfCI_global)
 }
+# ## test calls
+# dfCI_test_differences <- genAndPlot_differences_factorBased(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+# dfCI_test_differences
+# dfCI_test_differences2 <- genAndPlot_differences_factorBased(d_sclAll,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling")
+# dfCI_test_differences2
 
 
 combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
+  d <- filter_getRightParticipants(d)
+  
   factorVariation <- factorDifference
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
   if (factorScaling | factorVariation=="scaling"){arrFocus <- c("WHAT_Qn","WHAT_Ql")}  
@@ -1220,7 +1262,6 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     if(factor4=="scaling"){dfCI_global_differences$scaling[0] <- 0}
     if(factor4=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
   }
-  
   
   cat("\n about to loop arrQuestions")
   # generations of boot according to the number of factors for each question
@@ -1565,7 +1606,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         dfTest_CI_differences <- data.frame(group_differences1_CI);
       } 
       else {
-        cat("\nfactorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
+        # cat("\nfactorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
         selec1 <- d[d[factorVariation]==arrFactorVariations[1] ,]
         selec2 <- d[d[factorVariation]==arrFactorVariations[2] ,]
         selec3 <- d[d[factorVariation]==arrFactorVariations[3] ,]
@@ -1653,7 +1694,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences)); # very odd. but should be fine...
   cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,",minLow_cI_differences: ",minLow_cI_differences,", maxHigh_CI_differences: ",maxHigh_CI_differences,",edgeSize_differences: ",edgeSize_differences)
   
-  cat("\n no complaints about scaling as a factor?")
+  # cat("\n no complaints about scaling as a factor?")
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI)); # very odd. but should be fine...
   cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize)
   # TODO reflect on the need to have two different formulas?
@@ -1695,95 +1736,168 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global))
   cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
   
-  if (numFactor!=0){  
+  dfCI_global_differences <- addInfoCiDifferenceSignificant(dfCI_global_differences)
+  strTitleTotal <- NULL;
+  if (numFactor!=0){ 
+    strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Confidence intervals for diffA1") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      ggtitle("Mean with Mask") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
+      labs(title = 'Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank()
+      )
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Confidence intervals for diffA2") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      ggtitle("Overall Mean") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'Overall Mean', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      )
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Confidence intervals for diffA3") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      ggtitle("Mask Proportion") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
+      labs(title = 'Mask Proportion', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      )
     # 
-    group_differencesedPlotCI_1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
+    groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-edgeSize_differences,edgeSize_differences)) +
-      ggtitle("Differences for diffA1") +
-      facet_wrap( as.formula(strFormula_differences) , dir="v", ncol=1)
-    group_differencesedPlotCI_2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mean with Mask") +
+      labs(title = 'Differences for Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), #axis.text.y = element_blank(),
+        legend.position="none"
+      ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
+    groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-edgeSize_differences,edgeSize_differences)) +
-      ggtitle("Differences for diffA2") +
-      facet_wrap( as.formula(strFormula_differences) , dir="v", ncol=1)
-    group_differencesedPlotCI_3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Overall Means")  + 
+      labs(title = 'Differences for Overall Means', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+        legend.position="none"
+      )+
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+    groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-edgeSize_differences,edgeSize_differences)) +
-      ggtitle("Differences for diffA3") +
-      facet_wrap( as.formula(strFormula_differences) , dir="v", ncol=1)
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mask Proportion") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
+      labs(title = 'Differences for Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
     
   } 
   else {
+    strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Confidence intervals for diffA1")
+      ggtitle("Mean with Mask") +
+      labs(title = 'Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank()
+      )
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Confidence intervals for diffA2") 
+      ggtitle("Overall Mean") +
+      labs(title = 'Overall Mean', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      )
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Confidence intervals for diffA3")
+      ggtitle("Mask Proportion") +
+      labs(title = 'Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
     # 
-    group_differencesedPlotCI_1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
+    groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-edgeSize_differences,edgeSize_differences)) +
-      ggtitle("Differences for diffA1")
-    group_differencesedPlotCI_2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mean with Mask") +
+      labs(title = 'Differences for Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        legend.position="none"
+      )
+    groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-edgeSize_differences,edgeSize_differences)) +
-      ggtitle("Differences for diffA2") 
-    group_differencesedPlotCI_3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Overall Means")  + 
+      labs(title = 'Differences for Overall Means', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+        legend.position="none"
+      )
+    groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-      geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-edgeSize_differences,edgeSize_differences)) +
-      ggtitle("Differences for diffA3")
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point(aes(x=-edgeSize, alpha = 1*significantDifference,col="red",size=0.5))+
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mask Proportion") +
+      labs(title = 'Differences for Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
   }
-  grid.arrange(groupedPlotCI_1, group_differencesedPlotCI_1,groupedPlotCI_2,group_differencesedPlotCI_2,groupedPlotCI_3,group_differencesedPlotCI_3, ncol=6)  
+  
+  cat("\nThe plots are generated. But are they fine?\n")
+  grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1,groupedPlotCI_2,groupedPlotCI_differences2,groupedPlotCI_3,groupedPlotCI_differences3), ncol=6,top=textGrob( strTitleTotal ) )
   cat("not sure what to return")
 }
-dfCombinationCI <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+dfCombinationCI_differences_test <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
 
 
 returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE){
@@ -1899,7 +2013,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,medium_hard"] = "Mask: Medium-Hard"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,easy_medium"] = "Mask: Easy-Medium"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,easy_hard"] = "Mask: Easy-Hard"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("Mask: Easy-Medium","Mask: Easy-Hard","Mask: Medium-Hard"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("Mask: Easy-Hard","Mask: Medium-Hard","Mask: Easy-Medium"))
         groupedData_all$category_combination[groupedData_all$category_combination == "Mask: Medium-Hard"] = "dMask,medium_hard"
         groupedData_all$category_combination[groupedData_all$category_combination == "Mask: Easy-Medium"] = "dMask,easy_medium"
         groupedData_all$category_combination[groupedData_all$category_combination == "Mask: Easy-Hard"] = "dMask,easy_hard"
@@ -1909,7 +2023,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,easy"] = "Mask: Easy"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,medium"] = "Mask: Medium"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,hard"] = "Mask: Hard"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("Mask: Easy","Mask: Medium","Mask: Hard"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("Mask: Hard","Mask: Medium","Mask: Easy"))
         groupedData_all$category_combination[groupedData_all$category_combination == "Mask: Easy"] = "dMask,easy"
         groupedData_all$category_combination[groupedData_all$category_combination == "Mask: Medium"] = "dMask,medium"
         groupedData_all$category_combination[groupedData_all$category_combination == "Mask: Hard"] = "dMask,hard"
@@ -1922,7 +2036,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "scaling,0_1"] = "scaling: 0-1"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "scaling,0_2"] = "scaling: 0-2"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "scaling,1_2"] = "scaling: 1-2"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("scaling: 0-1","scaling: 0-2","scaling: 1-2"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("scaling: 1-2","scaling: 0-2","scaling: 0-1"))
         groupedData_all$category_combination[groupedData_all$category_combination == "scaling: 0-1"] = "scaling,0_1"
         groupedData_all$category_combination[groupedData_all$category_combination == "scaling: 0-2"] = "scaling,0_2"
         groupedData_all$category_combination[groupedData_all$category_combination == "scaling: 1-2"] = "scaling,1_2"
@@ -1931,7 +2045,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "scaling,0"] = "scaling: 0"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "scaling,1"] = "scaling: 1"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "scaling,2"] = "scaling: 2"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("scaling: 0","scaling: 1","scaling: 2"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("scaling: 2","scaling: 1","scaling: 0"))
         groupedData_all$category_combination[groupedData_all$category_combination == "scaling: 0"] = "scaling,0"
         groupedData_all$category_combination[groupedData_all$category_combination == "scaling: 1"] = "scaling,1"
         groupedData_all$category_combination[groupedData_all$category_combination == "scaling: 2"] = "scaling,2"
@@ -1959,7 +2073,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,E_M"] = "focus complexity: Easy-Medium"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,E_H"] = "focus complexity: Easy-Hard"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,M_H"] = "focus complexity: Medium-Hard"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus complexity: Easy-Medium","focus complexity: Easy-Hard","focus complexity: Medium-Hard"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus complexity: Easy-Hard","focus complexity: Medium-Hard","focus complexity: Easy-Medium"))
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Easy-Medium"] = "dComplex_focus,E_M"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Easy-Hard"] = "dComplex_focus,E_H"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Medium-Hard"] = "dComplex_focus,M_H"
@@ -1968,7 +2082,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,E"] = "focus complexity: Easy"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,M"] = "focus complexity: Medium"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,H"] = "focus complexity: Hard"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus complexity: Easy","focus complexity: Medium","focus complexity: Hard"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus complexity: Hard","focus complexity: Medium","focus complexity: Easy"))
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Easy"] = "dComplex_focus,E"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Medium"] = "dComplex_focus,M"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Hard"] = "dComplex_focus,H"
@@ -1981,7 +2095,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Qn_WHAT_Ql"] = "focus: WHAT_Qn-WHAT_Ql"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Qn_WHERE"] = "focus: WHAT_Qn-WHERE"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Ql_WHERE"] = "focus: WHAT_Ql-WHERE"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus: WHAT_Qn-WHAT_Ql","focus: WHAT_Qn-WHERE","focus: WHAT_Ql-WHERE"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus: WHAT_Qn-WHERE","focus: WHAT_Ql-WHERE","focus: WHAT_Qn-WHAT_Ql"))
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Qn-WHAT_Ql"] = "focus,WHAT_Qn_WHAT_Ql"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Qn-WHERE"] = "focus,WHAT_Qn_WHERE"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Ql-WHERE"] = "focus,WHAT_Ql_WHERE"
@@ -1991,7 +2105,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Qn"] = "focus: WHAT_Qn"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Ql"] = "focus: WHAT_Ql"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHERE"] = "focus: WHERE"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus: WHAT_Qn","focus: WHAT_Ql","focus: WHERE"))
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus: WHERE","focus: WHAT_Qn","focus: WHAT_Ql"))
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Qn"] = "focus,WHAT_Qn"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Ql"] = "focus,WHAT_Ql"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHERE"] = "focus,WHERE"
@@ -2072,12 +2186,29 @@ modify_d_OkOrNot <-function (d){
   return (d)
 }
 
-d_alt_enrichedFilter <- modify_d_OkOrNot(d_alt)
-dim(d_alt)
-d_alt_Right <- filter_getRightParticipants(d_alt)
-dim(d_alt_Right)
-d_alt_Wrong <- filter_getWrongParticipants(d_alt)
-dim(d_alt_Wrong)
+# Only relevant when called for a 
+addInfoCiDifferenceSignificant<-function(d){
+  d$significantDifference <- NA
+  d$sizeSignificantDifference <- NA
+  for(i in 1:length(d$low_CI)){
+    if ((d[i,]$low_CI > 0 & d[i,]$high_CI > 0) | (d[i,]$low_CI < 0 & d[i,]$high_CI < 0)){
+      d[i,]$significantDifference <- TRUE
+      d[i,]$sizeSignificantDifference <- 1
+    } else {
+      d[i,]$significantDifference <- FALSE
+      d[i,]$sizeSignificantDifference <- 0
+    }
+  }
+  return (d)
+}
+# dfCI_test_differences<-addInfoCiDifferenceSignificant(dfCI_test_differences)
+
+# d_alt_enrichedFilter <- modify_d_OkOrNot(d_alt)
+# dim(d_alt)
+# d_alt_Right <- filter_getRightParticipants(d_alt)
+# dim(d_alt_Right)
+# d_alt_Wrong <- filter_getWrongParticipants(d_alt)
+# dim(d_alt_Wrong)
 
 # TODO do we need this anymore?
 # TODO FIX!!! potentially buggy!!! 

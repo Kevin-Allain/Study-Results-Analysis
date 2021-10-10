@@ -58,6 +58,8 @@ samplemean <- function(x, d) {
 bootDuration_in_seconds = boot(d_alt$t, samplemean, R=1000) # 1000 replications
 plot(bootDuration_in_seconds)
 
+
+
 bootDuration_in_minutes_total = boot(d_alt$Duration_in_seconds/60, samplemean, R=1000) # 1000 replications
 plot(bootDuration_in_minutes_total)
 plot(d_alt$Duration_in_seconds/60)

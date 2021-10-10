@@ -63,7 +63,6 @@ bindFiles$participant_id
 bindFiles_merged <- merge(bindFiles,prolific_exports)
 bindFiles_merged_manuals <- merge(bindFiles,manualProlificInfo)
 
-
 # TODO remember the functions filter_getRightParticipants and filter_getWrongParticipants
 length(unique(d_alt$ResponseId))
 length(unique(d_sclAll$ResponseId))
