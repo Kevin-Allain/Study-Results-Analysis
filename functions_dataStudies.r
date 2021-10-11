@@ -23,7 +23,7 @@ orderData <- function(d){
 }
 
 genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
-  # cat("\ngenboot: question: ",question,", focus: ", focus," dMask: ", dMask,", dComplex_focus: ", dComplex_focus)
+  cat("\ngenboot: question: ",question,", focus: ", focus," dMask: ", dMask,", dComplex_focus: ", dComplex_focus)
   boot_d <- c()
   if (focus=="" & dMask == "" & dComplex_focus ==""){
     boot_d <- boot(d[[question]],samplemean,R)
@@ -567,7 +567,7 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
   
   # we should have the dfCI_global loaded now, but still need to display it.
   cat("\n####about to draw, are the plots null: ",(is.null(groupedPlotCI_1)),", ",(is.null(groupedPlotCI_2)),", ",(is.null(groupedPlotCI_3)) )
-  cat("\nwhat of the global structure... ",dim(dfCI_global))
+  cat("\nwhat of the global structure... ",dim(dfCI_global),", and its questions: ",length(dfCI_global$question))
   class(dfCI_global$category_combination)
   class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI);
   class(dfCI_global$low_CI); dfCI_global$low_CI <- as.numeric(dfCI_global$low_CI); class(dfCI_global$low_CI);
@@ -672,8 +672,8 @@ genAndPlotCI_factorBased <- function(d, factorScaling=FALSE, factorDistractor=FA
   
   return (dfCI_global);
 }
-dfCI_test <- genAndPlotCI_factorBased(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorVariation="dMask")
-dfCI_test
+# dfCI_test <- genAndPlotCI_factorBased(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorVariation="dMask")
+# dfCI_test
 # cat("",toString(dfCI_test[0,]))
 # cat("",colnames(dfCI_test))
 
@@ -1579,7 +1579,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         }
       }
       
-    }else {
+    }
+    else {
       # no factoring... so which differences do we display?!
       cat("\ncase with numFactor == 0")
       # numFactor==0
@@ -1588,16 +1589,18 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       dfTest_CI_differences <- NULL
       
       if (length(arrFactorVariations)== 2){
-        cat("length(arrFactorVariations)== 2")
+        cat("length(arrFactorVariations)== 2, factorVariation: ",factorVariation,", factorDifference: ",factorDifference,", arrFactorVariations[1]: ",arrFactorVariations[1],", arrFactorDifferences[1]: ",arrFactorDifferences[1])
+        cat("\nlength selec1: ",length(d[factorDifference]==arrFactorDifferences[1])," length selec2: ",length(d[factorDifference]==arrFactorDifferences[2]))
         selec1 <- d[d[factorVariation]==arrFactorVariations[1] ,]
         selec2 <- d[d[factorVariation]==arrFactorVariations[2] ,]
         selec_differences1 <- d[d[factorDifference]==arrFactorDifferences[1] ,]
         selec_differences2 <- d[d[factorDifference]==arrFactorDifferences[2] ,]
-        
+        cat("\n__selec1, selec2, selec_differences1 and selec_differences2 made. Also, curQuestion is: ",curQuestion);
         group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
         group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+        cat("\n__group1_CI and group2_CI");
         group_differences1_CI<- bootQuestionsDifferences_conservative(d=selec_differences1, d2= selec_differences2,question=curQuestion);
-        
+        cat("\n__bootQuestionsDifferences_conservative passed");
         group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
         group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
         group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
@@ -1606,7 +1609,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         dfTest_CI_differences <- data.frame(group_differences1_CI);
       } 
       else {
-        # cat("\nfactorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
+        cat("\nfactorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations),", curQuestion: ",curQuestion)
         selec1 <- d[d[factorVariation]==arrFactorVariations[1] ,]
         selec2 <- d[d[factorVariation]==arrFactorVariations[2] ,]
         selec3 <- d[d[factorVariation]==arrFactorVariations[3] ,]
@@ -1631,8 +1634,10 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
         dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
       }
-      # is.numeric(dfTest_CI$mean_CI[2])
-      dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); dfTest_CI <- rename(dfTest_CI,"category_combination"=X4); dfTest_CI[factor1] <- curFactor1; dfTest_CI$question <- i
+      dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); dfTest_CI <- rename(dfTest_CI,"category_combination"=X4);dfTest_CI$question <- i
+      # cat("\n****length(dfTest_CI$question): ",length(dfTest_CI$question))
+      # cat("\n****length(dfTest_CI_differences$question): ",length(dfTest_CI_differences$question))
+      # dfTest_CI[factor1] <- curFactor1; dfTest_CI$question <- i
       dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4); dfTest_CI_differences$question <- i
       
       cols <- c("mean_CI","low_CI","high_CI");
@@ -1655,8 +1660,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   
   # we should have the dfCI_global loaded now, but still need to display it.
   cat("\n####about to draw")
-  cat("\nwhat of the global structure variations... ",dim(dfCI_global))
-  cat("\nwhat of the global structure differences... ",dim(dfCI_global_differences))
+  cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question))
+  cat("\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
   
   class(dfCI_global$category_combination)
   class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI);
@@ -1667,10 +1672,11 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI);
   class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
   
-  
   dfCI_global <- renameGroupedData(dfCI_global)
   dfCI_global_differences <- renameGroupedData(dfCI_global_differences)
   cat("\nrenaming done...")
+  cat("\ndid the renaming mess up dimensions of dfCI_global: ",dim(dfCI_global),", and how many items in question? ",length(dfCI_global$question))
+  cat("\nand what about dfCI_global_differences: ",dim(dfCI_global_differences),", and how many items in question? ",length(dfCI_global_differences$question))
   if (numFactor ==3 ){
     if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
       dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
@@ -1697,7 +1703,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   # cat("\n no complaints about scaling as a factor?")
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI)); # very odd. but should be fine...
   cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize)
-  # TODO reflect on the need to have two different formulas?
+  cat("\n^^^^what's the length of question for dfCI_global now? ",length(dfCI_global$question))
   strFormula <- ""
   if (numFactor==2){
     strFormula<-paste("~",factor1,"+",factor2)
@@ -1730,7 +1736,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     # no wrapping.
     cat("\nno wrapping according to formula")
   } 
-  
+  # TODO fix the question missing in dfCI_global when numFactor == 0
   groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL;groupedPlotCI_3<- NULL;
   group_differencesedPlotCI_1<-NULL;group_differencesedPlotCI_2<-NULL;group_differencesedPlotCI_3<-NULL;
   cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global))
@@ -1771,7 +1777,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Mask Proportion") +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mask Proportion', y = "" ) +
       theme(
         strip.background = element_blank(),
@@ -1822,38 +1828,44 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     
   } 
   else {
+    cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Mean with Mask") +
-      labs(title = 'Mean with Mask', y = "" ) +
+      ggtitle("Mean with Mask")+
       theme(
         strip.background = element_blank(),
-        strip.text.x = element_blank()
-      )
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank()
+      ) +
+      labs(title = "Mean with Mask",y="")
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Overall Mean") +
-      labs(title = 'Overall Mean', y = "" ) +
+      ggtitle("Mean Overall") +
       theme(
         strip.background = element_blank(),
         strip.text.x = element_blank(),
         axis.ticks.y = element_blank(), axis.text.y = element_blank()
-      )
+      ) +
+      labs(title = "Mean Overall",y="")
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question=="diffA3",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
-      ggtitle("Mask Proportion") +
-      labs(title = 'Mask Proportion', y = "" ) +
-      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank())
+      ggtitle("Mask Proportion")+
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      labs(title = "Mask Proportion",y="")
     # 
     groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="diffA1",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -1894,11 +1906,19 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   }
   
   cat("\nThe plots are generated. But are they fine?\n")
-  grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1,groupedPlotCI_2,groupedPlotCI_differences2,groupedPlotCI_3,groupedPlotCI_differences3), ncol=6,top=textGrob( strTitleTotal ) )
-  cat("not sure what to return")
+  grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1,
+                          groupedPlotCI_2,groupedPlotCI_differences2,
+                          groupedPlotCI_3,groupedPlotCI_differences3), ncol=6,top=textGrob( strTitleTotal ) )
+  # cat("not sure what to return")
+  return (dfCI_global)
 }
-dfCombinationCI_differences_test <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
-
+dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_scaling_focus <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+# TODO fix that one buggy configuration
+dfCombinationCI_differences_test__CIandDiff_focus_factoredby_dMask_dComplex_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= TRUE,factorFocus=FALSE,factorDComplex_focus=TRUE, factorDifference="focus")
+# 
+dfCombinationCI_differences_test__CIandDiff_scaling_factoredby_none <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling")
+dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_none <- combine_genPlot_CIandDifferences(d_distr_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="distractor")
 
 returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE){
   res <- c(NULL,NULL,NULL,NULL)
@@ -1978,6 +1998,7 @@ returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE,
 # Rename the categories for readability
 renameGroupedData <- function(groupedData_all) {  
   cat("\n____renameGroupedData, colnames: ",toString(colnames(groupedData_all)))
+  cat("\nAt entry, length(groupedData_all$question): ",length(groupedData_all$question))
   if("dMask" %in% colnames(groupedData_all))
   {
     cat("\nrename for dMask")
@@ -2114,13 +2135,14 @@ renameGroupedData <- function(groupedData_all) {
     } 
   }
   if ("scaling" %in% colnames(groupedData_all)){
+    cat("\n~~ scaling in colnames")
     groupedData_all$orderedScaling <- NA
     groupedData_all$scaling = as.character(groupedData_all$scaling)
     groupedData_all$orderedScaling[groupedData_all$scaling == 0] <- "Scaling 0"
     groupedData_all$orderedScaling[groupedData_all$scaling == 1] <- "Scaling 1"
     groupedData_all$orderedScaling[groupedData_all$scaling == 2] <- "Scaling 2"
   }
-  
+  cat("\nSO how are the questions now...: ",length(groupedData_all$question))
   return (groupedData_all);
 }
 
@@ -2162,18 +2184,21 @@ generateGroupedData <- function (d){
   return (groupedData_all)
 }
 
-# TODO work in progress
+# TODO work in progress... are we happy with these parameters?
 # overall question: do we disregard the entire set of answers from a participant when they provide one problematic answer, or do we keep the rest? Let's start by being throrough in the data removal.
 # about the reported trust: do we disregard the whole set of answers of a participant if they once answered 0 to all trust records for one stimuli, or only for that one stimuli...?
 # impossibilities: we know of the cases for WHAT_Ql, but are there other impossiblilities?
 filter_getRightParticipants <- function (d){
-  toFilter_ResponsesId <- unique(d$ResponseId[ (d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  toFilter_ResponsesId <- unique(d$ResponseId[ (d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | 
+                                                 (is.na(d$correctB)) |
+                                                 (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
   d <- d[which(!(d$ResponseId %in% toFilter_ResponsesId)),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
   return (d)
 }
 
 filter_getWrongParticipants <- function (d){
-  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | 
+                                                (is.na(d$correctB)) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
   d <- d[which(d$ResponseId %in% toFilter_ResponsesId),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
   return (d)
 }
