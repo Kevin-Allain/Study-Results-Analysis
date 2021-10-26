@@ -12,10 +12,17 @@ var csvFilePath = 'data/complete_20210828_noflip_headerAdapted.csv'
 
 var csvFilePathArray = [];
 // Added the _MMM_replaced for some elements that were missing a category
+// Update for First Language English
+// complete_measurement_f_2021_09_18_October_22_headerAdapted
+// complete_measurement_nf_2021_09_18_October_22_headerAdapted
 csvFilePathArray.push(
 "data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_headerAdapted.csv",
 "data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted_MMM_replaced.csv","data/participants_answers_headerAdapted_untransformed/complete_distractor_n_2021_09_18_headerAdapted_MMM_replaced.csv",
 "data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted_MMM_replaced.csv","data/participants_answers_headerAdapted_untransformed/complete_scaling_1_2021_09_19_headerAdapted_MMM_replaced.csv", "data/participants_answers_headerAdapted_untransformed/complete_scaling_2_2021_09_19_headerAdapted_MMM_replaced.csv"
+)
+var csvFilePathArray_FirstLanguage = [];
+csvFilePathArray_FirstLanguage.push(
+    "data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_October_22_headerAdapted.csv","data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_October_22_headerAdapted.csv"
 )
 
 // $.getJSON("QIDtoFilename.json", function(json) { // let rawdata = fs.readFileSync('data/QIDtoFilename.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210505_1607.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210523_1023.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_test_20210525_1618.json'); // let rawdata =  fs.readFileSync('data/QIDtoFilename_20210528_1555.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_20210802_1914.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t16720211305_alt_focus.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t25720212145_attempt_distractor.json'); // let rawdata = fs.readFileSync('data/QIDtoFilename_t26720211035_attempt_flip1.json') // let rawdata=fs.readFileSync('data/QIDtoFilename_complete_20210828_noflip.json') // let rawdata=fs.readFileSync("data/QIDtoFilename_t138_2021_09_13_1930.json");
@@ -310,7 +317,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
 
             var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
             var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : fileStudyBit;
-            console.log("writing " + "data/transformed/survey_" + fileNameTime + ".csv")
+            console.log("writing " + "data/transformed/survey_" + fileNameTime  + ".csv")
             fs.writeFile("data/transformed/survey_" + fileNameTime + ".csv", csvOutput, function (err, data) {
                 if (err) console.log('error', err);
             });
@@ -372,24 +379,27 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 // ---- Calls of the functions 
 // generateModifiedCSV(QIDtoFilename,csvFilePath)
 
+
 // Commented for tests, but should work
 /* Write the functions in separate calls. Something much cleanier could be done but we are in a rush */
 let rawdata_cmplt_f = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_f_2021_09_18.json");
 let rawdata_cmplt_nf = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_measurement_nf_2021_09_18.json");
-// let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_h_2021_09_18.json");
-// let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_n_2021_09_18.json");
-// let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_19.json");
-// let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_19.json");
-// let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_19.json");
-let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_distractor_h_replaced_mix.json");
-let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_distractor_n_replaced_mix.json");
-let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_0_replaced_mix.json");
-let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_1_replaced_mix.json");
-let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_2_replaced_mix.json");
+let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_h_2021_09_18.json");
+let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_distractor_n_2021_09_18.json");
+let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_0_2021_09_19.json");
+let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_1_2021_09_19.json");
+let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_complete_scaling_2_2021_09_19.json");
+// let rawdata_dist_h =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_distractor_h_replaced_mix.json");
+// let rawdata_dist_n =fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_distractor_n_replaced_mix.json");
+// let rawdata_scaling_0 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_0_replaced_mix.json");
+// let rawdata_scaling_1 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_1_replaced_mix.json");
+// let rawdata_scaling_2 = fs.readFileSync("data/studies_2021_09_18/QIDtoFilename_addendum_MMM_scaling_2_replaced_mix.json");
+// -- Update for First Language English
+let rawdata_cmplt_f_firstLanguage = fs.readFileSync("data/studies_2021_10_22/QIDtoFilename_complete_measurement_f_2021_09_18_October_22_headerAdapted.json")
+let rawdata_cmplt_nf_firstLanguage = fs.readFileSync("data/studies_2021_10_22/QIDtoFilename_complete_measurement_nf_2021_09_18_October_22_headerAdapted.json")
 
 
-let d_measurement_nf = fs.readFileSync('data/QIDtoFilename_complete_measurement_nf_2021_09_18.json')
-
+// let d_measurement_nf = fs.readFileSync('data/QIDtoFilename_complete_measurement_nf_2021_09_18.json')
 var listQIDtoFileName = []; 
 listQIDtoFileName.push(JSON.parse(rawdata_cmplt_nf)); 
 listQIDtoFileName.push(JSON.parse(rawdata_cmplt_f));
@@ -398,6 +408,11 @@ listQIDtoFileName.push(JSON.parse(rawdata_dist_n));
 listQIDtoFileName.push(JSON.parse(rawdata_scaling_0)); 
 listQIDtoFileName.push(JSON.parse(rawdata_scaling_1));
 listQIDtoFileName.push(JSON.parse(rawdata_scaling_2)); 
+// -- Update for First Language English
+var listQIDtoFileName_firstLanguage = []; 
+listQIDtoFileName_firstLanguage.push(JSON.parse(rawdata_cmplt_f_firstLanguage)); 
+listQIDtoFileName_firstLanguage.push(JSON.parse(rawdata_cmplt_nf_firstLanguage));
+
 
 var listStrFilesBsln = [];
 listStrFilesBsln.push("cmplt_nf");
@@ -408,9 +423,13 @@ listStrFilesBsln.push("scaling_0");
 listStrFilesBsln.push("scaling_1");
 listStrFilesBsln.push("scaling_2");
 
+var listStrFilesBsln_firstLanguage = [];
+listStrFilesBsln_firstLanguage.push("cmplt_nf_firstLanguage");
+listStrFilesBsln_firstLanguage.push("cmplt_f_firstLanguage");
 
-// ---- Generate baselines
+// ---- Generate baselines -- fluent
 // var t = new Date(); // var strAdd_bslnFile = "_measurement_nf_"+t.getFullYear()+"_"+t.getMonth()+"_"+t.getDay()+"_"+t.getHours()+"_"+t.getMinutes()
+// console.log("---- Generate baselines")
 // for (var i=0; i < listQIDtoFileName.length; i++)
 // {
 //     generateBaselineCSV(listQIDtoFileName[i],listStrFilesBsln[i]);  
@@ -419,14 +438,36 @@ listStrFilesBsln.push("scaling_2");
 
 
 // ---- Filter out answers with wrong intro
+// console.log("---- Filter out answers with wrong intro")
 // for (var i=0; i < csvFilePathArray.length;i++){
 //     writeFilterWrongAnswersToIntro(csvFilePathArray[i]);
 // }
 
 // // // ---- Generate structured files of answers
-// console.log("csvFilePathArray: ",csvFilePathArray)
-for (var i=0; i < listQIDtoFileName.length; i++){
-    console.log("csvFilePathArray[i]: ",csvFilePathArray[i]);
-    newGenerateModifiedCSV(listQIDtoFileName[i], csvFilePathArray[i])
-}
+// console.log("---- Generate structured files of answers, csvFilePathArray: ",csvFilePathArray)
+// for (var i=0; i < listQIDtoFileName.length; i++){
+//     console.log("csvFilePathArray[i]: ",csvFilePathArray[i]);
+//     newGenerateModifiedCSV(listQIDtoFileName[i], csvFilePathArray[i])
+// }
 
+
+// ---- Generate baselines -- fluent & first language
+// console.log("---- Generate baselines")
+// for (var i=0; i < listQIDtoFileName_firstLanguage.length; i++)
+// {
+//     generateBaselineCSV(listQIDtoFileName_firstLanguage[i],listStrFilesBsln_firstLanguage[i]);  
+// }
+
+
+// ---- Filter out answers with wrong intro
+// console.log("---- Filter out answers with wrong intro")
+// for (var i=0; i < csvFilePathArray_FirstLanguage.length;i++){
+//     writeFilterWrongAnswersToIntro(csvFilePathArray_FirstLanguage[i]);
+// }
+
+// // // ---- Generate structured files of answers
+console.log("---- Generate structured files of answers, csvFilePathArray_FirstLanguage: ",csvFilePathArray_FirstLanguage)
+for (var i=0; i < listQIDtoFileName_firstLanguage.length; i++){
+    console.log("csvFilePathArray_FirstLanguage[i]: ",csvFilePathArray_FirstLanguage[i]);
+    newGenerateModifiedCSV(listQIDtoFileName_firstLanguage[i], csvFilePathArray_FirstLanguage[i])
+}

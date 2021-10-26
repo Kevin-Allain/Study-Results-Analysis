@@ -9,7 +9,7 @@ library(cowplot)
 library(patchwork)
 library(stringr)
 library(rlist)
-library(simpleaffy)
+# library(simpleaffy)
 library(dplyr)
 library(skimr)
 library(agricolae)
@@ -2199,8 +2199,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
 # dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_scaling_focus <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask");
 # dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
 
-dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus")
-dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus
+# dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus")
+# dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus
 
 # dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_CIandDifferences(d_measurement_filtered,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
 # dfCI_valuestoCSV <- dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus
@@ -3790,9 +3790,9 @@ genAndPlot_errorRate_correctB_measurement<-function(d, factorScaling=FALSE, fact
   cat("\nDrawing done")
   return(dfCI_global)
 }
-dfCI_errorRate_B_test1 <- genAndPlot_errorRate_correctB_measurement(d_measurement_filtered, factorDMask = TRUE, factorVariation = "focus")
-dfCI_errorRate_B_test2 <- genAndPlot_errorRate_correctB_measurement(d_measurement_filtered, factorVariation = "focus")
-dfCI_errorRate_B_test3 <- genAndPlot_errorRate_correctB_measurement(d_sclFiltered, factorVariation = "scaling")
+# dfCI_errorRate_B_test1 <- genAndPlot_errorRate_correctB_measurement(d_measurement_filtered, factorDMask = TRUE, factorVariation = "focus")
+# dfCI_errorRate_B_test2 <- genAndPlot_errorRate_correctB_measurement(d_measurement_filtered, factorVariation = "focus")
+# dfCI_errorRate_B_test3 <- genAndPlot_errorRate_correctB_measurement(d_sclFiltered, factorVariation = "scaling")
 
 combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
   d <- filter_getRightParticipants(d)
@@ -4476,36 +4476,36 @@ combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,f
   # cat("not sure what to return")
   return (dfCI_global_differences)
 }
-dfCI_errorRate_B_differences_focus_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorDifference = "focus")
-dfCI_errorRate_B_differences_dMask_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorDifference = "dMask")
+# dfCI_errorRate_B_differences_focus_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorDifference = "focus")
+# dfCI_errorRate_B_differences_dMask_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorDifference = "dMask")
 
-dfCI_errorRate_B_differences_dMask_factoredby_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDifference = "dMask")
-dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDComplex_focus = TRUE, factorDifference = "dMask")
-dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus
+# dfCI_errorRate_B_differences_dMask_factoredby_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDifference = "dMask")
+# dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDComplex_focus = TRUE, factorDifference = "dMask")
+# dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus
 
-# this combination is buggy!
-dfCI_errorRate_B_differences_focus_factoredby_scaling <- combine_genPlot_ErrorRate_CIandDifferences(d_sclFiltered, factorScaling =TRUE, factorDifference = "focus")
-# d_sclFiltered[d_sclFiltered$focus=="WHAT_Ql" & d_sclFiltered$scaling==2,]
-dfCI_errorRate_B_differences_scaling_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_sclFiltered, factorScaling =FALSE, factorDifference = "scaling")
-dfCI_errorRate_B_differences_distractor_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_distrFiltered, factorScaling =FALSE, factorDifference = "distractor")
+# # this combination is buggy!
+# dfCI_errorRate_B_differences_focus_factoredby_scaling <- combine_genPlot_ErrorRate_CIandDifferences(d_sclFiltered, factorScaling =TRUE, factorDifference = "focus")
+# # d_sclFiltered[d_sclFiltered$focus=="WHAT_Ql" & d_sclFiltered$scaling==2,]
+# dfCI_errorRate_B_differences_scaling_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_sclFiltered, factorScaling =FALSE, factorDifference = "scaling")
+# dfCI_errorRate_B_differences_distractor_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_distrFiltered, factorScaling =FALSE, factorDifference = "distractor")
 
-dfCI_differences_distractor_noFactor <- combine_genPlot_CIandDifferences(d_distrFiltered, factorScaling =FALSE, factorDifference = "distractor")
+# dfCI_differences_distractor_noFactor <- combine_genPlot_CIandDifferences(d_distrFiltered, factorScaling =FALSE, factorDifference = "distractor")
 
 # bug with this combination (probably an issue with rename function)
 # dfCI_differences_dComplex_focus_factoredby_focus <- combine_genPlot_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDifference = "dComplex_focus")
-dfCI_differences_dMask_factoredby_focus <- combine_genPlot_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDifference = "dMask")
+# dfCI_differences_dMask_factoredby_focus <- combine_genPlot_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDifference = "dMask")
+# 
+# # TODO!!! function that makes those graphs without making factorDifference and factorVariations
+# dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDComplex_focus = TRUE, factorDifference = "")
+# # TODO potentially look at reordering?!
 
-# TODO!!! function that makes those graphs without making factorDifference and factorVariations
-dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDComplex_focus = TRUE, factorDifference = "")
-# TODO potentially look at reordering?!
 
-
-strFormulaTest <- "~ orderMaskComplex"
-ggplot(dfCI_errorRate_B_test2, aes(x=mean_CI,y=orderCategoryCombination)) +
-  geom_vline(xintercept = 0) +
-  geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
-  geom_point(size=3,col="black",fill="white", shape=1) # +
-  # facet_wrap( as.formula(strFormulaTest) , dir="v", ncol=1)
+# strFormulaTest <- "~ orderMaskComplex"
+# ggplot(dfCI_errorRate_B_test2, aes(x=mean_CI,y=orderCategoryCombination)) +
+#   geom_vline(xintercept = 0) +
+#   geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
+#   geom_point(size=3,col="black",fill="white", shape=1) # +
+#   # facet_wrap( as.formula(strFormulaTest) , dir="v", ncol=1)
 
 
 
@@ -4761,4 +4761,4 @@ genAndPlot_correctB_measurement_mask <- function(d) {
   grid_maskDiff_correctB <- grid.arrange(plotCorrectB_dMask,  
                                          top = textGrob("maskDiff",gp=gpar(fontsize=20,font=3)))
 }
-genAndPlot_correctB_measurement_mask(d_measurement_filtered)
+# genAndPlot_correctB_measurement_mask(d_measurement_filtered)

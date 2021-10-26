@@ -31,6 +31,39 @@ d_scl0 <- d_sclAll[d_sclAll$scaling==0,]
 d_scl1 <- d_sclAll[d_sclAll$scaling==1,]
 d_scl2 <- d_sclAll[d_sclAll$scaling==2,] 
 
+d_scl0$alt_dMask <- NA
+arr_alt_dMask <- c()
+for(nM in d_scl0$nMasks){
+  if (nM <5){
+    arr_alt_dMask <- c(arr_alt_dMask,"easy")
+  } else if (nM <9){
+    arr_alt_dMask <- c(arr_alt_dMask,"medium")
+  } else {
+    arr_alt_dMask <- c(arr_alt_dMask,"hard")
+  }
+}
+
+d_scl0$alt_dMask <- arr_alt_dMask
+length(d_scl0$dMask[d_scl0$dMask=="easy"])
+length(d_scl0$dMask[d_scl0$dMask=="medium"])
+length(d_scl0$dMask[d_scl0$dMask=="hard"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="easy"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="easy" & d_scl0$focus=="WHAT_Qn"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard" & d_scl0$focus=="WHAT_Ql" & d_scl0$dComplex_focus=="E"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard" & d_scl0$focus=="WHAT_Ql" & d_scl0$dComplex_focus=="M"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard" & d_scl0$focus=="WHAT_Ql" & d_scl0$dComplex_focus=="H"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="easy" & d_scl0$focus=="WHAT_Ql"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="easy" & d_scl0$focus=="WHERE"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="medium"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="medium" & d_scl0$focus=="WHAT_Qn"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="medium" & d_scl0$focus=="WHAT_Ql"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="medium" & d_scl0$focus=="WHERE"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard" & d_scl0$focus=="WHAT_Qn"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard" & d_scl0$focus=="WHAT_Ql"])
+length(d_scl0$alt_dMask[d_scl0$alt_dMask=="hard" & d_scl0$focus=="WHERE"])
+
+
 
 length(unique(d_sclAll$ResponseId))
 
