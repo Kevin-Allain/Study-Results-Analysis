@@ -19,8 +19,8 @@ d_distr_n <-  read.table(file="data/transformed/survey_complete_distractor_n_202
 d_distr_h <-  read.table(file="data/transformed/survey_complete_distractor_h_2021_09_18_headerAdapted.csv",TRUE, ",")
 d_distr_all <-  read.table(file="data/transformed/survey_complete_distractor_all_2021_09_18_headerAdapted_MMM_replaced.csv",TRUE, ",")
 d_distr_all <- na.omit(d_distr_all)
-d_distr_all <- filter_getRightParticipants(d_distr_all)
-d_distrFiltered <- filter_getRightParticipants(d_distr_all)
+d_distr_all <- filter_someTrust0or5_impossibleQualAnswer(d_distr_all)
+d_distrFiltered <- filter_someTrust0or5_impossibleQualAnswer(d_distr_all)
 
 d_distr_n <- d_distr_all[d_distr_all$distractor == "n",];
 d_distr_h <- d_distr_all[d_distr_all$distractor == "h",];

@@ -1445,8 +1445,8 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
 # dfCI_test_differences2
 
 
-combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
-  d <- filter_getRightParticipants(d)
+combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask", arrMixOrderFormula=c()){
+  d <- filter_allTrust0or5_impossibleQualAnswer(d)
   
   factorVariation <- factorDifference
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
@@ -1457,7 +1457,12 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   # call the function to get the factors
   factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus);
   numFactor <- length(factorArr)
-  factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]
+  if (length(arrMixOrderFormula) == 0){
+    factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]  
+  } 
+  else {
+    factor1 <- factorArr[arrMixOrderFormula[1]]; factor2 <- factorArr[arrMixOrderFormula[2]]; factor3 <- factorArr[arrMixOrderFormula[3]]; factor4 <- factorArr[arrMixOrderFormula[4]];
+  }
   numFactor <- length(factorArr)
   cat("\n}}}}factorArr: ",toString(factorArr))
   cat("\nnumFactor: ",numFactor)
@@ -2015,6 +2020,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
     cat("\npost modif strFormula: ",strFormula)
     strFormula_differences<-paste("~",factor1,"+",factor2)
+    
     cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences,"... what about dfCI_global_differences: ",toString(dfCI_global_differences[1,]))
     strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
     strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
@@ -2058,7 +2064,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Mean with Mask', y = "" ) +
       theme(
         strip.background = element_blank(),
-        strip.text.x = element_blank()
+        strip.text.x = element_blank(),
+        axis.ticks.y = element_blank(), axis.text.y = element_blank() # }}}} Hid that following advices from Jason{{{{
       )
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question=="diffA2",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -2099,7 +2106,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       theme(
         strip.background = element_blank(),
         strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), #axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), 
+        axis.text.y = element_blank(), # }}}} Hid that following advices from Jason{{{{
         legend.position="none"
       ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
@@ -2223,10 +2231,12 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
 # dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_scaling_focus <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask");
 # dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
 
-# dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus <- combine_genPlot_CIandDifferences(d_alt,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus")
+# dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus <- combine_genPlot_CIandDifferences(d_measurement_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus")
 # dfCombinationCI_differences_test__CIandDiff_dComplex_focus_factoredby_focus
 
-# dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_CIandDifferences(d_measurement_filtered,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+# dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_CIandDifferences(d_measurement_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask")
+# dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_measurement_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= TRUE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus")
+# dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_measurement_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= TRUE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus", arrMixOrderFormula= c(2,1) )
 # dfCI_valuestoCSV <- dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_focus_dComplex_focus
 # dfCI_valuestoCSV
 # dfCI_differencestoCSV
@@ -2353,11 +2363,10 @@ generateGroupedData <- function (d){
   return (groupedData_all)
 }
 
-# TODO work in progress... are we happy with these parameters? probably not...! This code filters out participants who at least once answered 0 or 5 to all answers related to trust.
 # overall question: do we disregard the entire set of answers from a participant when they provide one problematic answer, or do we keep the rest? Let's start by being throrough in the data removal.
 # about the reported trust: do we disregard the whole set of answers of a participant if they once answered 0 to all trust records for one stimuli, or only for that one stimuli...?
 # impossibilities: we know of the cases for WHAT_Ql, but are there other impossibilities?
-filter_getRightParticipants <- function (d){
+filter_someTrust0or5_impossibleQualAnswer <- function (d){
   toFilter_ResponsesId <- unique(d$ResponseId[ (d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | 
                                                  (is.na(d$correctB)) |
                                                  (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
@@ -2365,6 +2374,21 @@ filter_getRightParticipants <- function (d){
   return (d)
 }
 
+filter_allTrust0or5_impossibleQualAnswer <- function (d){
+  d <- enrichData_withTrustAll0or5(d)
+  toFilter_ResponsesId <- unique(d$ResponseId[ (d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | 
+                                                 (is.na(d$correctB)) |
+                                                 (d$allSameTrust) ])
+  d <- d[which(!(d$ResponseId %in% toFilter_ResponsesId)),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
+  return (d)
+}
+
+filter_getWrongParticipants <- function (d){
+  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | 
+                                                (is.na(d$correctB)) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
+  d <- d[which(d$ResponseId %in% toFilter_ResponsesId),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
+  return (d)
+}
 
 enrichData_withTrustSome0or5 <- function (d){
   d$someSameTrust <- NA;
@@ -2415,13 +2439,19 @@ enrichData_withTrustAll0or5 <- function (d){
   return (d)
 }
 
-
-filter_getWrongParticipants <- function (d){
-  toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | 
-                                                (is.na(d$correctB)) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
-  d <- d[which(d$ResponseId %in% toFilter_ResponsesId),] # remove the cases of impossible answer and trusts being all at 0 or all at 5 for a stimuli.
+enrichData_impossibleQualAnswer <- function(d){
+  d$impossibleQualAnswer <- NA;
+  d$impossibleQualAnswer <- d$focus=="WHAT_Ql" & (d$answerA1>d$answerA2 | d$answerA1>d$answerA3)
   return (d)
 }
+
+enrichData_wasCntrQFaulty <- function (d){
+  arrCntrQFaultry <- c(425, 352, 439, 412, 403, 376, 377, 356, 464, 375, 366, 354, 357, 438, 362, 360, 372, 345, 454, 373, 359, 340, 421, 448, 482, 347, 374, 363, 446, 364, 445, 361, 442, 415, 343, 370, 451, 378, 351, 353, 355, 452, 371, 379, 396, 342, 369, 476, 385, 466, 404, 383, 402, 399, 381, 384, 389, 387, 481, 400, 386, 475, 394, 367, 428, 455, 401, 390, 473, 391, 472, 388, 469, 397, 478, 405, 380, 382, 398, 479, 109, 126, 99, 206, 179, 196, 115, 133, 106, 160, 134, 107, 167, 194, 113, 132, 105, 123, 96, 111, 114, 119, 117, 129, 102, 211, 130, 116, 97, 205, 124, 178, 212, 185, 131, 104, 203, 176, 202, 121, 118, 199, 172, 127, 100, 208, 135, 108, 110, 112, 128, 209, 236, 136, 153, 233, 142, 223, 161, 221, 140, 159, 150, 138, 141, 146, 144, 156, 238, 157, 143, 232, 151, 239, 158, 120, 230, 148, 229, 145, 226, 154, 235, 162, 137, 139, 155, 147)
+  cntrQWasFaulty <- d$cntrQ %in% arrCntrQFaultry
+  d$cntrQWasFaulty <- cntrQWasFaulty
+  return(d)
+}
+
 
 modify_d_OkOrNot <-function (d){
   toFilter_ResponsesId <- unique(d$ResponseId[(d$focus=="WHAT_Ql" & d$answerA1 > d$answerA2) | (d$trustA1==d$trustA2 & d$trustA2==d$trustA3 & d$trustA3==d$trustB & (d$trustB==0 | d$trustB==5)) ])
@@ -2431,7 +2461,6 @@ modify_d_OkOrNot <-function (d){
   return (d)
 }
 
-# Only relevant when called for a 
 addInfoCiDifferenceSignificant<-function(d){
   d$significantDifference <- NA
   d$sizeSignificantDifference <- NA
@@ -2450,7 +2479,7 @@ addInfoCiDifferenceSignificant<-function(d){
 
 # d_alt_enrichedFilter <- modify_d_OkOrNot(d_alt)
 # dim(d_alt)
-# d_alt_Right <- filter_getRightParticipants(d_alt)
+# d_alt_Right <- filter_someTrust0or5_impossibleQualAnswer(d_alt)
 # dim(d_alt_Right)
 # d_alt_Wrong <- filter_getWrongParticipants(d_alt)
 # dim(d_alt_Wrong)
@@ -3004,7 +3033,6 @@ genDF_measurement_correctB_overall <- function (d){
 }
 
 genDF_measurement_trust <- function (d){
-  
   sumTrustA1_overAll <- d %>% 
     group_by (trustA1) %>% 
     summarise(count = n()) %>% 
@@ -3033,25 +3061,12 @@ genDF_measurement_trust <- function (d){
   dfTrust_measurement_overAll <- rbind(sumTrustA1_overAll,sumTrustA2_overAll,sumTrustA3_overAll,sumTrustB_overAll)
   return (dfTrust_measurement_overAll)
 }
-# 
-# dfTrust_test <- genDF_measurement_trust(d_measurement_filtered)
-# dfTrust_test
 
-# TODO?
-genDF_measurement_trust_dMask <- function(d){
-  
-}
-# 
-# aggregate(d_measurement_filtered$trustA1, by=list(dMask=d_measurement_filtered$dMask), FUN=sum)
-# group_mean <- aggregate(trustA1 ~ dMask, data = d_measurement_filtered, FUN = pcentFun)
 
 pcentFun <- function(x) {
   res <- x > 0
   100 * (sum(res) / length(res))
 }
-
-# with(d_measurement_filtered, aggregate(trustA1, by = list(d_measurement_filtered$dMask), pcentFun))
-
 
 # -------- gen and plot trust
 
@@ -3455,14 +3470,10 @@ genAndPlotTrust_measurement_dMask <- function(d){
 }
 
 
-
 # -------- gen and plot error rate
-
-# dim(d_scl0[d_scl0$correctB==1,])[1] / dim(d_scl0)[1]
-# Error rate: computed as the number of incorrect answers per task multiplied by the total number of repetitions.
-# This is NOT it! # to check again, I don't remember
-# Regular show
+# Error rate: computed as the number of incorrect answers per task multiplied by the total number of repetitions. # reverify
 genAndPlot_errorRate_correctB_measurement<-function(d, factorScaling=FALSE, factorDistractor=FALSE,factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorVariation="dMask") {
+  d <- filter_allTrust0or5_impossibleQualAnswer(d);
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
   if (factorScaling | factorVariation=="scaling"){arrFocus <- c("WHAT_Qn","WHAT_Ql")}  
   d$reverseB <- abs(d$correctB -1);
@@ -3871,7 +3882,7 @@ genAndPlot_errorRate_correctB_measurement<-function(d, factorScaling=FALSE, fact
 # dfCI_errorRate_B_test3 <- genAndPlot_errorRate_correctB_measurement(d_sclFiltered, factorVariation = "scaling")
 
 combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask"){
-  d <- filter_getRightParticipants(d)
+  d <- filter_allTrust0or5_impossibleQualAnswer(d)
   d$reverseB <- abs(d$correctB -1);
   
   factorVariation <- factorDifference
@@ -4159,7 +4170,7 @@ combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,f
               dfTest_CI <- NULL
               dfTest_CI_differences <- NULL
               if (length(arrFactorVariations)== 2){
-                cat("length(arrFactorVariations)== 2")
+                cat("\nlength(arrFactorVariations)== 2")
                 selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
                 selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
                 selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
@@ -4485,9 +4496,9 @@ combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,f
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="reverseB",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
-      geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
+      geom_errorbar(aes(xmin=low_CI, xmax= high_CI )) + #seriously concerned with this
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(0,1)) + 
+      xlim(c(0,1.1)) + 
       ggtitle("Error Rate") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
       labs(title = 'Error Rate', y = "" ) +
@@ -4498,7 +4509,7 @@ combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,f
     # 
     groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="reverseB",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
-      geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
+      geom_errorbar(aes(xmin=low_CI, xmax= high_CI )) +
       geom_point(size=2,col="black",fill="white", shape=1) +
       geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5)+
       scale_size_manual(values=c(0.1,5)) +
@@ -4550,10 +4561,10 @@ combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,f
   cat("\nThe plots are generated. But are they fine?\n")
   grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1), ncol=2,top=textGrob( strTitleTotal ) )
   # cat("not sure what to return")
-  return (dfCI_global_differences)
+  return (dfCI_global)
 }
 # dfCI_errorRate_B_differences_focus_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorDifference = "focus")
-# dfCI_errorRate_B_differences_dMask_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorDifference = "dMask")
+# dfCI_errorRate_B_differences_dMask_noFactor <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_all, factorDifference = "dMask")
 
 # dfCI_errorRate_B_differences_dMask_factoredby_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDifference = "dMask")
 # dfCI_errorRate_B_differences_dMask_factoredby_focus_dComplex_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_measurement_filtered, factorFocus = TRUE, factorDComplex_focus = TRUE, factorDifference = "dMask")
@@ -4582,7 +4593,6 @@ combine_genPlot_ErrorRate_CIandDifferences  <- function (d,factorScaling=FALSE,f
 #   geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
 #   geom_point(size=3,col="black",fill="white", shape=1) # +
 #   # facet_wrap( as.formula(strFormulaTest) , dir="v", ncol=1)
-
 
 
 genAndPlot_errorRate_correctB_scaling <- function (d_scl0, d_scl1, d_scl2) {

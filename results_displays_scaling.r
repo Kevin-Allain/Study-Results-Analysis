@@ -24,8 +24,8 @@ source("functions_dataStudies.r")
 d_sclAll <- read.table(file="data/transformed/survey_complete_scaling_all_2021_09_19_headerAdapted_MMM_replaced.csv",TRUE,",")
 d_sclAll <- na.omit(d_sclAll)
 
-d_sclAll <- filter_getRightParticipants(d_sclAll)
-d_sclFiltered <- filter_getRightParticipants(d_sclAll)
+d_sclAll <- filter_someTrust0or5_impossibleQualAnswer(d_sclAll)
+d_sclFiltered <- filter_someTrust0or5_impossibleQualAnswer(d_sclAll)
 
 d_scl0 <- d_sclAll[d_sclAll$scaling==0,] 
 d_scl1 <- d_sclAll[d_sclAll$scaling==1,]

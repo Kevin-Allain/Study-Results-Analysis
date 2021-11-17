@@ -9,22 +9,23 @@ library(scales)
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 source("functions_dataStudies.r")
 
-# ---- Characterization loading
+# ---- Characterization loading _ Unclear if still necessary
 characterizations <- read.table(file="data/transformed/alt_characterization/study_measurement_all_numqualitychanges_filteredFocus_numMask_flip.csv",TRUE, ",")
 alt_masks <- read.table(file="data/transformed/alt_characterization/study_alt_masks.csv",TRUE, ",")
 
-# ---- Data loading
-d_alt_f <- read.table(file="data/transformed/survey_complete_measurement_f_2021_09_18_headerAdapted.csv",TRUE,",")
-d_alt_nf <- read.table(file="data/transformed/survey_complete_measurement_nf_2021_09_18_headerAdapted.csv",TRUE,",")
+
+# d_alt_f <- read.table(file="data/transformed/survey_complete_measurement_f_2021_09_18_headerAdapted.csv",TRUE,",")
+# d_alt_nf <- read.table(file="data/transformed/survey_complete_measurement_nf_2021_09_18_headerAdapted.csv",TRUE,",")
 d_alt <- read.table(file="data/transformed/survey_complete_measurement_all_2021_09_18_headerAdapted.csv",TRUE, ",")
+length ( unique(d_alt$ResponseId) )
 dim(d_alt)
 d_alt_fluentAndFirst <- read.table(file="data/transformed/survey_complete_measurement_all_2021_09_18_October_22_headerAdapted.csv",TRUE,",")
 dim(d_alt_fluentAndFirst)
 length(unique(d_alt_fluentAndFirst$ResponseId))
-d_rigorous_fluent <- filter_getRightParticipants(d_alt)
+d_rigorous_fluent <- filter_someTrust0or5_impossibleQualAnswer(d_alt)
 dim(d_rigorous_fluent)
 length(unique(d_rigorous_fluent$ResponseId))
-d_measurement_filtered_fluentAndFirst <- filter_getRightParticipants(d_alt_fluentAndFirst)
+d_measurement_filtered_fluentAndFirst <- filter_someTrust0or5_impossibleQualAnswer(d_alt_fluentAndFirst)
 length(unique(d_measurement_filtered_fluentAndFirst$ResponseId))
 dim(d_measurement_filtered_fluentAndFirst)
 length(d_alt$ResponseId)
@@ -157,7 +158,6 @@ as.numeric(as.Date("18/09/21 11:33"), as.Date("18/10/21 11:33"), units="days")/(
 # ---- Calls
 genAndPlotTrust_measurement_focus(d_alt)
 genAndPlotTrust_measurement_dcomplex_focus(d_alt)
-
 genAndPlotTrust_measurement_mask(d_alt)
 genAndPlotTrust_measurement_overall(d_alt)
 genAndPlot_errorRate_correctB(d_alt)
