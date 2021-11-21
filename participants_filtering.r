@@ -73,16 +73,37 @@ complete_scaling_1_2021_09_19_headerAdapted <- read.table(file="data/participant
 complete_scaling_0_2021_09_19_headerAdapted <- read.table(file="data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted.csv",TRUE,",")
 complete_distractor_h_2021_09_18_headerAdapted <- read.table(file="data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted.csv",TRUE,",")
 
-# Some datasets have to be filtered by month... Use the function filterAccordingToMonth
+# ==== Selection for our population tests === Some datasets have to be filtered by month... Use the function filterAccordingToMonth
 mergeComplete <- merge(complete_measurement_nf_2021_09_18_October_22_headerAdapted, complete_measurement_f_2021_09_18_October_22_headerAdapted,all=TRUE)
 complete_sep <- filterAccordingToMonth(mergeComplete,"09")
 complete_oct <- filterAccordingToMonth(mergeComplete,"10")
 
-length(complete_sep$ResponseId[complete_sep$Finished=="True"])
-length(complete_sep$ResponseId[complete_sep$Finished=="True" & (complete_sep$Q11!="Down" | complete_sep$Q12!="From time 10 to 30 and time 60 to 70" | complete_sep$Q13!="Time 30" | complete_sep$Q17!="On the first long straight section" | complete_sep$Q14!="From a little before time 70 up to a little before time 80")])
-length(complete_oct$ResponseId[complete_oct$Finished=="True"])
-length(complete_oct$ResponseId[complete_oct$Finished=="True" & (complete_oct$Q11!="Down" | complete_oct$Q12!="From time 10 to 30 and time 60 to 70" | complete_oct$Q13!="Time 30" | complete_oct$Q17!="On the first long straight section" | complete_oct$Q14!="From a little before time 70 up to a little before time 80")])
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True"]) )
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True" & (complete_sep$Q11!="Down" | complete_sep$Q12!="From time 10 to 30 and time 60 to 70" | complete_sep$Q13!="Time 30" | complete_sep$Q17!="On the first long straight section" | complete_sep$Q14!="From a little before time 70 up to a little before time 80")] ) )
+length( unique ( complete_oct$ResponseId[complete_oct$Finished=="True"] ) )
+length( unique (  complete_oct$ResponseId[complete_oct$Finished=="True" & (complete_oct$Q11!="Down" | complete_oct$Q12!="From time 10 to 30 and time 60 to 70" | complete_oct$Q13!="Time 30" | complete_oct$Q17!="On the first long straight section" | complete_oct$Q14!="From a little before time 70 up to a little before time 80")] ) )
 
+# -- specifics introductions failures
+# going down
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True" & complete_sep$Q11!="Down"]  ) )
+length( unique ( complete_oct$ResponseId[complete_oct$Finished=="True" & complete_oct$Q11!="Down"]  ) )
+length( unique ( d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True" & d_aggregate_noTikTok_firstLanguage$Q11!="Down"]  ) )
+# assessing quality
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True" & complete_sep$Q12!="From time 10 to 30 and time 60 to 70"]  ) )
+length( unique ( complete_oct$ResponseId[complete_oct$Finished=="True" & complete_oct$Q12!="From time 10 to 30 and time 60 to 70"]  ) )
+length( unique ( d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True" & d_aggregate_noTikTok_firstLanguage$Q12!="From time 10 to 30 and time 60 to 70"]  ) )
+# assessing minimum quantity
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True" & complete_sep$Q13!="Time 30"]  ) )
+length( unique ( complete_oct$ResponseId[complete_oct$Finished=="True" & complete_oct$Q13!="Time 30"]  ) )
+length( unique ( d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True" & d_aggregate_noTikTok_firstLanguage$Q13!="Time 30"]  ) )
+# assessing location of minimum quantity
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True" & complete_sep$Q17!="On the first long straight section"]  ) )
+length( unique ( complete_oct$ResponseId[complete_oct$Finished=="True" & complete_oct$Q17!="On the first long straight section"]  ) )
+length( unique ( d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True" & d_aggregate_noTikTok_firstLanguage$Q17!="On the first long straight section"]  ) )
+# assessing the mask
+length( unique ( complete_sep$ResponseId[complete_sep$Finished=="True" & complete_sep$Q17!="On the first long straight section" | complete_oct$Q14!="From a little before time 70 up to a little before time 80"]  ) )
+length( unique ( complete_oct$ResponseId[complete_oct$Finished=="True" & complete_oct$Q17!="On the first long straight section" | complete_oct$Q14!="From a little before time 70 up to a little before time 80"]  ) )
+length( unique ( d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True" & d_aggregate_noTikTok_firstLanguage$Q17!="On the first long straight section" | complete_oct$Q14!="From a little before time 70 up to a little before time 80"]  ) )
 
 # how do we merge them? ... by hand
 jointUntransformed <- merge(full_distractor_n_headerAdapted_2021_11_03, full_distractor_h_headerAdapted_2021_11_03,all=TRUE)

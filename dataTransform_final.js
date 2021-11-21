@@ -350,12 +350,15 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
                                         // add differences
                                         if (typeof objGenerated[objGenerated.length - 1]["answerA1"]!=="undefined"){
                                             objGenerated[objGenerated.length - 1]["diffA1"] = objGenerated[objGenerated.length - 1]["bslnA1"]-objGenerated[objGenerated.length - 1]["answerA1"]
+                                            objGenerated[objGenerated.length - 1]["log_diffA1"] = Math.log2( Math.abs(objGenerated[objGenerated.length - 1]["bslnA1"]-objGenerated[objGenerated.length - 1]["answerA1"]) +1/8 )
                                         } 
                                         if (typeof objGenerated[objGenerated.length - 1]["answerA2"]!=="undefined"){
                                             objGenerated[objGenerated.length - 1]["diffA2"] = objGenerated[objGenerated.length - 1]["bslnA2"]-objGenerated[objGenerated.length - 1]["answerA2"]
+                                            objGenerated[objGenerated.length - 1]["log_diffA2"] = Math.log2( Math.abs(objGenerated[objGenerated.length - 1]["bslnA2"]-objGenerated[objGenerated.length - 1]["answerA2"]) +1/8 )
                                         } 
                                         if (typeof objGenerated[objGenerated.length - 1]["answerA3"]!=="undefined"){
                                             objGenerated[objGenerated.length - 1]["diffA3"] = objGenerated[objGenerated.length - 1]["bslnA3"]-objGenerated[objGenerated.length - 1]["answerA3"]
+                                            objGenerated[objGenerated.length - 1]["log_diffA3"] = Math.log2( Math.abs(objGenerated[objGenerated.length - 1]["bslnA3"]-objGenerated[objGenerated.length - 1]["answerA3"]) +1/8 )
                                         } 
                                         if (typeof objGenerated[objGenerated.length - 1]["answerB"]!=="undefined"){
                                             var numDerivedB=(objGenerated[objGenerated.length - 1]["answerB"]=="Agree")?1:(objGenerated[objGenerated.length - 1]["answerB"]=="Neither agree nor disagree")?0:-1;
@@ -544,12 +547,15 @@ function newNoFilterGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapT
                                         // add differences
                                         if (typeof objGenerated[objGenerated.length - 1]["answerA1"]!=="undefined"){
                                             objGenerated[objGenerated.length - 1]["diffA1"] = objGenerated[objGenerated.length - 1]["bslnA1"]-objGenerated[objGenerated.length - 1]["answerA1"]
+                                            objGenerated[objGenerated.length - 1]["log_diffA1"] = Math.log2( Math.abs(objGenerated[objGenerated.length - 1]["bslnA1"]-objGenerated[objGenerated.length - 1]["answerA1"]) +1/8 )
                                         } 
                                         if (typeof objGenerated[objGenerated.length - 1]["answerA2"]!=="undefined"){
                                             objGenerated[objGenerated.length - 1]["diffA2"] = objGenerated[objGenerated.length - 1]["bslnA2"]-objGenerated[objGenerated.length - 1]["answerA2"]
+                                            objGenerated[objGenerated.length - 1]["log_diffA2"] = Math.log2( Math.abs(objGenerated[objGenerated.length - 1]["bslnA2"]-objGenerated[objGenerated.length - 1]["answerA2"]) +1/8 )
                                         } 
                                         if (typeof objGenerated[objGenerated.length - 1]["answerA3"]!=="undefined"){
                                             objGenerated[objGenerated.length - 1]["diffA3"] = objGenerated[objGenerated.length - 1]["bslnA3"]-objGenerated[objGenerated.length - 1]["answerA3"]
+                                            objGenerated[objGenerated.length - 1]["log_diffA3"] = Math.log2( Math.abs(objGenerated[objGenerated.length - 1]["bslnA3"]-objGenerated[objGenerated.length - 1]["answerA3"]) +1/8 )
                                         } 
                                         if (typeof objGenerated[objGenerated.length - 1]["answerB"]!=="undefined"){
                                             var numDerivedB=(objGenerated[objGenerated.length - 1]["answerB"]=="Agree")?1:(objGenerated[objGenerated.length - 1]["answerB"]=="Neither agree nor disagree")?0:-1;
@@ -581,8 +587,8 @@ function newNoFilterGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapT
 
             var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
             var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : fileStudyBit;
-            console.log("writing " + "data/transformed/survey_" + fileNameTime  + ".csv")
-            fs.writeFile("data/transformed/survey_" + fileNameTime + ".csv", csvOutput, function (err, data) {
+            console.log("writing " + "data/transformed/noFilter_survey_" + fileNameTime  + ".csv")
+            fs.writeFile("data/transformed/noFilter_survey_" + fileNameTime + ".csv", csvOutput, function (err, data) {
                 if (err) console.log('error', err);
             });
         })
@@ -787,13 +793,13 @@ listStrFilesBsln_noTikTok.push("noTikTok_scaling_2");
 // console.log("---- Filter out answers with wrong intro.")
 // for (var i=0; i < csvFilePathArray_noTikTok.length;i++){
 //     // writeNoFilterWrongAnswersToIntro(csvFilePathArray_noTikTok[i]); // to use if we wish outputs without filters
-//     writeFilterWrongAnswersToIntro(csvFilePathArray_noTikTok[i], "_noTikTok")
+//     writeFilterWrongAnswersToIntro(csvFilePathArray_noTikTok[i], "_noTikTok_withLog2")
 // }
 
-// // ---- Generate structured files of answers
+// ---- Generate structured files of answers
 console.log("---- Generate structured files of answers, csvFilePathArray_noTikTok: ",csvFilePathArray_noTikTok)
 for (var i=0; i < listQIDtoFileName_noTikTok.length; i++){
     console.log("csvFilePathArray_noTikTok[i]: ",csvFilePathArray_noTikTok[i]);
     // newNoFilterGenerateModifiedCSV(listQIDtoFileName_noTikTok[i], csvFilePathArray_noTikTok[i])
-    newGenerateModifiedCSV (listQIDtoFileName_noTikTok[i], csvFilePathArray_noTikTok[i], "" , false, "_noTikTok" )
+    newGenerateModifiedCSV (listQIDtoFileName_noTikTok[i], csvFilePathArray_noTikTok[i], "" , false, "_noTikTok_withLog2" )
 }

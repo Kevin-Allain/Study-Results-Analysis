@@ -130,8 +130,8 @@ plotCorrectB_n_overAll <- ggplot(df_distractor_correctB_overAll[df_distractor_co
   theme_minimal(base_size = 14)+ 
   theme(text = element_text(size = 10)) +
   theme(text = element_text(size = 10),axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))  
-grid_overAll_correctB <- grid.arrange(plotCorrectB_h_overAll, plotCorrectB_n_overAll, ncol=2,
-                                      top = textGrob("overall",gp=gpar(fontsize=20,font=3)))
+grid_overAll_correctB <- grid.arrange( plotCorrectB_h_overAll, plotCorrectB_n_overAll, ncol=2,
+                                      top = textGrob("overall",gp=gpar(fontsize=20,font=3)) )
 
 
 # correctB - According to Mask
@@ -208,17 +208,17 @@ genAndPlotTrust_distractor_focus(d_h,d_n)
 
 # confidence intervals differences
 dfCI_global_distractorStudy_distractorXfocus_dMask <- genAndPlot_differences_factorBased(d=d_distr_all,
-                                                 factorDifference = "dMask",
-                                                 factorScaling = FALSE, 
-                                                 factorDistractor = TRUE,
-                                                 factorFocus = TRUE,
-                                                 factorDMask= FALSE, 
-                                                 factorDComplex_focus=FALSE)
+                                             factorDifference = "dMask",
+                                             factorScaling = FALSE, 
+                                             factorDistractor = TRUE,
+                                             factorFocus = TRUE,
+                                             factorDMask= FALSE, 
+                                             factorDComplex_focus=FALSE)
 
 dfCI_global_distractorStudy_focus_distractor <- genAndPlot_differences_factorBased(d=d_distr_all,
-                                                 factorDifference = "distractor",
-                                                 factorScaling = FALSE, 
-                                                 factorDistractor = FALSE,
-                                                 factorFocus = FALSE,
-                                                 factorDMask= FALSE, 
-                                                 factorDComplex_focus=FALSE)
+                                             factorDifference = "distractor",
+                                             factorScaling = FALSE, 
+                                             factorDistractor = FALSE,
+                                             factorFocus = FALSE,
+                                             factorDMask= FALSE, 
+                                             factorDComplex_focus=FALSE)

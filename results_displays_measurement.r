@@ -13,15 +13,26 @@ source("functions_dataStudies.r")
 characterizations <- read.table(file="data/transformed/alt_characterization/study_measurement_all_numqualitychanges_filteredFocus_numMask_flip.csv",TRUE, ",")
 alt_masks <- read.table(file="data/transformed/alt_characterization/study_alt_masks.csv",TRUE, ",")
 
-
 # d_alt_f <- read.table(file="data/transformed/survey_complete_measurement_f_2021_09_18_headerAdapted.csv",TRUE,",")
 # d_alt_nf <- read.table(file="data/transformed/survey_complete_measurement_nf_2021_09_18_headerAdapted.csv",TRUE,",")
 d_alt <- read.table(file="data/transformed/survey_complete_measurement_all_2021_09_18_headerAdapted.csv",TRUE, ",")
 length ( unique(d_alt$ResponseId) )
-dim(d_alt)
+
 d_alt_fluentAndFirst <- read.table(file="data/transformed/survey_complete_measurement_all_2021_09_18_October_22_headerAdapted.csv",TRUE,",")
-dim(d_alt_fluentAndFirst)
 length(unique(d_alt_fluentAndFirst$ResponseId))
+
+d_alt_sep <- filterAccordingToMonth(d_alt_fluentAndFirst,"09")
+d_alt_oct <- filterAccordingToMonth(d_alt_fluentAndFirst,"10")
+length(unique(d_alt_sep$ResponseId)) # passed first filter fluent
+length(unique(d_alt_oct$ResponseId)) # passed first filter first language
+d_alt_sep_passedSecondFilter <- filter_allTrust0or5_impossibleQualAnswer(d_alt_sep)
+d_alt_oct_passedSecondFilter <- filter_allTrust0or5_impossibleQualAnswer(d_alt_oct)
+length(unique(d_alt_sep_passedSecondFilter$ResponseId)) # passed second filter fluent
+length(unique(d_alt_oct_passedSecondFilter$ResponseId)) # passed second filter first language
+
+
+
+
 d_rigorous_fluent <- filter_someTrust0or5_impossibleQualAnswer(d_alt)
 dim(d_rigorous_fluent)
 length(unique(d_rigorous_fluent$ResponseId))
@@ -32,8 +43,6 @@ length(d_alt$ResponseId)
 length(d_rigorous_enriched$ResponseId[d_rigorous_enriched$flip=="nf"])
 length(unique(d_alt$ResponseId))
 length(unique(d_measurement_filtered$ResponseId))
-# length(unique(d_alt_f$ResponseId))
-# length(unique(d_alt_nf$ResponseId))
 
 # ---- Merge with alt characterization
 # jointdataset <- merge(d_alt, characterizations, by = c('flips','idc'),all=TRUE)
