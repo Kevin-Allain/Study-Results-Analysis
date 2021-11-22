@@ -2250,7 +2250,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         }
         else {
           if(numFactor==1){
-            cat("\ncase with numFactor == 1")
+            cat("\ncase with numFactor == 1"); # is this where we need to investigate X4?! # solved
             # numFactor==1
             # warning: remember that factorVariation can be distractor
             dfTest_CI <- NULL
@@ -2268,6 +2268,10 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
               
               group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1] ,sep="") )
               group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2] ,sep="") )
+              group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+              # cat("\n-- is this the place where the issue occurs?")
+              View(group_differences1_CI)
+              
               dfTest_CI <- data.frame(group1_CI,group2_CI);
               dfTest_CI_differences <- data.frame(group_differences1_CI); 
             } 
@@ -2291,6 +2295,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
               group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2] ,sep="") )
               group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3] ,sep="") )
               group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+              # cat("\n-- how does the good one look?")
+              View(group_differences1_CI)
               group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[3]),sep="")
               group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[2],"_",arrFactorDifferences[3]),sep="")
               
@@ -2298,10 +2304,25 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
               dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
               dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
             }
-            # is.numeric(dfTest_CI$mean_CI[2])
-            dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); dfTest_CI <- rename(dfTest_CI,"category_combination"=X4); dfTest_CI[factor1] <- curFactor1; dfTest_CI$question <- i
-            dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4); dfTest_CI_differences[factor1] <- curFactor1; dfTest_CI_differences$question <- i
-            
+
+            # cat("\ncolnames(dfTest_CI): ",colnames(dfTest_CI))
+            dfTest_CI <- data.frame(t(dfTest_CI)); 
+            # cat("\ncolnames(dfTest_CI) right after turning data frame: ",colnames(dfTest_CI))
+            # cat("\ndfTest_CI$X4  right after turning data frame: ", toString(dfTest_CI$X4))
+            dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); 
+            dfTest_CI <- rename(dfTest_CI,"category_combination"=X4); dfTest_CI[factor1] <- curFactor1; dfTest_CI$question <- i
+            # cat("\ncolnames(dfTest_CI): ",colnames(dfTest_CI))
+            # cat("\nRenamed dfTest_CI")
+            # cat("\ncolnames(dfTest_CI_differences): ", colnames(dfTest_CI_differences)," ---- \n")
+            dfTest_CI_differences <- data.frame(t(dfTest_CI_differences));
+            # cat("\ncolnames(dfTest_CI_differences) right after turning data frame: ", colnames(dfTest_CI_differences),
+            #     "\n-- dfTest_CI_differences$X1: ",toString(dfTest_CI_differences$X1),
+            #     "\n-- dfTest_CI_differences$X2: ",toString(dfTest_CI_differences$X2),
+            #     "\n-- dfTest_CI_differences$X3: ",toString(dfTest_CI_differences$X3),
+            #     "\n-- dfTest_CI_differences$X4: ",toString(dfTest_CI_differences$X4),", dfTest_CI_differences$X5: ",toString(dfTest_CI_differences$X5)," ---- \n")
+            dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); 
+            dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4); dfTest_CI_differences[factor1] <- curFactor1; dfTest_CI_differences$question <- i
+            cat("\nRenamed dfTest_CI_differences")
             cols <- c("mean_CI","low_CI","high_CI");
             dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric)
             leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 

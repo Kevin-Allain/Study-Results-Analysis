@@ -95,8 +95,7 @@ length( unique (d_distractor_all_noTikTok_filteredSemiRigorous$ResponseId ) ) # 
 
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
-dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences(
-  d_distractor_all_noTikTok,
+dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_distractor_all_noTikTok,
   factorScaling=FALSE,
   factorDistractor=FALSE,
   factorDMask= FALSE,
@@ -135,9 +134,9 @@ dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <-
                                          useLogDiff=TRUE);
 
 dfCombinationCI_differences_distractor_factoredby_focus <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
-                                                                 factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
-                                                                 factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="scaling",
-                                                                 useLogDiff=TRUE);
+                                                           factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
+                                                           factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="scaling",
+                                                           useLogDiff=TRUE);
 
 
 dfCombinationCI_differences_distractor_factoredby_NA <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
