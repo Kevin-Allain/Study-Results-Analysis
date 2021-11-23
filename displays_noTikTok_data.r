@@ -46,7 +46,15 @@ dim(d_distractor_all_noTikTok)
 dim(d_scaling_all_noTikTok)
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
-dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= TRUE,factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="dComplex_focus", logFunction=FALSE)
+dfCI_global_differences_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                          factorScaling=FALSE,
+                                                                          factorDistractor=FALSE,
+                                                                          factorDMask= FALSE,
+                                                                          factorFocus=FALSE,
+                                                                          factorDComplex_focus=FALSE, 
+                                                                          factorDifference="focus", 
+                                                                          logFunction=FALSE,
+                                                                          useLogDiff=TRUE)
 
 # ---- CorrectB # looks weird with logFunction = TRUE
 combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok,factorFocus = TRUE, factorDComplex_focus = FALSE, factorDMask = TRUE, factorDifference="dComplex_focus" , logFunction=FALSE)
@@ -98,8 +106,8 @@ length( unique (d_distractor_all_noTikTok_filteredSemiRigorous$ResponseId ) ) # 
 dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_distractor_all_noTikTok,
   factorScaling=FALSE,
   factorDistractor=FALSE,
-  factorDMask= FALSE,
-  factorFocus=TRUE,
+  factorDMask= TRUE,
+  factorFocus=FALSE,
   factorDComplex_focus=FALSE, 
   factorDifference="distractor",
   useLogDiff=TRUE)
