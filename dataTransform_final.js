@@ -46,6 +46,14 @@ csvFilePathArray_noTikTok.push(
     "Studies_2021_11_12/Results/scaling_2_headerAdapted.csv"
 )
 
+var csvFilePathArray_withJason = [];
+csvFilePathArray_withJason.push(
+    "Studies_2021_11_12/Results/measurement_f_withJason.csv",
+    "Studies_2021_11_12/Results/distractor_h_withJason.csv",
+    "Studies_2021_11_12/Results/scaling_0_withJason.csv",
+)
+
+
 // short terms to long attributes names
 hashmapAttributesNames_glbl = {
     "eG": "engine temperature",
@@ -176,7 +184,7 @@ function writeFilterWrongAnswersToIntro(csvFilePath, endFileAddition=""){
     return toFilterProlificIds;
 }
 
-function writeNoFilterWrongAnswersToIntro(csvFilePath){
+function writeNoFilterWrongAnswersToIntro(csvFilePath, fileEnd=""){
     console.log("---- writeNoFilterWrongAnswersToIntro, csvFilePath: ",csvFilePath)
     var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
     console.log("fileStudyBit: ",fileStudyBit);
@@ -214,6 +222,7 @@ function writeNoFilterWrongAnswersToIntro(csvFilePath){
 
             csvFilePath = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
             var toFilter_JSONpath = "data/toFilter/notToFilter_"+csvFilePath+".json"
+            console.log("writing ",toFilter_JSONpath)
             // console.log("hashmap_toKeepProlificIds: ",hashmap_toKeepProlificIds,", toFilter_JSONpath: ", toFilter_JSONpath)
             fs.writeFile(toFilter_JSONpath, JSON.stringify(hashmap_toKeepProlificIds), function (err, data) {
                 if (err) console.log('error', err);
@@ -397,7 +406,7 @@ function newGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep=""
         })
 }
 
-function newNoFilterGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep="", addRandomInfoToFillVoid = false) {
+function newNoFilterGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapToKeep="", addRandomInfoToFillVoid = false,  fileEnd="") {
     // console.log("newGenerateModifiedCSV ",{QIDtoFilename,csvFilePath,addRandomInfoToFillVoid})
     // console.log(QIDtoFilename);
     var objGenerated = [];
@@ -587,8 +596,8 @@ function newNoFilterGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapT
 
             var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
             var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : fileStudyBit;
-            console.log("writing " + "data/transformed/noFilter_survey_" + fileNameTime  + ".csv")
-            fs.writeFile("data/transformed/noFilter_survey_" + fileNameTime + ".csv", csvOutput, function (err, data) {
+            console.log("writing " + "data/transformed/noFilter_survey_" + fileNameTime + fileEnd  + ".csv")
+            fs.writeFile("data/transformed/noFilter_survey_" + fileNameTime +fileEnd + ".csv", csvOutput, function (err, data) {
                 if (err) console.log('error', err);
             });
         })
@@ -672,7 +681,7 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 // let rawdata_full_scaling_1 = fs.readFileSync("data/studies_2021_11_03/QIDtoFilename_full_scaling_1.json");
 // let rawdata_full_scaling_2 = fs.readFileSync("data/studies_2021_11_03/QIDtoFilename_full_scaling_2.json");
 
-// -- noTikTok
+// -- noTikTok (& withJason)
 let data_measurement_nf = fs.readFileSync("Studies_2021_11_12/measurement_nf/QIDtoFilename_measurement_nf.json")
 let data_measurement_f = fs.readFileSync("Studies_2021_11_12/measurement_f/QIDtoFilename_measurement_f.json")
 let data_distractor_h = fs.readFileSync("Studies_2021_11_12/distractor_h/QIDtoFilename_distractor_h.json")
@@ -680,6 +689,7 @@ let data_distractor_n = fs.readFileSync("Studies_2021_11_12/distractor_n/QIDtoFi
 let data_scaling_0 = fs.readFileSync("Studies_2021_11_12/scaling_0/QIDtoFilename_scaling_0.json")
 let data_scaling_1 = fs.readFileSync("Studies_2021_11_12/scaling_1/QIDtoFilename_scaling_1.json")
 let data_scaling_2 = fs.readFileSync("Studies_2021_11_12/scaling_2/QIDtoFilename_scaling_2.json")
+
 
 // Fluent only
 // let d_measurement_nf = fs.readFileSync('data/QIDtoFilename_complete_measurement_nf_2021_09_18.json')
@@ -719,23 +729,42 @@ let data_scaling_2 = fs.readFileSync("Studies_2021_11_12/scaling_2/QIDtoFilename
 // listStrFilesBsln_firstLanguage.push("full_scaling_1_firstLanguage");
 // listStrFilesBsln_firstLanguage.push("full_scaling_2_firstLanguage");
 
-var listQIDtoFileName_noTikTok = []; 
-listQIDtoFileName_noTikTok.push(JSON.parse(data_measurement_nf)); 
-listQIDtoFileName_noTikTok.push(JSON.parse(data_measurement_f));
-listQIDtoFileName_noTikTok.push(JSON.parse(data_distractor_h)); 
-listQIDtoFileName_noTikTok.push(JSON.parse(data_distractor_n));
-listQIDtoFileName_noTikTok.push(JSON.parse(data_scaling_0)); 
-listQIDtoFileName_noTikTok.push(JSON.parse(data_scaling_1));
-listQIDtoFileName_noTikTok.push(JSON.parse(data_scaling_2)); 
+// var listQIDtoFileName_noTikTok = []; 
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_measurement_nf)); 
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_measurement_f));
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_distractor_h)); 
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_distractor_n));
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_scaling_0)); 
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_scaling_1));
+// listQIDtoFileName_noTikTok.push(JSON.parse(data_scaling_2)); 
 
-var listStrFilesBsln_noTikTok = [];
-listStrFilesBsln_noTikTok.push("noTikTok_measurement_nf");
-listStrFilesBsln_noTikTok.push("noTikTok_measurement_f");
-listStrFilesBsln_noTikTok.push("noTikTok_distractor_h");
-listStrFilesBsln_noTikTok.push("noTikTok_distractor_n");
-listStrFilesBsln_noTikTok.push("noTikTok_scaling_0");
-listStrFilesBsln_noTikTok.push("noTikTok_scaling_1");
-listStrFilesBsln_noTikTok.push("noTikTok_scaling_2");
+// var listStrFilesBsln_noTikTok = [];
+// listStrFilesBsln_noTikTok.push("noTikTok_measurement_nf");
+// listStrFilesBsln_noTikTok.push("noTikTok_measurement_f");
+// listStrFilesBsln_noTikTok.push("noTikTok_distractor_h");
+// listStrFilesBsln_noTikTok.push("noTikTok_distractor_n");
+// listStrFilesBsln_noTikTok.push("noTikTok_scaling_0");
+// listStrFilesBsln_noTikTok.push("noTikTok_scaling_1");
+// listStrFilesBsln_noTikTok.push("noTikTok_scaling_2");
+
+var listQIDtoFileName_noTikTok_withJason = []; 
+// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_measurement_nf)); 
+listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_measurement_f));
+listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_distractor_h)); 
+// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_distractor_n));
+listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_0)); 
+// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_1));
+// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_2)); 
+
+var listStrFilesBsln_noTikTok_withJason = [];
+// listStrFilesBsln_noTikTok_withJason.push("noTikTok_measurement_nf");
+listStrFilesBsln_noTikTok_withJason.push("withJason_measurement_f");
+listStrFilesBsln_noTikTok_withJason.push("withJason_distractor_h");
+// listStrFilesBsln_noTikTok_withJason.push("noTikTok_distractor_n");
+listStrFilesBsln_noTikTok_withJason.push("withJason_scaling_0");
+// listStrFilesBsln_noTikTok_withJason.push("noTikTok_scaling_1");
+// listStrFilesBsln_noTikTok_withJason.push("noTikTok_scaling_2");
+
 
 /** Function calls to generate baseline files. Uncomment selections relevant. 
  * The code requires to be run three times, uncommenting each section which generates a file first. Could be made better but we are in a rush.
@@ -784,22 +813,22 @@ listStrFilesBsln_noTikTok.push("noTikTok_scaling_2");
 // ======== Prior to TikTok trend
 // ---- Generate baselines -- fluent & first language // still ok on 2021_11_03
 // console.log("---- Generate baselines")
-// for (var i=0; i < listQIDtoFileName_noTikTok.length; i++)
+// for (var i=0; i < listQIDtoFileName_noTikTok_withJason.length; i++)
 // {
-//     generateBaselineCSV(listQIDtoFileName_noTikTok[i],listStrFilesBsln_noTikTok[i]);  
+//     generateBaselineCSV(listQIDtoFileName_noTikTok_withJason[i],listStrFilesBsln_noTikTok_withJason[i]);  
 // }
 
 // // ---- Filter out answers with wrong intro // seems ok on 2021_11_03
 // console.log("---- Filter out answers with wrong intro.")
-// for (var i=0; i < csvFilePathArray_noTikTok.length;i++){
-//     // writeNoFilterWrongAnswersToIntro(csvFilePathArray_noTikTok[i]); // to use if we wish outputs without filters
-//     writeFilterWrongAnswersToIntro(csvFilePathArray_noTikTok[i], "_noTikTok_withLog2")
+// for (var i=0; i < csvFilePathArray_withJason.length;i++){
+//     writeNoFilterWrongAnswersToIntro(csvFilePathArray_withJason[i]); // to use if we wish outputs without filters
+//     //writeFilterWrongAnswersToIntro(csvFilePathArray_withJason[i], "_withJason_withLog2")
 // }
 
-// ---- Generate structured files of answers
-console.log("---- Generate structured files of answers, csvFilePathArray_noTikTok: ",csvFilePathArray_noTikTok)
-for (var i=0; i < listQIDtoFileName_noTikTok.length; i++){
-    console.log("csvFilePathArray_noTikTok[i]: ",csvFilePathArray_noTikTok[i]);
-    // newNoFilterGenerateModifiedCSV(listQIDtoFileName_noTikTok[i], csvFilePathArray_noTikTok[i])
-    newGenerateModifiedCSV (listQIDtoFileName_noTikTok[i], csvFilePathArray_noTikTok[i], "" , false, "_noTikTok_withLog2" )
+// // // ---- Generate structured files of answers
+console.log("---- Generate structured files of answers, csvFilePathArray_withJason: ",csvFilePathArray_noTikTok)
+for (var i=0; i < listQIDtoFileName_noTikTok_withJason.length; i++){
+    console.log("csvFilePathArray_withJason[i]: ",csvFilePathArray_withJason[i]);
+    newNoFilterGenerateModifiedCSV(listQIDtoFileName_noTikTok_withJason[i], csvFilePathArray_withJason[i])
+    //newGenerateModifiedCSV (listQIDtoFileName_noTikTok_withJason[i], csvFilePathArray_withJason[i], "" , false, "_withJason_withLog2" )
 }

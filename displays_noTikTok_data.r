@@ -6,6 +6,8 @@ library(ggplot2)
 library(dplyr)
 library(lattice)
 library(scales)
+library(FSA)
+
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 source("functions_dataStudies.r")
 
@@ -22,6 +24,10 @@ length( unique (d_measurement_all_noTikTok$ResponseId ) )
 # d_measurement_all_noTikTok_filteredRigorous <- filter_someTrust0or5_impossibleQualAnswer(d_measurement_all_noTikTok)
 d_measurement_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibleQualAnswer(d_measurement_all_noTikTok)
 length( unique (d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId ) )
+
+
+d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok)
+
 
 d_measurement_all_noTikTok_enriched <- enrichData_impossibleQualAnswer(enrichData_withTrustAll0or5(d_measurement_all_noTikTok))
 length ( unique(d_measurement_all_noTikTok_enriched$ResponseId ) )
@@ -46,7 +52,7 @@ dim(d_distractor_all_noTikTok)
 dim(d_scaling_all_noTikTok)
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
-dfCI_global_differences_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
                                                                           factorDMask= FALSE,
@@ -56,8 +62,45 @@ dfCI_global_differences_TikTok_measurement_factored <- combine_genPlot_CIandDiff
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
+View(d_measurement_all_noTikTok_filteredSemiRigorous)
+View(dfCI_global_TikTok_measurement_factored)
+dfCI_global_TikTok_measurement_factored$orderCategoryCombination[1]
+d_measurement_all_noTikTok_filteredSemiRigorous$dComplex_focus[80]
+View(renamed_d)
+View(dfCI_global_TikTok_measurement_factored)
+
+length(dfCI_global_TikTok_measurement_factored$orderCategoryCombination)
+str_detect(dfCI_global_TikTok_measurement_factored$orderCategoryCombination[1] , "focus complexity:" )
+selecColName <- "focus"
+modifiedColumn <- c()
+select(d_measurement_all_noTikTok_filteredSemiRigorous,selecColName)
+for (i in select(d_measurement_all_noTikTok_filteredSemiRigorous,selecColName) ){
+  # cat(" ",i)
+  modifiedColumn <- c(modifiedColumn, paste( selecColName,": ",i, sep="" ) )
+}
+modifiedColumn
+
+d_measurement_forViolin <- prettyEnrichCategory(d_measurement_all_noTikTok_filteredSemiRigorous, dfCI_global_TikTok_measurement_factored )
+d_measurement_forViolin$orderCategoryCombination
+View(d_measurement_forViolin)
+
 # ---- CorrectB # looks weird with logFunction = TRUE
-combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok,factorFocus = TRUE, factorDComplex_focus = FALSE, factorDMask = TRUE, factorDifference="dComplex_focus" , logFunction=FALSE)
+combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok_filteredSemiRigorous,
+                                            factorFocus = TRUE, 
+                                            factorDComplex_focus = FALSE, 
+                                            factorDMask = TRUE, 
+                                            factorDifference="dComplex_focus",
+                                            )
+
+# -- CorrectB filtere of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
+combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+                                            factorFocus = TRUE, 
+                                            factorDComplex_focus = FALSE, 
+                                            factorDMask = TRUE, 
+                                            factorDifference="dComplex_focus",
+)
+
+
 
 # Distributions of errors: get the numbers to get the CHI square
 correctBdistribution <- df_Distribution_correctB_per_idc(d_measurement_all_noTikTok)
@@ -74,8 +117,44 @@ genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok)
 
 # --trust according to question type
 trust_overAll <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB) )
+trust_overAll
+
+# dunnTest(data= list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB))
 # -- trust according to focus
 trustA1_focus <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA1[d_measurement_all_noTikTok$dMask=="easy"], d_measurement_all_noTikTok$trustA1[d_measurement_all_noTikTok$dMask=="medium"], d_measurement_all_noTikTok$trustA1[d_measurement_all_noTikTok$dMask=="hard"] ) )
+
+dunnTest(x = list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB), g =  ~ dMask)
+
+dunnTest( trustA1~trustB, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+
+# Strange result here...
+mean(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+mean(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="medium"])
+mean(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="hard"])
+
+length(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy" & d_measurement_all_noTikTok_filteredSemiRigorous$trustA3==5])
+length(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="medium" & d_measurement_all_noTikTok_filteredSemiRigorous$trustA3==5])
+length(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="hard"& d_measurement_all_noTikTok_filteredSemiRigorous$trustA3==5])
+
+plot(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3 )
+
+min(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+min(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+min(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+
+max(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+max(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+max(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
+
+
+dunnTest( trustA1~focus, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+dunnTest( trustA2~focus, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+dunnTest( trustA3~focus, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+dunnTest( trustB~focus, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+dunnTest( trustB~trustA1, data = d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql",], method="bonferroni" )
+class(d_measurement_all_noTikTok$trustA1[5])
+
+
 trustA2_focus <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA2[d_measurement_all_noTikTok$dMask=="easy"], d_measurement_all_noTikTok$trustA2[d_measurement_all_noTikTok$dMask=="medium"], d_measurement_all_noTikTok$trustA2[d_measurement_all_noTikTok$dMask=="hard"] ) )
 trustA3_focus <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA3[d_measurement_all_noTikTok$dMask=="easy"], d_measurement_all_noTikTok$trustA3[d_measurement_all_noTikTok$dMask=="medium"], d_measurement_all_noTikTok$trustA3[d_measurement_all_noTikTok$dMask=="hard"] ) )
 trustB_focus <- kruskal.test( x= list( d_measurement_all_noTikTok$trustB[d_measurement_all_noTikTok$dMask=="easy"], d_measurement_all_noTikTok$trustB[d_measurement_all_noTikTok$dMask=="medium"], d_measurement_all_noTikTok$trustB[d_measurement_all_noTikTok$dMask=="hard"] ) )
@@ -85,9 +164,19 @@ trustA2_Mask <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA2[d_meas
 trustA3_Mask <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA3[d_measurement_all_noTikTok$dMask=="easy"], d_measurement_all_noTikTok$trustA3[d_measurement_all_noTikTok$dMask=="medium"], d_measurement_all_noTikTok$trustA3[d_measurement_all_noTikTok$dMask=="hard"] ) )
 trustB_Mask <-  kruskal.test( x= list( d_measurement_all_noTikTok$trustB[d_measurement_all_noTikTok$focus=="WHAT_Ql"], d_measurement_all_noTikTok$trustB[d_measurement_all_noTikTok$focus=="WHAT_Qn"], d_measurement_all_noTikTok$trustB[d_measurement_all_noTikTok$focus=="WHERE"] ) )
 
-genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok[d_measurement_all_noTikTok$focus=="WHAT_Qn",])
-genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok[d_measurement_all_noTikTok$focus=="WHAT_Ql",])
-genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok[d_measurement_all_noTikTok$focus=="WHERE",])
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous)
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql",])
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Qn",])
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHERE",])
+
+median(d_measurement_all_noTikTok_filteredSemiRigorous$trustA1)
+median(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3)
+
+
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy",])
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="medium",])
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="hard",])
+
 
 # Not interesting but useful for tests?
 # genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok[d_measurement_all_noTikTok$focus=="WHAT_Ql",])
@@ -116,8 +205,10 @@ dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_di
 d_distractor_all_noTikTok_errorRates <- combine_genPlot_ErrorRate_CIandDifferences( 
   d=d_distractor_all_noTikTok,factorFocus = TRUE, factorDComplex_focus = TRUE, factorDMask = FALSE, factorDifference="distractor" )
 
+d_distractor_all_noTikTok$correctB[d_distractor_all_noTikTok$focus=="WHAT_Qn" & d_distractor_all_noTikTok$dComplex_focus=="H"]
+
 d_distractor_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( 
-  d=d_distractor_all_noTikTok,factorFocus = TRUE, factorDComplex_focus = FALSE, factorDMask = TRUE, factorDifference="distractor" )
+  d=d_distractor_all_noTikTok,factorFocus = TRUE, factorDComplex_focus = FALSE, factorDMask = FALSE, factorDifference="dMask" )
 
 # Trust
 genAndPlotTrust_measurement_overall(d_distractor_all_noTikTok[d_distractor_all_noTikTok$distractor=="h",])
@@ -128,6 +219,31 @@ trustA2_distractor <- kruskal.test( x= list( d_distractor_all_noTikTok$trustA2[d
 trustA3_distractor <- kruskal.test( x= list( d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="h"], d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="n"] ) )
 trustB_distractor <- kruskal.test( x= list( d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="h"], d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="n"] ) )
 
+
+median(d_distractor_all_noTikTok$trustA1[d_distractor_all_noTikTok$distractor=="h"])
+mean(d_distractor_all_noTikTok$trustA1[d_distractor_all_noTikTok$distractor=="h"])
+median(d_distractor_all_noTikTok$trustA1[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustA1[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustA1[d_distractor_all_noTikTok$distractor=="h"]) - mean(d_distractor_all_noTikTok$trustA1[d_distractor_all_noTikTok$distractor=="n"])
+
+median(d_distractor_all_noTikTok$trustA2[d_distractor_all_noTikTok$distractor=="h"])
+mean(d_distractor_all_noTikTok$trustA2[d_distractor_all_noTikTok$distractor=="h"])
+median(d_distractor_all_noTikTok$trustA2[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustA2[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustA2[d_distractor_all_noTikTok$distractor=="h"]) - mean(d_distractor_all_noTikTok$trustA2[d_distractor_all_noTikTok$distractor=="n"])
+
+
+median(d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="h"])
+mean(d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="h"])
+median(d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="h"]) - mean(d_distractor_all_noTikTok$trustA3[d_distractor_all_noTikTok$distractor=="n"])
+
+median(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="h"])
+mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="h"])
+median(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="n"])
+mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="h"]) - mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="n"])
 
 
 # いいい Scaling いいい
@@ -157,15 +273,18 @@ dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_Error
                                        factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling");
 
 
+d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( 
+  d=d_scaling_all_noTikTok,factorFocus = FALSE, factorDComplex_focus = FALSE, factorDMask = TRUE, factorDifference="scaling" )
+
 genAndPlotTrust_measurement_overall(d_scaling_all_noTikTok[d_scaling_all_noTikTok$scaling==0,])
 genAndPlotTrust_measurement_overall(d_scaling_all_noTikTok[d_scaling_all_noTikTok$scaling==1,])
 genAndPlotTrust_measurement_overall(d_scaling_all_noTikTok[d_scaling_all_noTikTok$scaling==2,])
 
-
 trustA1_scaling <- kruskal.test( x= list( d_scaling_all_noTikTok$trustA1[d_scaling_all_noTikTok$scaling==0], d_scaling_all_noTikTok$trustA1[d_scaling_all_noTikTok$scaling==1], d_scaling_all_noTikTok$trustA1[d_scaling_all_noTikTok$scaling==2]  ) )
 trustA2_scaling <- kruskal.test( x= list( d_scaling_all_noTikTok$trustA2[d_scaling_all_noTikTok$scaling==0], d_scaling_all_noTikTok$trustA2[d_scaling_all_noTikTok$scaling==1], d_scaling_all_noTikTok$trustA2[d_scaling_all_noTikTok$scaling==2] ) )
 trustA3_scaling <- kruskal.test( x= list( d_scaling_all_noTikTok$trustA3[d_scaling_all_noTikTok$scaling==0], d_scaling_all_noTikTok$trustA3[d_scaling_all_noTikTok$scaling==1], d_scaling_all_noTikTok$trustA3[d_scaling_all_noTikTok$scaling==2] ) )
-trustB_scaling <- kruskal.test( x= list( d_scaling_all_noTikTok$trustB[d_scaling_all_noTikTok$scaling==0], d_scaling_all_noTikTok$trustB[d_scaling_all_noTikTok$scaling==1], d_scaling_all_noTikTok$trustB[d_scaling_all_noTikTok$scaling==2] ) )
+trustB_scaling <-  kruskal.test( x= list( d_scaling_all_noTikTok$trustB[d_scaling_all_noTikTok$scaling==0], d_scaling_all_noTikTok$trustB[d_scaling_all_noTikTok$scaling==1], d_scaling_all_noTikTok$trustB[d_scaling_all_noTikTok$scaling==2] ) )
+
 
 
 length ( unique ( d_scaling_all_noTikTok$ResponseId ) )

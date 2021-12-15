@@ -40,7 +40,7 @@ length(aggregate_oct$Status[aggregate_oct$Finished=="True" & (aggregate_oct$Q11!
 
 # ======
 
-# ====== data from noTikTok measurement study.
+# ====== data from noTikTok aggregated studies.
 d_aggregate_noTikTok_firstLanguage <- read.table(file="Studies_2021_11_12/Results/measurement_aggregate-measurement-distractor-scaling1_headerAdapted.csv",TRUE, ",")
 dim(d_aggregate_noTikTok_firstLanguage)
 length(d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Q11!="Down"]) # count number of errors for test question about direction of trajectory
@@ -50,7 +50,54 @@ length(d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstL
 length(d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Q14!="From a little before time 70 up to a little before time 80"]) # count number of errors to identify masks times 
 length(d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True" & (d_aggregate_noTikTok_firstLanguage$Q11!="Down" | d_aggregate_noTikTok_firstLanguage$Q12!="From time 10 to 30 and time 60 to 70" | d_aggregate_noTikTok_firstLanguage$Q13!="Time 30" | d_aggregate_noTikTok_firstLanguage$Q17!="On the first long straight section" | d_aggregate_noTikTok_firstLanguage$Q14!="From a little before time 70 up to a little before time 80")])
 length(d_aggregate_noTikTok_firstLanguage$ResponseId[d_aggregate_noTikTok_firstLanguage$Finished=="True"])
-# ======
+# ====== data from noTikTok measurement study
+d_measurement_noflip_noTikTok_firstLanguage <- read.table(file="Studies_2021_11_12/Results/measurement_nf_headerAdapted.csv",TRUE, ",")
+d_measurement_flip_noTikTok_firstLanguage <- read.table(file="Studies_2021_11_12/Results/measurement_f_headerAdapted.csv",TRUE, ",")
+
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Q11!="Down"]) # count number of errors for test question about direction of trajectory
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Q11!="Down"]) # count number of errors for test question about direction of trajectory
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Q12!="From time 10 to 30 and time 60 to 70"]) # count number of errors for test to assess quality
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Q12!="From time 10 to 30 and time 60 to 70"]) # count number of errors for test to assess quality
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Q13!="Time 30"]) # count number of errors to identify time with minimum value
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Q13!="Time 30"]) # count number of errors to identify time with minimum value
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Q17!="On the first long straight section"]) # count number of errors to identify position with minimum value
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Q17!="On the first long straight section"]) # count number of errors to identify position with minimum value
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Q14!="From a little before time 70 up to a little before time 80"]) # count number of errors to identify masks times 
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Q14!="From a little before time 70 up to a little before time 80"]) # count number of errors to identify masks times 
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Finished=="True" & (d_measurement_noflip_noTikTok_firstLanguage$Q11!="Down" | d_measurement_noflip_noTikTok_firstLanguage$Q12!="From time 10 to 30 and time 60 to 70" | d_measurement_noflip_noTikTok_firstLanguage$Q13!="Time 30" | d_measurement_noflip_noTikTok_firstLanguage$Q17!="On the first long straight section" | d_measurement_noflip_noTikTok_firstLanguage$Q14!="From a little before time 70 up to a little before time 80")])
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Finished=="True" & (d_measurement_flip_noTikTok_firstLanguage$Q11!="Down" | d_measurement_flip_noTikTok_firstLanguage$Q12!="From time 10 to 30 and time 60 to 70" | d_measurement_flip_noTikTok_firstLanguage$Q13!="Time 30" | d_measurement_flip_noTikTok_firstLanguage$Q17!="On the first long straight section" | d_measurement_flip_noTikTok_firstLanguage$Q14!="From a little before time 70 up to a little before time 80")])
+length(d_measurement_noflip_noTikTok_firstLanguage$ResponseId[d_measurement_noflip_noTikTok_firstLanguage$Finished=="True"])
+length(d_measurement_flip_noTikTok_firstLanguage$ResponseId[d_measurement_flip_noTikTok_firstLanguage$Finished=="True"])
+
+
+# ====== data from cases Jason tried
+# raw
+d_scaling_0_withJason <- read.table(file="Studies_2021_11_12/Results/scaling_0_withJason.csv",TRUE, ",")
+d_distractor_h_withJason <- read.table(file="Studies_2021_11_12/Results/distractor_h_withJason.csv",TRUE, ",")
+d_measurement_flip_withJason <- read.table(file="Studies_2021_11_12/Results/measurement_f_withJason.csv",TRUE, ",")
+# with the baselines and the differences to them
+d_noFilter_scaling_0_withJason <- read.table(file="data/transformed/noFilter_survey_scaling_0_withJason.csv",TRUE, ",")
+d_noFilter_distractor_h_withJason <- read.table(file="data/transformed/noFilter_survey_distractor_h_withJason.csv",TRUE, ",")
+d_noFilter_measurement_flip_withJason <- read.table(file="data/transformed/noFilter_survey_scaling_0_withJason.csv",TRUE, ",")
+d_scaling_0_onlyJason <-filterAccordingToMonth(d_noFilter_scaling_0_withJason,'12')
+d_distractor_h_onlyJason <-filterAccordingToMonth(d_noFilter_distractor_h_withJason,'12')
+d_measurement_f_onlyJason <-filterAccordingToMonth(d_noFilter_measurement_flip_withJason,'12')
+
+ggplot(d_scaling_0_onlyJason,aes(x=uniqueCntrQuestion,y=diffA1,col=focus))+geom_point() + ggtitle("Jason - Scaling 0 - MwM")
+ggplot(d_scaling_0_onlyJason,aes(x=uniqueCntrQuestion,y=diffA2,col=focus))+geom_point() + ggtitle("Jason - Scaling 0 - OM")
+ggplot(d_scaling_0_onlyJason,aes(x=uniqueCntrQuestion,y=diffA3,col=focus))+geom_point() + ggtitle("Jason - Scaling 0 - MP")
+ggplot(d_scaling_0_onlyJason,aes(x=uniqueCntrQuestion,y=correctB,col=focus))+geom_point() + ggtitle("Jason - Scaling 0 - SC")
+
+ggplot(d_distractor_h_onlyJason,aes(x=uniqueCntrQuestion,y=diffA1,col=focus))+geom_point() + ggtitle("Jason - Distractor hidden - MwM")
+ggplot(d_distractor_h_onlyJason,aes(x=uniqueCntrQuestion,y=diffA2,col=focus))+geom_point() + ggtitle("Jason - Distractor hidden - OM")
+ggplot(d_distractor_h_onlyJason,aes(x=uniqueCntrQuestion,y=diffA3,col=focus))+geom_point() + ggtitle("Jason - Distractor hidden - MP")
+ggplot(d_distractor_h_onlyJason,aes(x=uniqueCntrQuestion,y=correctB,col=focus))+geom_point() + ggtitle("Jason - Distractor hidden - SC")
+
+ggplot(d_measurement_f_onlyJason,aes(x=uniqueCntrQuestion,y=diffA1,col=focus))+geom_point() + ggtitle("Jason - Measurement flipped - MwM")
+ggplot(d_measurement_f_onlyJason,aes(x=uniqueCntrQuestion,y=diffA2,col=focus))+geom_point() + ggtitle("Jason - Measurement flipped - OM")
+ggplot(d_measurement_f_onlyJason,aes(x=uniqueCntrQuestion,y=diffA3,col=focus))+geom_point() + ggtitle("Jason - Measurement flipped - MP")
+ggplot(d_measurement_f_onlyJason,aes(x=uniqueCntrQuestion,y=correctB,col=focus))+geom_point() + ggtitle("Jason - Measurement flipped - SC")
+
 
 # ---- Load studies untransformed
 full_distractor_n_headerAdapted_2021_11_03 <- read.table(file="data/participants_answers_headerAdapted_untransformed/full_distractor_n_headerAdapted.csv",TRUE,",")
