@@ -52,22 +52,30 @@ dim(d_distractor_all_noTikTok)
 dim(d_scaling_all_noTikTok)
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
+
 dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
-                                                                          factorDMask= FALSE,
+                                                                          factorDMask= TRUE,
                                                                           factorFocus=FALSE,
-                                                                          factorDComplex_focus=FALSE, 
-                                                                          factorDifference="focus", 
+                                                                          factorDComplex_focus=FALSE,
+                                                                          factorDifference="focus",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
 View(d_measurement_all_noTikTok_filteredSemiRigorous)
 View(dfCI_global_TikTok_measurement_factored)
+unique(dfCI_global_TikTok_measurement_factored$orderCategoryCombination)
 dfCI_global_TikTok_measurement_factored$orderCategoryCombination[1]
+
 d_measurement_all_noTikTok_filteredSemiRigorous$dComplex_focus[80]
 View(renamed_d)
 View(dfCI_global_TikTok_measurement_factored)
+
+addedOrderCategory <- prettyEnrichOrderCategory(d_measurement_all_noTikTok_filteredSemiRigorous,dfCI_global_TikTok_measurement_factored)
+unique(addedOrderCategory$orderCategoryCombination)
+unique(dfCI_global_TikTok_measurement_factored$orderCategoryCombination)
+View(addedOrderCategory)
 
 length(dfCI_global_TikTok_measurement_factored$orderCategoryCombination)
 str_detect(dfCI_global_TikTok_measurement_factored$orderCategoryCombination[1] , "focus complexity:" )
@@ -80,7 +88,7 @@ for (i in select(d_measurement_all_noTikTok_filteredSemiRigorous,selecColName) )
 }
 modifiedColumn
 
-d_measurement_forViolin <- prettyEnrichCategory(d_measurement_all_noTikTok_filteredSemiRigorous, dfCI_global_TikTok_measurement_factored )
+d_measurement_forViolin <- prettyEnrichOrderCategory(d_measurement_all_noTikTok_filteredSemiRigorous, dfCI_global_TikTok_measurement_factored )
 d_measurement_forViolin$orderCategoryCombination
 View(d_measurement_forViolin)
 
