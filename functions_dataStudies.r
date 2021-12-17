@@ -353,6 +353,8 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,M"] = "focus complexity: Medium"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,H"] = "focus complexity: Hard"
         groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus complexity: Hard","focus complexity: Medium","focus complexity: Easy"))
+        # groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("1 - focus complexity: Easy","2 - focus complexity: Medium",   "3 - focus complexity: Hard"))
+        
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Easy"] = "dComplex_focus,E"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Medium"] = "dComplex_focus,M"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Hard"] = "dComplex_focus,H"
@@ -362,6 +364,8 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,M"] = "focus complexity: Medium"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dComplex_focus,H"] = "focus complexity: Hard"
         groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus complexity: Hard","focus complexity: Medium","focus complexity: Easy"))
+        # groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("1 - focus complexity: Easy","2 - focus complexity: Medium",   "3 - focus complexity: Hard"))
+        
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Easy"] = "dComplex_focus,E"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Medium"] = "dComplex_focus,M"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus complexity: Hard"] = "dComplex_focus,H"
@@ -380,7 +384,7 @@ renameGroupedData <- function(groupedData_all) {
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Qn-WHAT_Ql"] = "focus,WHAT_Qn_WHAT_Ql"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Qn-WHERE"] = "focus,WHAT_Qn_WHERE"
         groupedData_all$category_combination[groupedData_all$category_combination == "focus: WHAT_Ql-WHERE"] = "focus,WHAT_Ql_WHERE"
-
+        
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Ql_WHAT_Qn"] = "focus: WHAT_Ql-WHAT_Qn"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Ql_WHERE"] = "focus: WHAT_Ql-WHERE"
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Qn_WHERE"] = "focus: WHAT_Qn-WHERE"
@@ -433,23 +437,41 @@ renameGroupedData <- function(groupedData_all) {
     groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "E"] = "Focus Easy"
     groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "M"] = "Focus Medium"
     groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "H"] = "Focus Hard"
-    groupedData_all$orderFocusComplex <- factor(groupedData_all$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
-    groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Easy"] = "E"
-    groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Medium"] = "M"
-    groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Hard"] = "H"
+    # groupedData_all$orderFocusComplex <- factor(groupedData_all$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
+    # groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Easy"] = "E"
+    # groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Medium"] = "M"
+    # groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Hard"] = "H"
   }
-  if ("scaling" %in% colnames(groupedData_all)) {
-    # cat("\n~~ scaling in colnames")
-    groupedData_all$orderedScaling <- NA
-    groupedData_all$scaling = as.character(groupedData_all$scaling)
-    groupedData_all$orderedScaling[groupedData_all$scaling == 0] <- "Scaling 0"
-    groupedData_all$orderedScaling[groupedData_all$scaling == 1] <- "Scaling 1"
-    groupedData_all$orderedScaling[groupedData_all$scaling == 2] <- "Scaling 2"
-  }
+  # if ("scaling" %in% colnames(groupedData_all)) {
+  #   cat("\n~~~\tscaling in colnames")
+  #   groupedData_all$orderedScaling <- NA
+  #   groupedData_all$scaling = as.character(groupedData_all$scaling)
+  #   groupedData_all$orderedScaling[groupedData_all$scaling == 0] <- "Scaling 0"
+  #   groupedData_all$orderedScaling[groupedData_all$scaling == 1] <- "Scaling 1"
+  #   groupedData_all$orderedScaling[groupedData_all$scaling == 2] <- "Scaling 2"
+  #   groupedData_all$orderedScaling <- factor(groupedData_all$scaling,c("Scaling 0","Scaling 1","Scaling 2"))
+  #   groupedData_all$scaling[groupedData_all$scaling == "Scaling 0"] = 0
+  #   groupedData_all$scaling[groupedData_all$scaling == "Scaling 1"] = 1
+  #   groupedData_all$scaling[groupedData_all$scaling == "Scaling 2"] = 2
+  # }
+  # if ("focus" %in% colnames(groupedData_all)){
+  #   cat("\n~~~~\tfocus in colnames")
+  #   groupedData_all$orderedFocus <- NA
+  #   groupedData_all$focus = as.character(groupedData_all$focus)
+  #   groupedData_all$orderedFocus[groupedData_all$focus == "WHAT_Ql"] <- "WHAT_Ql"
+  #   groupedData_all$orderedFocus[groupedData_all$focus == "WHAT_Qn"] <- "WHAT_Qn"
+  #   groupedData_all$orderedFocus[groupedData_all$focus == "WHERE"] <- "WHERE"
+  #   groupedData_all$orderedFocus <- factor(groupedData_all$focus,c("WHAT_Ql","WHAT_Qn","WHERE"))
+  #   groupedData_all$focus[groupedData_all$focus == "WHAT_Ql"] = "WHAT_Ql"
+  #   groupedData_all$focus[groupedData_all$focus == "WHAT_Qn"] = "WHAT_Qn"
+  #   groupedData_all$focus[groupedData_all$focus == "WHERE"] = "WHERE"
+  # 
+  # }
   
   # cat("\nSO how are the questions now...: ",length(groupedData_all$question),", and what of the orderCategoryCombination[1]: ",groupedData_all$orderCategoryCombination[1], ", colnames(groupedData_all)",colnames(groupedData_all),", groupedData_all$orderCategoryCombination[5]: ",groupedData_all$orderCategoryCombination[5],"\n\n")
   return (groupedData_all);
 }
+
 
 
 # we need a function to display differences between scaling groups...! With confidence intervals... get the values according to groups, make boot for each group, make the sample proportion, and then put it as the middle
@@ -1457,17 +1479,13 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   # d <- filter_allTrust0or5_impossibleQualAnswer(d)
   
   factorVariation <- factorDifference
-  arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
+  arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); 
+  arrDComplex_focus <- c("E","M","H");  
   if (factorScaling | factorVariation=="scaling"){arrFocus <- c("WHAT_Qn","WHAT_Ql")}  
   
   # IMPORTANT NOTE ABOUT logFunction. If we use the log_diffA1 instead of diffA1, then isn't the usage again of the formula transforming it again?! To think about
   arrQuestions <- c();
-  if (!useLogDiff){
-    arrQuestions <- c("diffA1","diffA2","diffA3");
-  } 
-  else {
-    arrQuestions <- c("log_diffA1","log_diffA2","log_diffA3");
-  }
+  if (!useLogDiff){ arrQuestions <- c("diffA1","diffA2","diffA3"); } else { arrQuestions <- c("log_diffA1","log_diffA2","log_diffA3"); }
   
   numGraphs <- length(arrQuestions); 
   groupedPlotCI_1 <- NULL;groupedPlotCI_2 <- NULL;groupedPlotCI_3 <- NULL;
@@ -1478,7 +1496,10 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]  
   } 
   else {
-    factor1 <- factorArr[arrMixOrderFormula[1]]; factor2 <- factorArr[arrMixOrderFormula[2]]; factor3 <- factorArr[arrMixOrderFormula[3]]; factor4 <- factorArr[arrMixOrderFormula[4]];
+    factor1 <- factorArr[arrMixOrderFormula[1]]; 
+    factor2 <- factorArr[arrMixOrderFormula[2]]; 
+    factor3 <- factorArr[arrMixOrderFormula[3]]; 
+    factor4 <- factorArr[arrMixOrderFormula[4]];
   }
   numFactor <- length(factorArr)
   cat("\n}}}}factorArr: ",toString(factorArr))
@@ -2013,11 +2034,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   
   dfCI_global <- renameGroupedData(dfCI_global)
   dfCI_global_differences <- renameGroupedData(dfCI_global_differences)
-  cat("\nrenaming done...")
-  cat("\ndid the renaming mess up dimensions of dfCI_global: ",dim(dfCI_global),", and how many items in question? ",length(dfCI_global$question))
-  cat("\nand what about dfCI_global_differences: ",dim(dfCI_global_differences),", and how many items in question? ",length(dfCI_global_differences$question))
-  
-  
+
   if (numFactor ==3 ){
     if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
       dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
@@ -2044,7 +2061,6 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize_CI <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI));
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences));
   
-  
   # edge according to the CI
   edgeSize <- max(edgeSize_CI,edgeSize_differences);
   # edge according to the values
@@ -2052,9 +2068,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   maxabsEdgeValue <- max(max(select(d_measurement_all_noTikTok,arrQuestions[1])) , max(select(d_measurement_all_noTikTok,arrQuestions[2])) , max(select(d_measurement_all_noTikTok,arrQuestions[3])) )
   edgeSize <- max(edgeSize, maxabsEdgeValue)
   
-  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize)
-  cat("\n^^^^what's the length of question for dfCI_global now? ",length(dfCI_global$question))
-  cat("\ndfCI_global$orderAdded: ", dfCI_global$orderAdded)
+  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,"\n^^^^what's the length of question for dfCI_global now? ",length(dfCI_global$question), "\ndfCI_global$orderAdded: ", dfCI_global$orderAdded)
   strFormula <- ""
   if (numFactor==2){
     strFormula<-paste("~",factor1,"+",factor2)
@@ -2089,29 +2103,30 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     cat("\nno wrapping according to formula")
   } 
   
-  groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL;groupedPlotCI_3<- NULL;
+  groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL; groupedPlotCI_3<- NULL;
   group_differencesedPlotCI_1<-NULL;group_differencesedPlotCI_2<-NULL;group_differencesedPlotCI_3<-NULL;
-  cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global))
-  cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
-  
+  cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global)); cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
   dfCI_global_differences <- addInfoCiDifferenceSignificant(dfCI_global_differences)
-  # cat("\n&#|@ added info about difference to dfCI_global_differences: ",toString(dfCI_global_differences))
-  # check significance # significantDifference # cat("\n&#|@ added info about difference to dfCI_global_differences$significantDifference: ",dfCI_global_differences$significantDifference) # cat("\n&#|@ class(dfCI_global_differences$significantDifference[4])",class(dfCI_global_differences$significantDifference[4]) )
-  wth_array <- dfCI_global_differences$significantDifference
-  # dfCI_global_differences$significantDifference <- as.logical(TRUE * round(runif( length(dfCI_global_differences$significantDifference) , 0 , 1)) ); # dfCI_global_differences$significantDifference <- c(TRUE,TRUE,TRUE,FALSE,TRUE,FALSE,TRUE,TRUE,TRUE) # dfCI_global_differences$significantDifference <- as.logical(dfCI_global_differences$significantDifference ); # for test...
-  # cat("\n&#|@ plus added info about difference to dfCI_global_differences$significantDifference: ",dfCI_global_differences$significantDifference) # cat("\n&#|@ plus change class(dfCI_global_differences$significantDifference[4])",class(dfCI_global_differences$significantDifference[4]) ) # cat("\n@_-|[ wth_array: ",wth_array)
-  
+
   # histogram...
   # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
   # geom_histogram()
-  # or violin? 
-  # geom_violin(aes(x=cut, y=price)) 
+  # or violin? # geom_violin(aes(x=cut, y=price))
   
-  cat("\n\n\t§§§§arrQuestions: ",arrQuestions, "\n\n unique(dfCI_global$orderCategoryCombination): ",unique(dfCI_global$orderCategoryCombination),
-      "\n\t toString(unique(dfCI_global$orderCategoryCombination)): ",toString(unique(dfCI_global$orderCategoryCombination)))
+  cat("\n\n\t§§§§arrQuestions: ",arrQuestions,
+      "\n\nunique(dfCI_global$orderCategoryCombination): ",unique(dfCI_global$orderCategoryCombination),
+      "\n\ttoString(unique(dfCI_global$orderCategoryCombination)): ",toString(unique(dfCI_global$orderCategoryCombination)))
   d <- prettyEnrichOrderCategory(d,dfCI_global)
-  cat("\n\n\t§§§§§§Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),"\n\nbtw strFormula: ",strFormula,
+  cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
+      "\n\nbtw strFormula: ",strFormula,
       "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)),"\n\n")
+  
+  ####### TESTING!!!
+  dfCI_global[sort(dfCI_global$orderCategoryCombination)] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
+  ######
+  
+  cat("\n\n\ndfCI_global$orderCategoryCombination: ", dfCI_global$orderCategoryCombination,
+      "\nd$orderCategoryCombination: ",d$orderCategoryCombination)
   
   strTitleTotal <- NULL;
   if (numFactor!=0){ 
@@ -2126,9 +2141,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
       labs(title = 'Mean with Mask', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), axis.text.y = element_blank() # }}}} Hid that following advices from Jason{{{{
+        strip.background = element_blank(), 
+        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank() # }}}} Hid that following advices from Jason{{{{
       )
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -2140,9 +2154,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Overall Mean', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       )
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -2154,9 +2166,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mask Proportion', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       )
     # 
     groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[1],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2169,10 +2179,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       ggtitle("Differences for Mean with Mask") +
       labs(title = 'Differences for Mean with Mask', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), 
-        axis.text.y = element_blank(), # }}}} Hid that following advices from Jason{{{{
+        strip.background = element_blank(), 
+        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), # }}}} Hid that following advices from Jason{{{{
         legend.position="none"
       ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
@@ -2186,10 +2194,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       ggtitle("Differences for Overall Means")  + 
       labs(title = 'Differences for Overall Means', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-        legend.position="none"
+        strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none"
       )+
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
     groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2203,7 +2208,6 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
       labs(title = 'Differences for Mask Proportion', y = "" ) +
       theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
-    
   } 
   else {
     cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
@@ -2216,7 +2220,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Mean with Mask")+
       theme(
-        strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.background = element_blank(), 
+        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       ) +
       labs(title = "Mean with Mask",y="")
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y= orderCategoryCombination )) +
@@ -2264,10 +2269,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       ggtitle("Differences for Mean with Mask") +
       labs(title = 'Differences for Mean with Mask', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        strip.text.x = element_blank(),
-        axis.ticks.y = element_blank(), 
-        axis.text.y = element_blank(),
+        strip.background = element_blank(), 
+        # strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
         legend.position="none"
       )
     groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2534,30 +2537,27 @@ enrichData_impossibleQualAnswer <- function(d){
 }
 
 prettyEnrichOrderCategory <- function (d,dfCI){
+  cat("\n&&&&&&prettyEnrichOrderCategory&&&&&&")
   d$orderCategoryCombination <- NA;
   # cat("\n~dfCI$orderCategoryCombination: ",dfCI$orderCategoryCombination,", dfCI$orderCategoryCombination[1]: ",dfCI$orderCategoryCombination[1], "\n\t toString(dfCI$orderCategoryCombination): ", toString(dfCI$orderCategoryCombination))
   is_focus_complexity <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "focus complexity:" )
   is_focus <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "focus:" )
   is_mask <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "Mask:" )
-  # cat("\n--\tis_focus_complexity: ",is_focus_complexity,", is_focus: ",is_focus,", is_mask: ",is_mask)
+  cat("\n--\tis_focus_complexity: ",is_focus_complexity,", is_focus: ",is_focus,", is_mask: ",is_mask)
   selecColName <- ""
   nameColPaste <- ""
   if (is_focus_complexity){
-    selecColName <- "dComplex_focus"
-    nameColPaste <- "focus complexity"
+    selecColName <- "dComplex_focus"; nameColPaste <- "focus complexity"
   }  else if (is_focus){
-    selecColName <- "focus"
-    nameColPaste<- "focus"
+    selecColName <- "focus"; nameColPaste<- "focus"
   } else if (is_mask){
-    selecColName <- "dMask"
-    nameColPaste <- "Mask"
+    selecColName <- "dMask"; nameColPaste <- "Mask"
   }
   cat('\n##\t selecColName: ',selecColName,', nameColPaste: ',nameColPaste,"\nunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination), "\ntoString(unique(dfCI$orderCategoryCombination)): ",toString(unique(dfCI$orderCategoryCombination)))
-  d$orderCategoryCombination  <- NA;
+  d$categoryCombination  <- NA;
   arrStrCategoryCombination <- c()
-  for (i in 1:length(select(d,selecColName)[,1] ) ){
+  for (i in 1:length(select(d,selecColName)[,1] ) ) {
     valVariant <- select(d,selecColName)[i,1]
-    # cat("\n_",valVariant,"-",i)
     if ( identical(valVariant,"E") ){
       valVariant <- "Easy"
     } else if ( identical(valVariant,"M") ){
@@ -2570,16 +2570,35 @@ prettyEnrichOrderCategory <- function (d,dfCI){
       valVariant <- "Medium"
     } else if ( identical(valVariant,"hard") ){
       valVariant <- "Hard"
-    } 
-    cat("\tTo assign valVariant: ",valVariant)
+    } else if (identical(valVariant,"WHAT_Qn") ){
+      # cat("_identical WHAT_Qn_")
+      valVariant <- "WHAT_Qn"
+    }else if (identical(valVariant,"WHAT_Ql") ){
+      # cat("_identical WHAT_Ql_")
+      valVariant <- "WHAT_Ql"
+    }
+    else if (identical(valVariant,"WHERE") ){
+      # cat("_identical WHERE_")
+      valVariant <- "WHERE"
+    }
+    # cat("\tTo assign valVariant: ",valVariant)
     # d$orderCategoryCombination <- paste( nameColPaste,": ",valVariant, sep="" )
     arrStrCategoryCombination <- c( arrStrCategoryCombination, paste( nameColPaste,": ",valVariant, sep="" ) )
   }
   cat("\n¤¤¤¤\tunique(arrStrCategoryCombination): ",unique(arrStrCategoryCombination))
 
-  d$orderCategoryCombination <- arrStrCategoryCombination
+  d$category_combination <- arrStrCategoryCombination
+  cat("\n\t\td$category_combination: ",d$category_combination,"\n***")
+  # I think we might have to factor to ensure the ordering goes as it should...?
+    
+  d$orderCategoryCombination <- factor(d$category_combination,c("focus complexity: Hard","focus complexity: Medium","focus complexity: Easy"))
+  
+  
   cat("\n||\tunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination),
       "\n||\tunique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination))
+  cat("\n\t|||| class(dfCI$orderCategoryCombination): ",class(dfCI$orderCategoryCombination),", class(dfCI$orderCategoryCombination[1]): ",class(dfCI$orderCategoryCombination[1]))
+  cat("\n\t|||| class(d$orderCategoryCombination): ",class(d$orderCategoryCombination),", class(d$orderCategoryCombination[1]): ",class(d$orderCategoryCombination[1]))
+  cat("\n&&&&&&")
   return (d);
 }
 

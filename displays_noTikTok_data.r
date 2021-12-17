@@ -53,15 +53,45 @@ dim(d_scaling_all_noTikTok)
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
 
-dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+dfCI_global_TikTok_measurement_factored_focusOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
-                                                                          factorDMask= TRUE,
+                                                                          factorDMask= FALSE,
                                                                           factorFocus=FALSE,
                                                                           factorDComplex_focus=FALSE,
                                                                           factorDifference="focus",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
+
+dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                          factorScaling=FALSE,
+                                                                          factorDistractor=FALSE,
+                                                                          factorDMask= FALSE,
+                                                                          factorFocus=TRUE,
+                                                                          factorDComplex_focus=FALSE,
+                                                                          factorDifference="dMask",
+                                                                          logFunction=FALSE,
+                                                                          useLogDiff=TRUE)
+
+dfCI_global_TikTok_measurement_factored_dComplex_focus_only <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                                      factorScaling=FALSE,
+                                                                                      factorDistractor=FALSE,
+                                                                                      factorDMask= FALSE,
+                                                                                      factorFocus=TRUE,
+                                                                                      factorDComplex_focus=FALSE,
+                                                                                      factorDifference="dComplex_focus",
+                                                                                      logFunction=FALSE,
+                                                                                      useLogDiff=TRUE)
+
+
+# ||||\\\\ test about display according to trust...
+# alphabetical order
+d_measurement_all_noTikTok <- d_measurement_all_noTikTok[order(d_measurement_all_noTikTok$dComplex_focus),]
+View(d_measurement_all_noTikTok)
+# pre-defined order
+ord_dComplex_focus <- c("E","M","H")
+d_measurement_all_noTikTok[sort(match(d_measurement_all_noTikTok, ord_dComplex_focus)),]
+View(d_measurement_all_noTikTok)
 
 View(d_measurement_all_noTikTok_filteredSemiRigorous)
 View(dfCI_global_TikTok_measurement_factored)
@@ -72,7 +102,9 @@ d_measurement_all_noTikTok_filteredSemiRigorous$dComplex_focus[80]
 View(renamed_d)
 View(dfCI_global_TikTok_measurement_factored)
 
-addedOrderCategory <- prettyEnrichOrderCategory(d_measurement_all_noTikTok_filteredSemiRigorous,dfCI_global_TikTok_measurement_factored)
+addedOrderCategory_focusOnly <- prettyEnrichOrderCategory(d_measurement_all_noTikTok_filteredSemiRigorous,dfCI_global_TikTok_measurement_factored_focusOnly)
+addedOrderCategory_dMaskOnly <- prettyEnrichOrderCategory(d_measurement_all_noTikTok_filteredSemiRigorous,dfCI_global_TikTok_measurement_factored_dMaskOnly)
+
 unique(addedOrderCategory$orderCategoryCombination)
 unique(dfCI_global_TikTok_measurement_factored$orderCategoryCombination)
 View(addedOrderCategory)
@@ -203,7 +235,7 @@ length( unique (d_distractor_all_noTikTok_filteredSemiRigorous$ResponseId ) ) # 
 dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_distractor_all_noTikTok,
   factorScaling=FALSE,
   factorDistractor=FALSE,
-  factorDMask= TRUE,
+  factorDMask= FALSE,
   factorFocus=FALSE,
   factorDComplex_focus=FALSE, 
   factorDifference="distractor",
@@ -261,7 +293,7 @@ d_scaling_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibleQua
 length( unique (d_scaling_all_noTikTok_filteredSemiRigorous$ResponseId ) ) # 13 only!!!
 
 dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
-                                         factorScaling=FALSE,factorDistractor=FALSE,factorDMask= TRUE,
+                                         factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
                                          factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="scaling",
                                          useLogDiff=TRUE);
 
