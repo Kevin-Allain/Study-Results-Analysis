@@ -324,16 +324,16 @@ renameGroupedData <- function(groupedData_all) {
       # cat("\ncase of distractor to change")
       if (str_count(groupedData_all$category_combination[1],"_") > 0){
         groupedData_all$category_combination = as.character(groupedData_all$category_combination)
-        groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "distractor,h_n"] = "distractor: hidden-normal"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("distractor: hidden-normal"))
-        groupedData_all$category_combination[groupedData_all$category_combination == "distractor: hidden-normal"] = "distractor,h_n"
+        groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "distractor,h_n"] = "distractor: h-n"
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("distractor: h-n"))
+        groupedData_all$category_combination[groupedData_all$category_combination == "distractor: h-n"] = "distractor,h_n"
       } else {
         groupedData_all$category_combination = as.character(groupedData_all$category_combination)
-        groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "distractor,h"] = "distractor: hidden"
-        groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "distractor,n"] = "distractor: normal"
-        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("distractor: hidden","distractor: normal"))
-        groupedData_all$category_combination[groupedData_all$category_combination == "distractor: hidden"] = "distractor,h"
-        groupedData_all$category_combination[groupedData_all$category_combination == "distractor: normal"] = "distractor,n"
+        groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "distractor,h"] = "distractor: h"
+        groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "distractor,n"] = "distractor: n"
+        groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("distractor: h","distractor: n"))
+        groupedData_all$category_combination[groupedData_all$category_combination == "distractor: h"] = "distractor,h"
+        groupedData_all$category_combination[groupedData_all$category_combination == "distractor: n"] = "distractor,n"
       }
     } 
     else if(grepl("dComplex_focus",groupedData_all$category_combination[1],fixed=TRUE)){
@@ -1478,6 +1478,11 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
 combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE){
   # d <- filter_allTrust0or5_impossibleQualAnswer(d)
   
+  # d[sort(d$focus)] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
+  d <- d[order(d$focus), ]
+  if (!is.null(d$distractor)){d <- d[order(d$distractor), ]}  # necessary? useful?
+  if (!is.null(d$scaling)){d <- d[order(d$scaling), ]}  # necessary? useful?
+  
   factorVariation <- factorDifference
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Ql","WHAT_Qn","WHERE"); arrMask <- c("easy","medium","hard"); 
   arrDComplex_focus <- c("E","M","H");  
@@ -1949,13 +1954,14 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       dfTest_CI_differences <- NULL
       
       if (length(arrFactorVariations)== 2){
-        cat("\nHEY 4 length(arrFactorVariations)== 2, factorVariation: ",factorVariation,", factorDifference: ",factorDifference,", arrFactorVariations[1]: ",arrFactorVariations[1],", arrFactorDifferences[1]: ",arrFactorDifferences[1])
+        cat("\nHEY 4 length(arrFactorVariations)== 2, factorVariation: ",factorVariation,", factorDifference: ",factorDifference,
+            ", arrFactorVariations: ",arrFactorVariations,", arrFactorDifferences: ",arrFactorDifferences)
         cat("\nlength selec1: ",length(d[factorDifference]==arrFactorDifferences[1])," length selec2: ",length(d[factorDifference]==arrFactorDifferences[2]))
         selec1 <- d[d[factorVariation]==arrFactorVariations[1] ,]
         selec2 <- d[d[factorVariation]==arrFactorVariations[2] ,]
         selec_differences1 <- d[d[factorDifference]==arrFactorDifferences[1] ,]
         selec_differences2 <- d[d[factorDifference]==arrFactorDifferences[2] ,]
-        cat("\n__selec1, selec2, selec_differences1 and selec_differences2 made. Also, curQuestion is: ",curQuestion);
+        cat("\n__toString(selec1): ",toString(selec1),", toString(selec2): ",toString(selec2),", selec_differences1 and selec_differences2 made. Also, curQuestion is: ",curQuestion);
         group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
         group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
         cat("\n__group1_CI and group2_CI");
@@ -2201,7 +2207,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Differences for Overall Means', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none"
+        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
+        legend.position="none"
       )+
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
     groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2256,17 +2263,22 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       ) +
       labs(title = "Mask Proportion",y="")
     # 
-    cat("\nAbout to generate the graphs for dfCI_global_differences")
-    
+
     cat("\nAbout to generate the graphs for dfCI_global_differences")
     arrSizesDifferent <- c(0.1,5); arrSizesSamePositive <- c(5); arrSizesSameNegative <- c(0.1)
     arrSize1 <- c(); arrSize2 <- c(); arrSize3 <- c();
+    cat("\nlength(dfCI_global_differences$significantDifference): ",length(dfCI_global_differences$significantDifference))
     boolArrSize1 <- dfCI_global_differences$significantDifference[1] & dfCI_global_differences$significantDifference[2] & dfCI_global_differences$significantDifference[3]
-    boolArrSize2 <- dfCI_global_differences$significantDifference[4] & dfCI_global_differences$significantDifference[5] & dfCI_global_differences$significantDifference[6]
-    boolArrSize3 <- dfCI_global_differences$significantDifference[7] & dfCI_global_differences$significantDifference[8] & dfCI_global_differences$significantDifference[9]
+    boolArrSize2 <- boolArrSize1; boolArrSize3 <- boolArrSize1;
+    if ( length(dfCI_global_differences$significantDifference) > 3 ){
+      boolArrSize2 <- dfCI_global_differences$significantDifference[4] & dfCI_global_differences$significantDifference[5] & dfCI_global_differences$significantDifference[6]
+      boolArrSize3 <- dfCI_global_differences$significantDifference[7] & dfCI_global_differences$significantDifference[8] & dfCI_global_differences$significantDifference[9]
+    }
     if (boolArrSize1){arrSize1 <- arrSizesSamePositive} else {arrSize1 <- arrSizesDifferent}
     if (boolArrSize2){arrSize2 <- arrSizesSamePositive} else {arrSize2 <- arrSizesDifferent}
     if (boolArrSize3){arrSize3 <- arrSizesSamePositive} else {arrSize3 <- arrSizesDifferent}
+    
+    cat("\nwelll hello there...")
     
     groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[1],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -2292,10 +2304,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       ggtitle("Differences for Overall Means")  + 
       labs(title = 'Differences for Overall Means', y = "" ) +
       theme(
-        strip.background = element_blank(),
-        # strip.text.x = element_blank(),
-        # axis.ticks.y = element_blank(), 
-        # axis.text.y = element_blank(),
+        strip.background = element_blank(), 
+        # strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
         legend.position="none"
       )
     groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2547,21 +2557,32 @@ enrichData_impossibleQualAnswer <- function(d){
 }
 
 prettyEnrichOrderCategory <- function (d,dfCI){
-  cat("\n&&&&&&prettyEnrichOrderCategory&&&&&&")
+  cat("\n&&&&&&prettyEnrichOrderCategory&&&&&& toString(dfCI$orderCategoryCombination[1]): ",toString(dfCI$orderCategoryCombination[1])) 
   d$orderCategoryCombination <- NA;
   # cat("\n~dfCI$orderCategoryCombination: ",dfCI$orderCategoryCombination,", dfCI$orderCategoryCombination[1]: ",dfCI$orderCategoryCombination[1], "\n\t toString(dfCI$orderCategoryCombination): ", toString(dfCI$orderCategoryCombination))
   is_focus_complexity <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "focus complexity:" )
   is_focus <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "focus:" )
   is_mask <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "Mask:" )
-  cat("\n--\tis_focus_complexity: ",is_focus_complexity,", is_focus: ",is_focus,", is_mask: ",is_mask)
+  is_distractor <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "distractor:" )
+  is_scaling <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "scaling:" )
+  
+  cat("\n--\tis_focus_complexity: ",is_focus_complexity,", is_focus: ",is_focus,", is_mask: ",is_mask,", is_distractor: ",is_distractor,", is_scaling: ",is_scaling)
   selecColName <- ""
   nameColPaste <- ""
   if (is_focus_complexity){
     selecColName <- "dComplex_focus"; nameColPaste <- "focus complexity"
-  }  else if (is_focus){
+  }  
+  else if (is_focus){
     selecColName <- "focus"; nameColPaste<- "focus"
-  } else if (is_mask){
+  } 
+  else if (is_mask){
     selecColName <- "dMask"; nameColPaste <- "Mask"
+  } 
+  else if (is_distractor){
+    selecColName <- "distractor"; nameColPaste <- "distractor"
+  } 
+  else if (is_scaling){
+    selecColName <- "scaling"; nameColPaste <- "scaling"
   }
   cat('\n##\t selecColName: ',selecColName,', nameColPaste: ',nameColPaste,"\nunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination), "\ntoString(unique(dfCI$orderCategoryCombination)): ",toString(unique(dfCI$orderCategoryCombination)))
   d$categoryCombination  <- NA;
@@ -2570,21 +2591,27 @@ prettyEnrichOrderCategory <- function (d,dfCI){
     valVariant <- select(d,selecColName)[i,1]
     if ( identical(valVariant,"E") ){
       valVariant <- "Easy"
-    } else if ( identical(valVariant,"M") ){
+    } 
+    else if ( identical(valVariant,"M") ){
       valVariant <- "Medium"
-    } else if ( identical(valVariant,"H") ){
+    } 
+    else if ( identical(valVariant,"H") ){
       valVariant <- "Hard"
-    } else if ( identical(valVariant,"easy") ){
+    } 
+    else if ( identical(valVariant,"easy") ){
       valVariant <- "Easy"
-    } else if ( identical(valVariant,"medium") ){
+    } 
+    else if ( identical(valVariant,"medium") ){
       valVariant <- "Medium"
-    } else if ( identical(valVariant,"hard") ){
+    } 
+    else if ( identical(valVariant,"hard") ){
       valVariant <- "Hard"
     } 
     else if (identical(valVariant,"WHAT_Qn") ){
       # cat("_identical WHAT_Qn_")
       valVariant <- "WHAT_Qn"
-    }else if (identical(valVariant,"WHAT_Ql") ){
+    }
+    else if (identical(valVariant,"WHAT_Ql") ){
       # cat("_identical WHAT_Ql_")
       valVariant <- "WHAT_Ql"
     }
@@ -2608,9 +2635,11 @@ prettyEnrichOrderCategory <- function (d,dfCI){
     d$orderCategoryCombination <- factor(d$category_combination,c("Mask: Hard","Mask: Medium","Mask: Easy"))
   } else if (is_focus){
     d$orderCategoryCombination <- factor(d$category_combination,c("focus: WHERE","focus: WHAT_Qn","focus: WHAT_Ql"))
-  } else {
-    cat('\n\t#####\n\tNOT SUPPOSED TO ARRIVE HERE...?')
-  }  
+  } else if (is_distractor) {
+    d$orderCategoryCombination <- factor(d$category_combination,c("distractor: n","distractor: h"))
+  } else if (is_scaling){
+    d$orderCategoryCombination <- factor(d$category_combination,c("scaling: 2","scaling: 1","scaling: 0"))
+  } 
   
   
   cat("\n||\tunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination),
