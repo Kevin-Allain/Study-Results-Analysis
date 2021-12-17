@@ -276,7 +276,7 @@ renameGroupedData <- function(groupedData_all) {
   if ("category_combination" %in% colnames(groupedData_all)) {
     # cat("\nRename for category_combination, example: ",groupedData_all$category_combination[1]) # TODO add verifications and changes for other factoring approaches
     if (grepl("Mask",groupedData_all$category_combination[1],fixed=TRUE)){
-      # cat("\ncase of dMask to change")
+      cat("\n%%%%%%%%\tcase of dMask to change%%%%%%%%\n")
       if (str_count(groupedData_all$category_combination[1],"_") > 0){
         groupedData_all$category_combination = as.character(groupedData_all$category_combination)
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "dMask,medium_hard"] = "Mask: Medium-Hard"
@@ -373,7 +373,7 @@ renameGroupedData <- function(groupedData_all) {
       # groupedData_all$orderCategoryCombination <- factor(groupedData_all$category_combination,c("focus: WHAT_Ql-WHAT_Qn"))
     } 
     else if(grepl("focus",groupedData_all$category_combination[1],fixed=TRUE)){
-      # cat("\ncase of focus to change. First one is: ",(groupedData_all$category_combination[1]))
+      cat("\n\t\t\t\t!!!!!!--case of focus to change. First one is: ",(groupedData_all$category_combination[1]),"--!!!!!!")
       if (str_count(groupedData_all$category_combination[1],"_") > 0){
         groupedData_all$category_combination = as.character(groupedData_all$category_combination) # TODO consider update for other orders of focuses?
         groupedData_all$category_combination[str_replace_all(groupedData_all$category_combination, " ","") == "focus,WHAT_Qn_WHAT_Ql"] = "focus: WHAT_Qn-WHAT_Ql"
@@ -1474,7 +1474,6 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
 # dfCI_test_differences2 <- genAndPlot_differences_factorBased(d_sclAll,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling")
 # dfCI_test_differences2
 
-
 combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE){
   # d <- filter_allTrust0or5_impossibleQualAnswer(d)
   
@@ -2023,14 +2022,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question),
   "\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
 
-  class(dfCI_global$category_combination)
-  class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI);
-  class(dfCI_global$low_CI); dfCI_global$low_CI <- as.numeric(dfCI_global$low_CI); class(dfCI_global$low_CI);
-  class(dfCI_global$high_CI); dfCI_global$high_CI <- as.numeric(dfCI_global$high_CI); class(dfCI_global$high_CI);
-  class(dfCI_global_differences$category_combination)
-  class(dfCI_global_differences$mean_CI); dfCI_global_differences$mean_CI <- as.numeric(dfCI_global_differences$mean_CI); class(dfCI_global_differences$mean_CI);
-  class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI);
-  class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
+  class(dfCI_global$category_combination) class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI); class(dfCI_global$low_CI); dfCI_global$low_CI <- as.numeric(dfCI_global$low_CI); class(dfCI_global$low_CI); class(dfCI_global$high_CI); dfCI_global$high_CI <- as.numeric(dfCI_global$high_CI); class(dfCI_global$high_CI); class(dfCI_global_differences$category_combination) class(dfCI_global_differences$mean_CI); dfCI_global_differences$mean_CI <- as.numeric(dfCI_global_differences$mean_CI); class(dfCI_global_differences$mean_CI); class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI); class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
   
   dfCI_global <- renameGroupedData(dfCI_global)
   dfCI_global_differences <- renameGroupedData(dfCI_global_differences)
@@ -2118,7 +2110,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       "\n\ttoString(unique(dfCI_global$orderCategoryCombination)): ",toString(unique(dfCI_global$orderCategoryCombination)))
   d <- prettyEnrichOrderCategory(d,dfCI_global)
   cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
-      "\n\nbtw strFormula: ",strFormula,
+      "\nbtw strFormula: ",strFormula,
       "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)),"\n\n")
   
   ####### TESTING!!!
@@ -2586,12 +2578,20 @@ prettyEnrichOrderCategory <- function (d,dfCI){
     arrStrCategoryCombination <- c( arrStrCategoryCombination, paste( nameColPaste,": ",valVariant, sep="" ) )
   }
   cat("\n¤¤¤¤\tunique(arrStrCategoryCombination): ",unique(arrStrCategoryCombination))
-
+  
   d$category_combination <- arrStrCategoryCombination
   cat("\n\t\td$category_combination: ",d$category_combination,"\n***")
   # I think we might have to factor to ensure the ordering goes as it should...?
-    
-  d$orderCategoryCombination <- factor(d$category_combination,c("focus complexity: Hard","focus complexity: Medium","focus complexity: Easy"))
+  
+  if (is_focus_complexity){
+    d$orderCategoryCombination <- factor(d$category_combination,c("focus complexity: Hard","focus complexity: Medium","focus complexity: Easy"))
+  } else if (is_mask){
+    d$orderCategoryCombination <- factor(d$category_combination,c("Mask: Hard","Mask: Medium","Mask: Easy"))
+  } else if (is_focus){
+    d$orderCategoryCombination <- factor(d$category_combination,c("focus: WHERE","focus: WHAT_Qn","focus: WHAT_Ql"))
+  } else {
+    cat('\n\t#####\n\tNOT SUPPOSED TO ARRIVE HERE...?')
+  }  
   
   
   cat("\n||\tunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination),

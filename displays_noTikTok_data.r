@@ -67,21 +67,21 @@ dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDiffer
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
                                                                           factorDMask= FALSE,
-                                                                          factorFocus=TRUE,
+                                                                          factorFocus=FALSE,
                                                                           factorDComplex_focus=FALSE,
                                                                           factorDifference="dMask",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
 dfCI_global_TikTok_measurement_factored_dComplex_focus_only <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
-                                                                                      factorScaling=FALSE,
-                                                                                      factorDistractor=FALSE,
-                                                                                      factorDMask= FALSE,
-                                                                                      factorFocus=TRUE,
-                                                                                      factorDComplex_focus=FALSE,
-                                                                                      factorDifference="dComplex_focus",
-                                                                                      logFunction=FALSE,
-                                                                                      useLogDiff=TRUE)
+                                                                          factorScaling=FALSE,
+                                                                          factorDistractor=FALSE,
+                                                                          factorDMask= FALSE,
+                                                                          factorFocus=TRUE,
+                                                                          factorDComplex_focus=FALSE,
+                                                                          factorDifference="dComplex_focus",
+                                                                          logFunction=FALSE,
+                                                                          useLogDiff=TRUE)
 
 
 # ||||\\\\ test about display according to trust...
@@ -90,7 +90,7 @@ d_measurement_all_noTikTok <- d_measurement_all_noTikTok[order(d_measurement_all
 View(d_measurement_all_noTikTok)
 # pre-defined order
 ord_dComplex_focus <- c("E","M","H")
-d_measurement_all_noTikTok[sort(match(d_measurement_all_noTikTok, ord_dComplex_focus)),]
+d_measurement_all_noTikTok_filteredSemiRigorous[sort(match(d_measurement_all_noTikTok_filteredSemiRigorous, ord_dComplex_focus)),]
 View(d_measurement_all_noTikTok)
 
 View(d_measurement_all_noTikTok_filteredSemiRigorous)
