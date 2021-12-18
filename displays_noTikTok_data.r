@@ -84,14 +84,35 @@ dfCI_global_TikTok_measurement_factored_dComplex_focus_only <- combine_genPlot_C
                                                                           useLogDiff=TRUE)
 
 
+
 # ||||\\\\ test about display according to trust...
-# alphabetical order
-d_measurement_all_noTikTok <- d_measurement_all_noTikTok[order(d_measurement_all_noTikTok$dComplex_focus),]
-View(d_measurement_all_noTikTok)
-# pre-defined order
-ord_dComplex_focus <- c("E","M","H")
-d_measurement_all_noTikTok_filteredSemiRigorous[sort(match(d_measurement_all_noTikTok_filteredSemiRigorous, ord_dComplex_focus)),]
-View(d_measurement_all_noTikTok)
+plot(d_measurement_all_noTikTok_filteredSemiRigorous$log_diffA1,d_measurement_all_noTikTok_filteredSemiRigorous$trustA1)
+ggplot(d_measurement_all_noTikTok_filteredSemiRigorous, aes( log_diffA1, trustA1, col= focus, fill = focus )) +    # Plotting with ggplot2 package
+  geom_boxplot(alpha=0.3) 
+
+filt_0trust <- d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$trustA1==0,]
+ggplot( filt_0trust , aes( x=log_diffA1, y=focus, fill=focus, col=focus )) +    # Plotting with ggplot2 package
+  geom_violin( alpha=0.3)  
+# +
+#   geom_jitter(data=d_measurement_all_noTikTok_filteredSemiRigorous ,  aes (x= log_diffA1 , y = trustA1, fill=focus) ) # d_measurement_all_noTikTok_filteredSemiRigorous, aes(x=log_diffA1, y=trustA1, col=focus)
+
+
+# work in progress
+display_res_trust <- gen_res_trust(d_measurement_all_noTikTok)
+
+
+dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                      factorScaling=FALSE,
+                                                                      factorDistractor=FALSE,
+                                                                      factorDMask= FALSE,
+                                                                      factorFocus=FALSE,
+                                                                      factorDComplex_focus=FALSE,
+                                                                      factorTrust=TRUE,
+                                                                      factorDifference="dComplex_focus",
+                                                                      logFunction=FALSE,
+                                                                      useLogDiff=TRUE) 
+
+
 
 View(d_measurement_all_noTikTok_filteredSemiRigorous)
 View(dfCI_global_TikTok_measurement_factored)

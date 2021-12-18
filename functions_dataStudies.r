@@ -1475,7 +1475,9 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
 # dfCI_test_differences2 <- genAndPlot_differences_factorBased(d_sclAll,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling")
 # dfCI_test_differences2
 
-combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE){
+combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, 
+                                               factorTrust = FALSE,
+                                               factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE){
   # d <- filter_allTrust0or5_impossibleQualAnswer(d)
   
   # d[sort(d$focus)] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
@@ -1486,6 +1488,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   factorVariation <- factorDifference
   arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Ql","WHAT_Qn","WHERE"); arrMask <- c("easy","medium","hard"); 
   arrDComplex_focus <- c("E","M","H");  
+  arrTrust  <- c("trustA1","trustA2","trustA3","trustB")
   if (factorScaling | factorVariation=="scaling"){arrFocus <- c("WHAT_Ql","WHAT_Qn")}  
   
   # IMPORTANT NOTE ABOUT logFunction. If we use the log_diffA1 instead of diffA1, then isn't the usage again of the formula transforming it again?! To think about
@@ -1495,7 +1498,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   numGraphs <- length(arrQuestions); 
   groupedPlotCI_1 <- NULL;groupedPlotCI_2 <- NULL;groupedPlotCI_3 <- NULL;
   # call the function to get the factors
-  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus);
+  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
+  cat("\nfactorArr: ",factorArr);
   numFactor <- length(factorArr)
   if (length(arrMixOrderFormula) == 0){
     factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]  
@@ -1506,6 +1510,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     factor3 <- factorArr[arrMixOrderFormula[3]]; 
     factor4 <- factorArr[arrMixOrderFormula[4]];
   }
+  
   numFactor <- length(factorArr)
   cat("\n}}}}factorArr: ",toString(factorArr))
   cat("\nnumFactor: ",numFactor)
@@ -1527,6 +1532,9 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     else if (factor1 == "dComplex_focus"){
       arrFactor1 <- arrDComplex_focus
     } 
+    else if (factor1=="trust"){
+      arrFactor1 <- arrTrust
+    }
     else {
       return ("Error? We have no factor for the display")
     }
@@ -1540,6 +1548,9 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       else if (factor2 == "dComplex_focus"){
         arrFactor2 <- arrDComplex_focus
       }
+      else if (factor2=="trust"){
+        arrFactor2 <- arrTrust
+      }
     }
     if (numFactor>2){
       if (factor3 == "focus"){
@@ -1550,6 +1561,9 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       } 
       else if (factor3 == "dComplex_focus"){
         arrFactor3 <- arrDComplex_focus
+      }
+      else if (factor3 == "trust"){
+        arrFactor3 <- arrTrust
       }
     }
     if (numFactor>3){
@@ -2143,7 +2157,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[1] ,],  aes (x= log_diffA1 , y = orderCategoryCombination) ) +
+      geom_violin( data = d[dfCI_global$question== arrQuestions[1] ,],  aes (x= log_diffA1 , y = orderCategoryCombination) ) + # change alpha?
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
@@ -2349,7 +2363,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
 # dfCombinationCI_differences_test__CIandDiff_scaling_factoredby_none
 # dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_none <- combine_genPlot_CIandDifferences(d_distr_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="distractor")
 
-returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE){
+returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE,
+                                     factorTrust=FALSE){
   cat("\nfactorScaling: ",factorScaling,", factorDistractor: ",factorDistractor,", factorFocus: ",factorFocus,", factorDMask: ",factorDMask,", factorDComplex_focus: ",factorDComplex_focus)  
   res <- c(NULL,NULL,NULL,NULL)
   factor1 <- NULL; factor2 <- NULL; factor3 <- NULL; factor4 <- NULL;
@@ -2395,6 +2410,18 @@ returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE,
       factor2 <- "dComplex_focus";
     }
   } 
+  else if (factorTrust){ # make more variations...? what could we do for scaling and distractor? Might not work! It's not 1 column, it's 4!
+    factor1 <- "trust"
+    if (factorFocus){
+      factor2 = "focus";
+      if (factorDMask){
+        factor3 = "dMask";
+        if (factorDComplex_focus){
+          factor4 <- "dComplex_focus";
+        }
+      }
+    }
+  }
   else {
     # numGraphs <- max(1,factorFocus*length(arrFocus))*max(1,factorDMask*length(arrMask))*max(1,factorDComplex_focus*length(arrDComplex_focus))    
     if (factorFocus){
