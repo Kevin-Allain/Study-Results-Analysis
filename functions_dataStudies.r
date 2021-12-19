@@ -10,6 +10,7 @@ library(patchwork)
 library(stringr)
 library(rlist)
 # library(simpleaffy)
+library(rlang)
 library(dplyr)
 library(skimr)
 library(agricolae)
@@ -2362,6 +2363,190 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
 # dfCombinationCI_differences_test__CIandDiff_scaling_factoredby_none <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling")
 # dfCombinationCI_differences_test__CIandDiff_scaling_factoredby_none
 # dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_none <- combine_genPlot_CIandDifferences(d_distr_all,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="distractor")
+
+
+# potential alternative approach... one of each for each trust, and factor then...
+# ggplot(d_measurement_all_noTikTok)+
+#   geom_vline(xintercept = 0) +
+#   geom_histogram( data=d_measurement_all_noTikTok , aes( x=abs(diffA1) ) )
+
+# potential approach with histograms... can't put y. 
+# ggplot(d_measurement_all_noTikTok)+
+#   geom_vline(xintercept = 0) +
+#   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==0,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  ) +
+#   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==1,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  ) +
+#   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==2,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  ) +
+#   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==3,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  ) +
+#   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==4,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  ) +
+#   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==5,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  )
+
+gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE, factorDMask= FALSE, factorFocus=FALSE, factorDComplex_focus=FALSE, factorTrust=FALSE,
+                           useLogDiff=TRUE) {
+
+  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
+  numFactor <- length(factorArr)
+  factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]
+  cat("\ngen_res_trust }}}} factorArr: ",toString(factorArr))
+  cat("\nnumFactor: ",numFactor)
+  cat("\n\tfactor1: ",factor1,", factor2: ",factor2,", factor3: ",factor3,", factor4: ",factor4)
+    
+  strFormula <- ""
+  if (numFactor==2){
+    strFormula<-paste("~",factor1,"+",factor2)
+    cat("\nnumFactor==2. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1,"+",factor2)
+    
+    cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else if (numFactor==1){
+    strFormula<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else {
+    # no wrapping.
+    cat("\nno wrapping according to formula")
+  } 
+  cat("\n\tstrFormula: ",strFormula)
+  
+  if (numFactor > 0){
+    plot_trustA1 <- ggplot(d)+
+      geom_vline(xintercept = 0) +
+      # geom_violin( data=d[d$trustA1==0,] , aes( x= abs(diffA1), y=trustA1,  col=focus,  alpha=0.3 )  ) + # fill could be done for something else... like focus?
+      # geom_jitter(data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, col=focus ) ) + # big doubt about whether I should display this...!
+      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'Mean with Mask', y = "" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+      )
+    
+    plot_trustA2 <- ggplot(d)+
+      geom_vline(xintercept = 0) +
+      geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'Overall Mean', y = "" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+      )
+    
+    plot_trustA3 <- ggplot(d)+
+      geom_vline(xintercept = 0) +
+      geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'Mask Proportion', y = "" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+      )
+    
+    plot_trustB <- ggplot(d)+
+      geom_vline(xintercept = 0) +
+      geom_violin( data=d[d$trustB==0,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==1,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==2,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==3,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==4,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==5,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
+      labs(title = 'Stability Comparison', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
+    
+  }
+  else {
+    cat("\nnumFactor==0")
+    plot_trustA1 <- ggplot(d)+
+      geom_vline(xintercept = 0) +
+      # geom_violin( data=d[d$trustA1==0,] , aes( x= abs(diffA1), y=trustA1,  col=focus,  alpha=0.3 )  ) + # fill could be done for something else... like focus?
+      # geom_jitter(data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, col=focus ) ) + # big doubt about whether I should display this...!
+      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      labs(title = 'Mean with Mask', y = "" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+      )
+    
+            
+      plot_trustA2 <- ggplot(d)+
+        geom_vline(xintercept = 0) +
+        geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
+        labs(title = 'Mean Overall', y = "" ) +
+        theme(
+          strip.background = element_blank(),
+          strip.text.x = element_blank(),
+          axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+        )
+      
+      
+      plot_trustA3 <- ggplot(d)+
+        geom_vline(xintercept = 0) +
+        geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
+        labs(title = 'Mask Proportion', y = "" ) +
+        theme(
+          strip.background = element_blank(),
+          strip.text.x = element_blank(),
+          axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+        )
+      
+      
+      plot_trustB <- ggplot(d)+
+        geom_vline(xintercept = 0) +
+        geom_violin( data=d[d$trustB==0,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==1,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==2,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==3,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==4,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==5,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        labs(title = 'Stability Comparison', y = "" ) +
+        theme(
+          strip.background = element_blank(),
+          strip.text.x = element_blank(),
+          axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
+        )
+  }
+  cat("\nHey we reached here")
+  grid.arrange(grobs=list(plot_trustA1, plot_trustA2, plot_trustA3,plot_trustB), ncol=4,top=textGrob( "Distribution of performances according to self-reported trust" ) )
+  return (d)
+}
 
 returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE,
                                      factorTrust=FALSE){

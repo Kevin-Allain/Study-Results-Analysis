@@ -98,7 +98,8 @@ ggplot( filt_0trust , aes( x=log_diffA1, y=focus, fill=focus, col=focus )) +    
 
 
 # work in progress
-display_res_trust <- gen_res_trust(d_measurement_all_noTikTok)
+display_res_trust_violin <- gen_res_trust(d_measurement_all_noTikTok)
+display_res_trust_violin <- gen_res_trust(d_measurement_all_noTikTok, factorFocus = TRUE)
 
 
 dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
