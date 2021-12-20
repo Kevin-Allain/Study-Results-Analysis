@@ -2380,8 +2380,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
 #   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==4,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  ) +
 #   geom_histogram( data=d_measurement_all_noTikTok[d_measurement_all_noTikTok$trustA1==5,] , aes( x=abs(diffA1), fill=trustA1, alpha=0.3 )  )
 
-gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE, factorDMask= FALSE, factorFocus=FALSE, factorDComplex_focus=FALSE, factorTrust=FALSE,
-                           useLogDiff=TRUE) {
+gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE, factorDMask= FALSE, factorFocus=FALSE, factorDComplex_focus=FALSE, factorTrust=FALSE, useLogDiff=TRUE) {
 
   factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
   numFactor <- length(factorArr)
@@ -2494,8 +2493,7 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
       labs(title = 'Mean with Mask', y = "" ) +
       theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
       )
-    
-            
+        
       plot_trustA2 <- ggplot(d)+
         geom_vline(xintercept = 0) +
         geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
@@ -2510,7 +2508,6 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
           strip.text.x = element_blank(),
           axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
         )
-      
       
       plot_trustA3 <- ggplot(d)+
         geom_vline(xintercept = 0) +
@@ -2527,7 +2524,6 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
           axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
         )
       
-      
       plot_trustB <- ggplot(d)+
         geom_vline(xintercept = 0) +
         geom_violin( data=d[d$trustB==0,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
@@ -2543,9 +2539,255 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
           axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
         )
   }
-  cat("\nHey we reached here")
-  grid.arrange(grobs=list(plot_trustA1, plot_trustA2, plot_trustA3,plot_trustB), ncol=4,top=textGrob( "Distribution of performances according to self-reported trust" ) )
+
+    grid.arrange(grobs=list(plot_trustA1, plot_trustA2, plot_trustA3,plot_trustB), ncol=4,top=textGrob( "Distribution of performances according to self-reported trust" ) )
   return (d)
+}
+
+
+performancesB_correct_neither_incorrect <- function (d, factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE,
+                                                     factorTrust=FALSE){
+
+  cat("\n----\tperformancesB_correct_neither_incorrect")
+  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
+  numFactor <- length(factorArr)
+  factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]
+  cat("\ngen_res_trust }}}} factorArr: ",toString(factorArr))
+  cat("\nnumFactor: ",numFactor)
+  cat("\n\tfactor1: ",factor1,", factor2: ",factor2,", factor3: ",factor3,", factor4: ",factor4)
+
+  
+  if (numFactor ==3 ){
+    if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==2) {
+    if (factor1=="scaling" | factor2=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==1){
+    if (factor1=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[dfCI_global$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  
+  
+  strFormula <- ""
+  if (numFactor==2){
+    strFormula<-paste("~",factor1,"+",factor2)
+    cat("\nnumFactor==2. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1,"+",factor2)
+    
+    cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else if (numFactor==1){
+    strFormula<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else {
+    # no wrapping.
+    cat("\nno wrapping according to formula")
+  } 
+  cat("\n\tstrFormula: ",strFormula)
+  
+  d <- renameGroupedData(d)
+  
+  # we need to modify the structure of the table... something like: cases where correct are labeled "correct", incorrect as "incorrect" and "neither" as "neither"...
+  d$txtCorrectB <- NA
+  d$txtCorrectB[d$correctB==1] <- "correct"
+  d$txtCorrectB[d$correctB==0 & d$answerB=="Neither agree nor disagree"] <- "neither"
+  d$txtCorrectB[d$correctB==0 & d$answerB!="Neither agree nor disagree"] <- "incorrect"
+  
+  if (numFactor > 0 ){
+    distribB <- ggplot(d) + 
+      scale_fill_manual(values = c("correct" = "green",
+                                   "incorrect" = "red",
+                                   "neither" = "#353535")) +
+      geom_bar( data=d , aes( x= txtCorrectB, alpha=0.3, fill=txtCorrectB )  ) + 
+      geom_text(
+        aes(x= txtCorrectB, label = paste("Count: " ,stat(count),"\nPercentage: ", scales::percent(prop.table(stat(count))), sep="" ) ),
+        stat='count',
+        vjust = 1+(numFactor*0.15),
+        size = 3-(numFactor*0.25)) + 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
+      labs(title = 'Distribution of SC', y = "" , x="" ) +
+      theme(
+        strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none"
+      ) 
+  } 
+  else {
+  distribB <- ggplot(d) + 
+    scale_fill_manual(values = c("correct" = "green",
+                                 "incorrect" = "red",
+                                 "neither" = "#111111")) +
+    geom_bar( data=d , aes( x= txtCorrectB, alpha=0.3, fill=txtCorrectB )  ) + 
+    geom_text(
+      aes(x= txtCorrectB, label = paste("Count: " ,stat(count),"\nPercentage: ", scales::percent(prop.table(stat(count))), sep="" ) ),
+      stat='count',
+      vjust = 3,
+      size = 3 ) + 
+    labs(title = 'Distribution of SC', y = "" , x="" ) +
+    theme(
+      strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none"
+    )
+  }
+    
+  grid.arrange(grobs=list(distribB), ncol=1 ) # ,top=textGrob( "Distribution of SC" )
+  
+  return (d)
+}
+
+performancesB_accordingToImportanceDifference <- function (d,   factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE,
+                                                           factorTrust=FALSE){
+  cat("\n----\tpperformancesB_accordingToImportanceDifference")
+  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
+  numFactor <- length(factorArr)
+  factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]
+  cat("\n}}}} factorArr: ",toString(factorArr))
+  cat("\nnumFactor: ",numFactor)
+  cat("\n\tfactor1: ",factor1,", factor2: ",factor2,", factor3: ",factor3,", factor4: ",factor4)
+  
+  if (numFactor ==3 ){
+    if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==2) {
+    if (factor1=="scaling" | factor2=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==1){
+    if (factor1=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[dfCI_global$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  
+  strFormula <- ""
+  if (numFactor==2){
+    strFormula<-paste("~",factor1,"+",factor2)
+    cat("\nnumFactor==2. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1,"+",factor2)
+    
+    cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else if (numFactor==1){
+    strFormula<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else {
+    # no wrapping.
+    cat("\nno wrapping according to formula")
+  } 
+  cat("\n\tstrFormula: ",strFormula)
+  
+  d <- renameGroupedData(d)
+  # we need to modify the structure of the table... something like: cases where correct are labeled "correct", incorrect as "incorrect" and "neither" as "neither"...
+  d$txtCorrectB <- NA
+  d$txtCorrectB[d$correctB==1] <- "correct"
+  d$txtCorrectB[d$correctB==0 & d$answerB=="Neither agree nor disagree"] <- "neither"
+  d$txtCorrectB[d$correctB==0 & d$answerB!="Neither agree nor disagree"] <- "incorrect"
+  
+  if (numFactor>0){
+    ggplot(data=d)+
+      geom_vline(xintercept = 0) +
+      scale_fill_manual(values = c("correct" = "green",
+                                   "incorrect" = "red",
+                                   "neither" = "#111111")) +
+      geom_jitter( data=d[d$focus=="WHAT_Ql",], aes( x=diffB, y=txtCorrectB, fill=txtCorrectB, col=txtCorrectB, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$focus=="WHAT_Qn",], aes( x=diffB, y=txtCorrectB, fill=txtCorrectB, col=txtCorrectB, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$focus=="WHERE",], aes( x=diffB, y=txtCorrectB, fill=txtCorrectB, col=txtCorrectB, alpha=0.3 )  ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
+      labs(title = 'Distribution of SC', y = "" , x="" ) +
+      theme(
+        strip.background = element_blank(), 
+        # strip.text.x = element_blank(), 
+        axis.ticks.y = element_blank(),  
+        # axis.text.y = element_blank(), 
+        legend.position="none"
+      )
+  } 
+  else {
+    gplot_ql <- ggplot(data=d)+
+      geom_vline(xintercept = 0) +
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
+      scale_col_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +      
+      geom_histogram( data=d[d$focus=="WHAT_Ql",], aes( x=abs(diffB), col=txtCorrectB, fill=txtCorrectB, alpha=0.3 )  )
+    gplot_qn <- ggplot(data=d)+
+      geom_vline(xintercept = 0) +
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
+      scale_col_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +      
+      geom_histogram( data=d[d$focus=="WHAT_Qn",], aes( x=abs(diffB), col=txtCorrectB,fill=txtCorrectB,alpha=0.3 )  ) 
+    gplot_where <- ggplot(data=d)+
+      geom_vline(xintercept = 0) +
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
+      scale_col_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +      
+      geom_histogram( data=d[d$focus=="WHERE",], aes( x=abs(diffB), col=txtCorrectB,fill=txtCorrectB, alpha=0.3 )  ) 
+    
+      # labs(title = 'Distribution of SC', y = "" , x="" ) +
+      # theme(
+      #   strip.background = element_blank(), 
+      #   # strip.text.x = element_blank(), 
+      #   axis.ticks.y = element_blank(),  
+      #   # axis.text.y = element_blank(), .
+      #   legend.position="none"
+      # )
+    grid.arrange(grobs=list(gplot_ql,gplot_qn,gplot_where), ncol=1 ) # ,top=textGrob( "Distribution of SC" )
+    
+  }
+}
+
+
+# disregarded... for now
+stat_ggplot_data <- function(y, upper_limit = max(iris$Sepal.Length) * 1.15) {
+  d
+  return( 
+    data.frame(
+      y = 0.95 * upper_limit,
+      label = paste('count =', length(y), '\n',
+                    'mean =', round(mean(y), 1), '\n')
+    )
+  )
 }
 
 returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE,

@@ -97,21 +97,24 @@ ggplot( filt_0trust , aes( x=log_diffA1, y=focus, fill=focus, col=focus )) +    
 #   geom_jitter(data=d_measurement_all_noTikTok_filteredSemiRigorous ,  aes (x= log_diffA1 , y = trustA1, fill=focus) ) # d_measurement_all_noTikTok_filteredSemiRigorous, aes(x=log_diffA1, y=trustA1, col=focus)
 
 
-# work in progress
-display_res_trust_violin <- gen_res_trust(d_measurement_all_noTikTok)
-display_res_trust_violin <- gen_res_trust(d_measurement_all_noTikTok, factorFocus = TRUE)
+# performance according to trust... not too bad?
+display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok)
+display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok, factorFocus = TRUE)
 
+# correctB... distribution of correct, neithers, incorrect
+distrib_performancesB <- performancesB_correct_neither_incorrect(d_measurement_all_noTikTok, factorFocus = TRUE)
 
-dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
-                                                                      factorScaling=FALSE,
-                                                                      factorDistractor=FALSE,
-                                                                      factorDMask= FALSE,
-                                                                      factorFocus=FALSE,
-                                                                      factorDComplex_focus=FALSE,
-                                                                      factorTrust=TRUE,
-                                                                      factorDifference="dComplex_focus",
-                                                                      logFunction=FALSE,
-                                                                      useLogDiff=TRUE) 
+# buggy?!
+# dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+#                                                                       factorScaling=FALSE,
+#                                                                       factorDistractor=FALSE,
+#                                                                       factorDMask= FALSE,
+#                                                                       factorFocus=FALSE,
+#                                                                       factorDComplex_focus=FALSE,
+#                                                                       factorTrust=TRUE,
+#                                                                       factorDifference="dComplex_focus",
+#                                                                       logFunction=FALSE,
+#                                                                       useLogDiff=TRUE) 
 
 
 
