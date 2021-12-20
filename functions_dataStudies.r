@@ -2750,19 +2750,24 @@ performancesB_accordingToImportanceDifference <- function (d,   factorScaling=FA
   else {
     gplot_ql <- ggplot(data=d)+
       geom_vline(xintercept = 0) +
-      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
-      scale_col_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +      
-      geom_histogram( data=d[d$focus=="WHAT_Ql",], aes( x=abs(diffB), col=txtCorrectB, fill=txtCorrectB, alpha=0.3 )  )
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
+      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +      
+      geom_violin( data=d[d$focus=="WHAT_Ql",], aes( x=abs(diffB),y = focus, col=txtCorrectB, fill=txtCorrectB, alpha=0.3 )  )+
+      labs(title = 'Distribution of SC for WHAT_Ql', y = "" , x="" )
+    
     gplot_qn <- ggplot(data=d)+
       geom_vline(xintercept = 0) +
-      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
-      scale_col_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +      
-      geom_histogram( data=d[d$focus=="WHAT_Qn",], aes( x=abs(diffB), col=txtCorrectB,fill=txtCorrectB,alpha=0.3 )  ) 
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
+      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +      
+      geom_violin( data=d[d$focus=="WHAT_Qn",], aes( x=abs(diffB),y = focus, col=txtCorrectB,fill=txtCorrectB,alpha=0.3 )  ) +
+      labs(title = 'Distribution of SC for WHAT_Qn', y = "" , x="" )
+    
     gplot_where <- ggplot(data=d)+
       geom_vline(xintercept = 0) +
-      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
-      scale_col_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +      
-      geom_histogram( data=d[d$focus=="WHERE",], aes( x=abs(diffB), col=txtCorrectB,fill=txtCorrectB, alpha=0.3 )  ) 
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
+      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +      
+      geom_violin( data=d[d$focus=="WHERE",], aes( x=abs(diffB), y = focus, col=txtCorrectB,fill=txtCorrectB, alpha=0.3 )  ) +
+      labs(title = 'Distribution of SC for WHERE', y = "" , x="" )
     
       # labs(title = 'Distribution of SC', y = "" , x="" ) +
       # theme(
@@ -2777,6 +2782,107 @@ performancesB_accordingToImportanceDifference <- function (d,   factorScaling=FA
   }
 }
 
+performances_accordingToCntrQ <- function(d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorTrust=FALSE){
+  cat("\n----\tperformances_accordingToCntrQ")
+  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
+  numFactor <- length(factorArr)
+  factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]
+  cat("\n}}}} factorArr: ",toString(factorArr))
+  cat("\nnumFactor: ",numFactor)
+  cat("\n\tfactor1: ",factor1,", factor2: ",factor2,", factor3: ",factor3,", factor4: ",factor4)
+  
+  if (numFactor ==3 ){
+    if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==2) {
+    if (factor1=="scaling" | factor2=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==1){
+    if (factor1=="scaling"){
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[dfCI_global$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+      d$scaling[d$scaling==0] <- "Scaling 0";d$scaling[d$scaling==1] <- "Scaling 1";d$scaling[d$scaling==2] <- "Scaling 2";
+    }
+  } 
+  
+  strFormula <- ""
+  if (numFactor==2){
+    strFormula<-paste("~",factor1,"+",factor2)
+    cat("\nnumFactor==2. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1,"+",factor2)
+    
+    cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else if (numFactor==1){
+    strFormula<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula: ",strFormula)
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula_differences: ",strFormula_differences)
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  } 
+  else {
+    # no wrapping.
+    cat("\nno wrapping according to formula")
+  } 
+  cat("\n\tstrFormula: ",strFormula)
+  
+  d <- renameGroupedData(d)
+  # we need to modify the structure of the table... something like: cases where correct are labeled "correct", incorrect as "incorrect" and "neither" as "neither"...
+  d$txtCorrectB <- NA
+  d$txtCorrectB[d$correctB==1] <- "correct"
+  d$txtCorrectB[d$correctB==0 & d$answerB=="Neither agree nor disagree"] <- "neither"
+  d$txtCorrectB[d$correctB==0 & d$answerB!="Neither agree nor disagree"] <- "incorrect"
+  
+  if (numFactor>0){
+    
+  } else {
+
+    distribA1 <- ggplot(d) + 
+      geom_point( data=d , aes( x= cntrQ, y=abs(diffA1), alpha=0.3, fill=abs(diffA1), col=abs(diffA1) )  ) + 
+      labs(title = 'Distribution of MwM', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+    
+    distribA2 <- ggplot(d) + 
+      geom_point( data=d , aes( x= cntrQ, y=abs(diffA2), alpha=0.3, fill=abs(diffA2), col=abs(diffA2) )  ) + 
+      labs(title = 'Distribution of MO', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+    
+    distribA3 <- ggplot(d) + 
+      geom_point( data=d , aes( x= cntrQ, y=abs(diffA3), alpha=0.3, fill=abs(diffA3), col=abs(diffA3) )  ) + 
+      labs(title = 'Distribution of MP', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+    
+    distribB <- ggplot(d) + 
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
+      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
+      geom_point( data=d , aes( x= cntrQ, y=txtCorrectB, alpha=0.3, fill=txtCorrectB, col=txtCorrectB )  ) + 
+      # geom_text( aes(x= txtCorrectB, label = paste("Count: " ,stat(count),"\nPercentage: ", scales::percent(prop.table(stat(count))), sep="" ) ), stat='count', vjust = 3, size = 3 ) + 
+      labs(title = 'Distribution of SC', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+    
+  }
+  
+  grid.arrange(grobs=list(distribA1,distribA2,distribA3,distribB), ncol=4 ) 
+  
+}
 
 # disregarded... for now
 stat_ggplot_data <- function(y, upper_limit = max(iris$Sepal.Length) * 1.15) {
