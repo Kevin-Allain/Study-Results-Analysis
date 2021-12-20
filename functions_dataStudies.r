@@ -2167,7 +2167,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Mean with Mask', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank() # }}}} Hid that following advices from Jason{{{{
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank() # }}}} Hid that following advices from Jason{{{{
       )
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -2180,7 +2180,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Overall Mean', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       )
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
@@ -2193,7 +2193,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Mask Proportion', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       )
     # 
     groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[1],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2207,7 +2207,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Differences for Mean with Mask', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), # }}}} Hid that following advices from Jason{{{{
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), # }}}} Hid that following advices from Jason{{{{
         legend.position="none"
       ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
@@ -2222,7 +2222,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Differences for Overall Means', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),
         legend.position="none"
       )+
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
@@ -2853,6 +2853,32 @@ performances_accordingToCntrQ <- function(d,factorScaling=FALSE,factorDistractor
   
   if (numFactor>0){
     
+    distribA1 <- ggplot(d) + 
+      geom_point( data=d , aes( x= cntrQ, y=abs(diffA1), alpha=0.3, fill=abs(diffA1), col=abs(diffA1) )  ) + 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      labs(title = 'Distribution of MwM', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+    
+    distribA2 <- ggplot(d) + 
+      geom_point( data=d , aes( x= cntrQ, y=abs(diffA2), alpha=0.3, fill=abs(diffA2), col=abs(diffA2) )  ) + 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      labs(title = 'Distribution of MO', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+
+    distribA3 <- ggplot(d) + 
+      geom_point( data=d , aes( x= cntrQ, y=abs(diffA3), alpha=0.3, fill=abs(diffA3), col=abs(diffA3) )  ) + 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      labs(title = 'Distribution of MP', y = "" , x="" ) +
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+
+    distribB <- ggplot(d) + 
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
+      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
+      geom_point( data=d , aes( x= cntrQ, y=txtCorrectB, alpha=0.3, fill=txtCorrectB, col=txtCorrectB )  ) + 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      labs(title = 'Distribution of SC', y = "" , x="" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
+    
   } else {
 
     distribA1 <- ggplot(d) + 
@@ -2871,18 +2897,19 @@ performances_accordingToCntrQ <- function(d,factorScaling=FALSE,factorDistractor
       theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
     
     distribB <- ggplot(d) + 
-      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
-      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#111111")) +
+      scale_fill_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
+      scale_colour_manual(values = c("correct" = "green", "incorrect" = "red", "neither" = "#888888")) +
       geom_point( data=d , aes( x= cntrQ, y=txtCorrectB, alpha=0.3, fill=txtCorrectB, col=txtCorrectB )  ) + 
-      # geom_text( aes(x= txtCorrectB, label = paste("Count: " ,stat(count),"\nPercentage: ", scales::percent(prop.table(stat(count))), sep="" ) ), stat='count', vjust = 3, size = 3 ) + 
       labs(title = 'Distribution of SC', y = "" , x="" ) +
-      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
     
   }
   
   grid.arrange(grobs=list(distribA1,distribA2,distribA3,distribB), ncol=4 ) 
   
 }
+
+
 
 # disregarded... for now
 stat_ggplot_data <- function(y, upper_limit = max(iris$Sepal.Length) * 1.15) {
