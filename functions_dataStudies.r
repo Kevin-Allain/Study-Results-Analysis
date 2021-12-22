@@ -2806,31 +2806,34 @@ get_best_worst_perfoms_cntrQ <- function (d){
   d <- d[order(d$focus), ]
   
   d_ql <- d[d$focus=="WHAT_Ql",]
+  cat("\nd_ql$cntrQ: ",d_ql$cntrQ)
   d_qn <- d[d$focus=="WHAT_Qn",]
   d_where <- d[d$focus=="WHERE",]
   # worst ql
   d_ql <- d_ql[order(d$log_diffA1), ];
+  cat("\nd_ql$cntrQ: ",d_ql$cntrQ)
   arr_ql_CntrQ_focusWorst_A1 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
   d_ql <- d_ql[order(d$log_diffA2), ];
   arr_ql_CntrQ_focusWorst_A2 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
   d_ql <- d_ql[order(d$log_diffA3), ];
   arr_ql_CntrQ_focusWorst_A3 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
-
+  cat("\narr_ql_CntrQ_focusWorst_A1: ",arr_ql_CntrQ_focusWorst_A1)
+  
   # worst qn
   d_qn <- d_qn[order(d$log_diffA1), ];
   arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
   d_qn <- d_qn[order(d$log_diffA2), ];
-  arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+  arr_qn_CntrQ_focusWorst_A2 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
   d_qn <- d_qn[order(d$log_diffA3), ];
-  arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+  arr_qn_CntrQ_focusWorst_A3 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
   
   # worst where
   d_where <- d_where[order(d$log_diffA1), ];
   arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
   d_where <- d_where[order(d$log_diffA2), ];
-  arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+  arr_where_CntrQ_focusWorst_A2 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
   d_where <- d_where[order(d$log_diffA3), ];
-  arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+  arr_where_CntrQ_focusWorst_A3 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
   
   # worst SC
   # 1 - filter neither for SC
@@ -2843,6 +2846,7 @@ get_best_worst_perfoms_cntrQ <- function (d){
   df_noneither_ql <- getDF_WrongBCntrQ(d_noneither_ql)
   df_noneither_qn <- getDF_WrongBCntrQ(d_noneither_qn)
   df_noneither_where <- getDF_WrongBCntrQ(d_noneither_where)
+  
   df_noneither_ql <- df_noneither_ql[order(df_noneither_ql$arr_amountWrong), ];
   df_noneither_qn <- df_noneither_qn[order(df_noneither_qn$arr_amountWrong), ];
   df_noneither_where <- df_noneither_where[order(df_noneither_where$arr_amountWrong), ];
@@ -2860,13 +2864,23 @@ get_best_worst_perfoms_cntrQ <- function (d){
                                           df_noneither_qn$arr_cntrQ_wrong[ length( df_noneither_qn$arr_cntrQ_wrong ) - 1], 
                                           df_noneither_qn$arr_cntrQ_wrong[ length( df_noneither_qn$arr_cntrQ_wrong )] ) )
 
-  arr_what_where_cntrQ_focusWorst_B <- c( c( df_noneither_where$arr_cntrQ_wrong [ length( df_noneither_where$arr_cntrQ_wrong  ) - 2], 
+  arr_where_cntrQ_focusWorst_B <- c( c( df_noneither_where$arr_cntrQ_wrong [ length( df_noneither_where$arr_cntrQ_wrong  ) - 2], 
                                            df_noneither_where$arr_cntrQ_wrong[ length( df_noneither_where$arr_cntrQ_wrong ) - 1], 
                                            df_noneither_where$arr_cntrQ_wrong[ length( df_noneither_where$arr_cntrQ_wrong )] ) )
 
+  cat("\narr_qn_CntrQ_focusWorst_A1: ",arr_qn_CntrQ_focusWorst_A1)
+  cat("\narr_where_cntrQ_focusWorst_B: ",arr_where_cntrQ_focusWorst_B)
   
-  return(arr_what_ql_cntrQ_focusWorst_B)
+  # arr to return total: arr_ql_CntrQ_focusWorst_A1 / A2 / A3, arr_qn_CntrQ_focusWorst_A1 / A2 / A3, arr_where_CntrQ_focusWorst_A1 / A2 /A3,arr_what_ql_cntrQ_focusWorst_B, arr_what_qn_cntrQ_focusWorst_B, arr_where_cntrQ_focusWorst_B
+  resArr <- c(arr_ql_CntrQ_focusWorst_A1,arr_ql_CntrQ_focusWorst_A2,arr_ql_CntrQ_focusWorst_A3,
+              arr_qn_CntrQ_focusWorst_A1,arr_qn_CntrQ_focusWorst_A2,arr_qn_CntrQ_focusWorst_A3,
+              arr_where_CntrQ_focusWorst_A1, arr_where_CntrQ_focusWorst_A2, arr_where_CntrQ_focusWorst_A3,
+              arr_what_ql_cntrQ_focusWorst_B,
+              arr_what_qn_cntrQ_focusWorst_B,
+              arr_where_cntrQ_focusWorst_B
+              )
   
+  return(resArr)
 }
 
 
