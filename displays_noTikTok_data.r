@@ -7,6 +7,8 @@ library(dplyr)
 library(lattice)
 library(scales)
 library(FSA)
+# library(see) # buggy...
+
 
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 source("functions_dataStudies.r")
@@ -15,6 +17,20 @@ source("functions_dataStudies.r")
 answers_untransformed <- read.table(file="Studies_2021_11_12/Results/measurement_all_headerAdapted.csv",TRUE,",")
 length( unique ( answers_untransformed$ResponseId[answers_untransformed$Finished=="True"]) ) # number of answers for measurement
 length( unique ( answers_untransformed$ResponseId[answers_untransformed$Finished=="True" & (answers_untransformed$Q11!="Down" | answers_untransformed$Q12!="From time 10 to 30 and time 60 to 70" | answers_untransformed$Q13!="Time 30" | answers_untransformed$Q17!="On the first long straight section" | answers_untransformed$Q14!="From a little before time 70 up to a little before time 80")] ) ) # number of answers for measurement who don't pass first test
+
+answers_onlyForIntros <- read.table(file="Studies_2021_11_12/Results/forIntros_all_headerAdapted.csv",TRUE,",")
+answers_onlyForIntros_nf <- read.table(file="Studies_2021_11_12/Results/forIntros_all_noflip_headerAdapted.csv",TRUE,",")
+
+length(answers_untransformed$Q11)
+length(answers_untransformed$Q11[answers_untransformed$Q11 =="Down" ])
+
+
+# differences of stability (condition - no condition) 
+diffB_cntrQ <- read.table(file="data/glbl_diffB_cntrQ_all.csv",TRUE,",")
+
+measurement_rigorous_withDiffB <- merge(d_measurement_all_noTikTok_filteredSemiRigorous, diffB_cntrQ)
+dim(d_measurement_all_noTikTok_filteredSemiRigorous)
+dim(measurement_rigorous_withDiffB)
 
 # いいい Measurement いいい
 # ---- Data loading
@@ -99,22 +115,19 @@ ggplot( filt_0trust , aes( x=log_diffA1, y=focus, fill=focus, col=focus )) +    
 
 # performance according to trust... not too bad?
 display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok)
-display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok, factorFocus = TRUE)
+display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok, factorDMask = TRUE)
+display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok, factorFocus = TRUE, factorDComplex_focus = TRUE)
+display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok, factorFocus = TRUE, factorDMask = TRUE)
 
 # correctB... distribution of correct, neithers, incorrect
-distrib_performancesB <- performancesB_correct_neither_incorrect(d_measurement_all_noTikTok, factorFocus = TRUE)
+distrib_performancesB <- performancesB_correct_neither_incorrect(measurement_rigorous_withDiffB, factorFocus = TRUE, factorDComplex_focus =  TRUE)
+
+
+
+
 
 # buggy?!
-# dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
-#                                                                       factorScaling=FALSE,
-#                                                                       factorDistractor=FALSE,
-#                                                                       factorDMask= FALSE,
-#                                                                       factorFocus=FALSE,
-#                                                                       factorDComplex_focus=FALSE,
-#                                                                       factorTrust=TRUE,
-#                                                                       factorDifference="dComplex_focus",
-#                                                                       logFunction=FALSE,
-#                                                                       useLogDiff=TRUE) 
+# dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous, factorScaling=FALSE, factorDistractor=FALSE, factorDMask= FALSE, factorFocus=FALSE, factorDComplex_focus=FALSE, factorTrust=TRUE, factorDifference="dComplex_focus", logFunction=FALSE, useLogDiff=TRUE) 
 
 
 

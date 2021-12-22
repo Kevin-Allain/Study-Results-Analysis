@@ -14,6 +14,8 @@ library(rlang)
 library(dplyr)
 library(skimr)
 library(agricolae)
+# library(plotly) # not our version?!
+
 
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 
@@ -439,7 +441,7 @@ renameGroupedData <- function(groupedData_all) {
     groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "E"] = "Focus Easy"
     groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "M"] = "Focus Medium"
     groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "H"] = "Focus Hard"
-    # groupedData_all$orderFocusComplex <- factor(groupedData_all$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
+    groupedData_all$orderFocusComplex <- factor(groupedData_all$dComplex_focus,c("Focus Easy","Focus Medium","Focus Hard"))
     # groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Easy"] = "E"
     # groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Medium"] = "M"
     # groupedData_all$dComplex_focus[groupedData_all$dComplex_focus == "Focus Hard"] = "H"
@@ -2156,9 +2158,9 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   strTitleTotal <- NULL;
   if (numFactor!=0){ 
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
-    groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], aes(x=mean_CI,y=orderCategoryCombination )) +
+    groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[1] ,],  aes (x= log_diffA1 , y = orderCategoryCombination) ) + # change alpha?
+      geom_violin( data = d[dfCI_global$question== arrQuestions[1] ,],  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) + # change alpha?
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
@@ -2168,10 +2170,12 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       theme(
         strip.background = element_blank(), 
         strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank() # }}}} Hid that following advices from Jason{{{{
-      )
-    groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      ) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[2] ,],  aes (x= log_diffA2 , y = orderCategoryCombination) ) +
+      geom_violin( data = d[dfCI_global$question== arrQuestions[2] ,],  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
@@ -2181,10 +2185,12 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       theme(
         strip.background = element_blank(), 
         strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
-      )
-    groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      ) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[3] ,],  aes (x= log_diffA3 , y = orderCategoryCombination) ) +
+      geom_violin( data = d[dfCI_global$question== arrQuestions[3] ,],  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
@@ -2194,13 +2200,15 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       theme(
         strip.background = element_blank(), 
         strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
-      )
+      ) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
     # 
     groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[1],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=2,col="black",fill="white", shape=1) +
-      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5)+
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5, show.legend = FALSE)+
       scale_size_manual(values=c(0.1,5)) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Differences for Mean with Mask") +
@@ -2210,12 +2218,15 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), # }}}} Hid that following advices from Jason{{{{
         legend.position="none"
       ) +
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) 
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    
     groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[2] ,], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=2,col="black",fill="white", shape=1) +
-      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5)+
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5, show.legend = FALSE)+
       scale_size_manual(values=c(0.1,5)) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Differences for Overall Means")  + 
@@ -2225,58 +2236,69 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
         strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),
         legend.position="none"
       )+
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    
     groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=2,col="black",fill="white", shape=1) +
-      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5)+
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5, show.legend = FALSE)+
       scale_size_manual(values=c(0.1,5)) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Differences for Mask Proportion") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
       labs(title = 'Differences for Mask Proportion', y = "" ) +
-      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
   } 
   else {
     cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1],], aes(x=mean_CI,y= orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[1] ,],  aes (x= log_diffA1 , y = orderCategoryCombination) ) +
+      geom_violin( data = d[dfCI_global$question== arrQuestions[1] ,],  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Mean with Mask")+
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       ) +
-      labs(title = "Mean with Mask",y="")
+      labs(title = "Mean with Mask",y="") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
     groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y= orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[2] ,],  aes (x= log_diffA2 , y = orderCategoryCombination) ) +
+      geom_violin( data = d[dfCI_global$question== arrQuestions[2] ,],  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Mean Overall") +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       ) +
-      labs(title = "Mean Overall",y="")
+      labs(title = "Mean Overall",y="") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
     groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y= orderCategoryCombination )) +
       geom_vline(xintercept = 0) +
-      geom_violin( data = d[dfCI_global$question== arrQuestions[3] ,],  aes (x= log_diffA3 , y = orderCategoryCombination) ) +
+      geom_violin( data = d[dfCI_global$question== arrQuestions[3] ,],  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbar(aes(xmin=low_CI, xmax=high_CI)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-edgeSize,edgeSize)) +
       ggtitle("Mask Proportion")+
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
       ) +
-      labs(title = "Mask Proportion",y="")
+      labs(title = "Mask Proportion",y="") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
     # 
 
     cat("\nAbout to generate the graphs for dfCI_global_differences")
@@ -2306,7 +2328,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Differences for Mean with Mask', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
         legend.position="none"
       )
     groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2320,7 +2342,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       labs(title = 'Differences for Overall Means', y = "" ) +
       theme(
         strip.background = element_blank(), 
-        # strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
         legend.position="none"
       )
     groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
@@ -2404,7 +2426,7 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
     strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
     cat("\npost modif strFormula_differences: ",strFormula_differences)
-  } 
+  }
   else if (numFactor==1){
     strFormula<-paste("~",factor1)
     cat("\nnumFactor==1. strFormula: ",strFormula)
@@ -2416,28 +2438,32 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
     strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
     cat("\npost modif strFormula_differences: ",strFormula_differences)
-  } 
+  }
   else {
     # no wrapping.
     cat("\nno wrapping according to formula")
-  } 
+  }
   cat("\n\tstrFormula: ",strFormula)
+  
   
   if (numFactor > 0){
     plot_trustA1 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      # geom_violin( data=d[d$trustA1==0,] , aes( x= abs(diffA1), y=trustA1,  col=focus,  alpha=0.3 )  ) + # fill could be done for something else... like focus?
-      # geom_jitter(data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, col=focus ) ) + # big doubt about whether I should display this...!
       geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 ) ) +
       geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 ) ) +
       geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 ) ) +
       geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 ) ) +
       geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 ) ) +
       geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mean with Mask', y = "" ) +
-      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-      )
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
     
     plot_trustA2 <- ggplot(d)+
       geom_vline(xintercept = 0) +
@@ -2449,8 +2475,7 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
       geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Overall Mean', y = "" ) +
-      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-      )
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
     
     plot_trustA3 <- ggplot(d)+
       geom_vline(xintercept = 0) +
@@ -2462,17 +2487,16 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
       geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mask Proportion', y = "" ) +
-      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-      )
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
     
     plot_trustB <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustB==0,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-      geom_violin( data=d[d$trustB==1,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-      geom_violin( data=d[d$trustB==2,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-      geom_violin( data=d[d$trustB==3,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-      geom_violin( data=d[d$trustB==4,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-      geom_violin( data=d[d$trustB==5,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
       labs(title = 'Stability Comparison', y = "" ) +
       theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
@@ -2482,17 +2506,20 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     cat("\nnumFactor==0")
     plot_trustA1 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      # geom_violin( data=d[d$trustA1==0,] , aes( x= abs(diffA1), y=trustA1,  col=focus,  alpha=0.3 )  ) + # fill could be done for something else... like focus?
-      # geom_jitter(data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, col=focus ) ) + # big doubt about whether I should display this...!
       geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.2 ) ) +
       geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.2 ) ) +
       geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.2 ) ) +
       geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.2 ) ) +
       geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.2 ) ) +
       geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.3 )  ) +
+      geom_jitter( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1, fill=trustA1, alpha=0.2 ) ) +
       labs(title = 'Mean with Mask', y = "" ) +
-      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-      )
+      theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
         
       plot_trustA2 <- ggplot(d)+
         geom_vline(xintercept = 0) +
@@ -2503,11 +2530,7 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
         geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
         geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2, fill=trustA2, alpha=0.3 )  ) +
         labs(title = 'Mean Overall', y = "" ) +
-        theme(
-          strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-        )
+        theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
       
       plot_trustA3 <- ggplot(d)+
         geom_vline(xintercept = 0) +
@@ -2518,29 +2541,21 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
         geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
         geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3, fill=trustA3, alpha=0.3 )  ) +
         labs(title = 'Mask Proportion', y = "" ) +
-        theme(
-          strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-        )
+        theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
       
       plot_trustB <- ggplot(d)+
         geom_vline(xintercept = 0) +
-        geom_violin( data=d[d$trustB==0,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustB==1,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustB==2,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustB==3,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustB==4,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustB==5,] , aes( x=correctB, y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==0,] , aes( x=  abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB, fill=trustB, alpha=0.3 )  ) +
         labs(title = 'Stability Comparison', y = "" ) +
-        theme(
-          strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none"
-        )
+        theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
   }
 
-    grid.arrange(grobs=list(plot_trustA1, plot_trustA2, plot_trustA3,plot_trustB), ncol=4,top=textGrob( "Distribution of performances according to self-reported trust" ) )
+  grid.arrange(grobs=list(plot_trustA1, plot_trustA2, plot_trustA3,plot_trustB), ncol=4,top=textGrob( "Distribution of performances according to self-reported trust" ) )
   return (d)
 }
 
@@ -2782,6 +2797,80 @@ performancesB_accordingToImportanceDifference <- function (d,   factorScaling=FA
   }
 }
 
+# may be imperfect, but time is against us:
+# - for focus: get worst performance cntrQ for each
+get_best_worst_perfoms_cntrQ <- function (d){
+
+  # 3 focus * 3 worst = 9 cntrQ to check
+  arrCntrQ_focusWorst_A1 <- c();
+  d <- d[order(d$focus), ]
+  
+  d_ql <- d[d$focus=="WHAT_Ql",]
+  d_qn <- d[d$focus=="WHAT_Qn",]
+  d_where <- d[d$focus=="WHERE",]
+  # worst ql
+  d_ql <- d_ql[order(d$log_diffA1), ];
+  arr_ql_CntrQ_focusWorst_A1 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
+  d_ql <- d_ql[order(d$log_diffA2), ];
+  arr_ql_CntrQ_focusWorst_A2 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
+  d_ql <- d_ql[order(d$log_diffA3), ];
+  arr_ql_CntrQ_focusWorst_A3 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
+
+  # worst qn
+  d_qn <- d_qn[order(d$log_diffA1), ];
+  arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+  d_qn <- d_qn[order(d$log_diffA2), ];
+  arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+  d_qn <- d_qn[order(d$log_diffA3), ];
+  arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+  
+  # worst where
+  d_where <- d_where[order(d$log_diffA1), ];
+  arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+  d_where <- d_where[order(d$log_diffA2), ];
+  arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+  d_where <- d_where[order(d$log_diffA3), ];
+  arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+  
+  # worst SC
+  # 1 - filter neither for SC
+  d_noneither <- filter_neitherLikert(d)
+  # 2 - filter for focus
+  d_noneither_ql <- d[d$focus=="WHAT_Ql",]
+  d_noneither_qn <- d[d$focus=="WHAT_Qn",]
+  d_noneither_where <- d[d$focus=="WHERE",]
+  # 3 - order the returned df of getDF_WrongBCntrQ and get last 3
+  df_noneither_ql <- getDF_WrongBCntrQ(d_noneither_ql)
+  df_noneither_qn <- getDF_WrongBCntrQ(d_noneither_qn)
+  df_noneither_where <- getDF_WrongBCntrQ(d_noneither_where)
+  df_noneither_ql <- df_noneither_ql[order(df_noneither_ql$arr_amountWrong), ];
+  df_noneither_qn <- df_noneither_qn[order(df_noneither_qn$arr_amountWrong), ];
+  df_noneither_where <- df_noneither_where[order(df_noneither_where$arr_amountWrong), ];
+  
+  df_noneither_ql <- df_noneither_ql[!duplicated(df_noneither_ql), ]
+  df_noneither_qn <- df_noneither_qn[!duplicated(df_noneither_qn), ]
+  df_noneither_where <- df_noneither_where[!duplicated(df_noneither_where), ]
+  
+  
+  arr_what_ql_cntrQ_focusWorst_B <- c( c( df_noneither_ql$arr_cntrQ_wrong [ length( df_noneither_ql$arr_cntrQ_wrong  ) - 2], 
+                                          df_noneither_ql$arr_cntrQ_wrong[ length( df_noneither_ql$arr_cntrQ_wrong ) - 1], 
+                                          df_noneither_ql$arr_cntrQ_wrong[ length( df_noneither_ql$arr_cntrQ_wrong )] ) )
+  
+  arr_what_qn_cntrQ_focusWorst_B <- c( c( df_noneither_qn$arr_cntrQ_wrong [ length( df_noneither_qn$arr_cntrQ_wrong  ) - 2], 
+                                          df_noneither_qn$arr_cntrQ_wrong[ length( df_noneither_qn$arr_cntrQ_wrong ) - 1], 
+                                          df_noneither_qn$arr_cntrQ_wrong[ length( df_noneither_qn$arr_cntrQ_wrong )] ) )
+
+  arr_what_where_cntrQ_focusWorst_B <- c( c( df_noneither_where$arr_cntrQ_wrong [ length( df_noneither_where$arr_cntrQ_wrong  ) - 2], 
+                                           df_noneither_where$arr_cntrQ_wrong[ length( df_noneither_where$arr_cntrQ_wrong ) - 1], 
+                                           df_noneither_where$arr_cntrQ_wrong[ length( df_noneither_where$arr_cntrQ_wrong )] ) )
+
+  
+  return(arr_what_ql_cntrQ_focusWorst_B)
+  
+}
+
+
+
 performances_accordingToCntrQ <- function(d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorTrust=FALSE){
   cat("\n----\tperformances_accordingToCntrQ")
   factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
@@ -2851,23 +2940,26 @@ performances_accordingToCntrQ <- function(d,factorScaling=FALSE,factorDistractor
   d$txtCorrectB[d$correctB==0 & d$answerB=="Neither agree nor disagree"] <- "neither"
   d$txtCorrectB[d$correctB==0 & d$answerB!="Neither agree nor disagree"] <- "incorrect"
   
+  d <- renameGroupedData(d)
+  
+  
   if (numFactor>0){
     
     distribA1 <- ggplot(d) + 
       geom_point( data=d , aes( x= cntrQ, y=abs(diffA1), alpha=0.3, fill=abs(diffA1), col=abs(diffA1) )  ) + 
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) +
       labs(title = 'Distribution of MwM', y = "" , x="" ) +
       theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
     
     distribA2 <- ggplot(d) + 
       geom_point( data=d , aes( x= cntrQ, y=abs(diffA2), alpha=0.3, fill=abs(diffA2), col=abs(diffA2) )  ) + 
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) +
       labs(title = 'Distribution of MO', y = "" , x="" ) +
       theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
 
     distribA3 <- ggplot(d) + 
       geom_point( data=d , aes( x= cntrQ, y=abs(diffA3), alpha=0.3, fill=abs(diffA3), col=abs(diffA3) )  ) + 
-      facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) +
       labs(title = 'Distribution of MP', y = "" , x="" ) +
       theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(), legend.position="none" )
 
@@ -2905,7 +2997,8 @@ performances_accordingToCntrQ <- function(d,factorScaling=FALSE,factorDistractor
     
   }
   
-  grid.arrange(grobs=list(distribA1,distribA2,distribA3,distribB), ncol=4 ) 
+  grid.arrange(grobs=list(distribA1,distribA2,distribA3,distribB), ncol=4 )
+  # ggplotly(distribA1)
   
 }
 
@@ -2923,8 +3016,7 @@ stat_ggplot_data <- function(y, upper_limit = max(iris$Sepal.Length) * 1.15) {
   )
 }
 
-returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE,
-                                     factorTrust=FALSE){
+returnFactorsCombination <- function(factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorTrust=FALSE){
   cat("\nfactorScaling: ",factorScaling,", factorDistractor: ",factorDistractor,", factorFocus: ",factorFocus,", factorDMask: ",factorDMask,", factorDComplex_focus: ",factorDComplex_focus)  
   res <- c(NULL,NULL,NULL,NULL)
   factor1 <- NULL; factor2 <- NULL; factor3 <- NULL; factor4 <- NULL;
@@ -3143,6 +3235,21 @@ enrichData_impossibleQualAnswer <- function(d){
   return (d)
 }
 
+# function to enrich with number of errors... (function to work and without making differences for neither, i.e. call after filtering out neither)
+getDF_WrongBCntrQ <- function(d){
+  d$numErrorB <- NA;
+  arr_cntrQ_wrong <- d$cntrQ[d$correctB==0]
+  arr_amountWrong <- c();
+  for (i in  arr_cntrQ_wrong){
+    arr_amountWrong <- c( arr_amountWrong, sum(match(arr_cntrQ_wrong, i, nomatch=0))   )
+  }
+  cat("\narr_amountWrong: ",arr_amountWrong)
+  dfRes <- data.frame(arr_cntrQ_wrong,arr_amountWrong)
+  return (dfRes)
+}
+
+
+
 prettyEnrichOrderCategory <- function (d,dfCI){
   cat("\n&&&&&&prettyEnrichOrderCategory&&&&&& toString(dfCI$orderCategoryCombination[1]): ",toString(dfCI$orderCategoryCombination[1])) 
   d$orderCategoryCombination <- NA;
@@ -3153,7 +3260,7 @@ prettyEnrichOrderCategory <- function (d,dfCI){
   is_distractor <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "distractor:" )
   is_scaling <- str_detect(toString(dfCI$orderCategoryCombination[1]) , "scaling:" )
   
-  cat("\n--\tis_focus_complexity: ",is_focus_complexity,", is_focus: ",is_focus,", is_mask: ",is_mask,", is_distractor: ",is_distractor,", is_scaling: ",is_scaling)
+  # cat("\n--\tis_focus_complexity: ",is_focus_complexity,", is_focus: ",is_focus,", is_mask: ",is_mask,", is_distractor: ",is_distractor,", is_scaling: ",is_scaling)
   selecColName <- ""
   nameColPaste <- ""
   if (is_focus_complexity){
@@ -3171,7 +3278,7 @@ prettyEnrichOrderCategory <- function (d,dfCI){
   else if (is_scaling){
     selecColName <- "scaling"; nameColPaste <- "scaling"
   }
-  cat('\n##\t selecColName: ',selecColName,', nameColPaste: ',nameColPaste,"\nunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination), "\ntoString(unique(dfCI$orderCategoryCombination)): ",toString(unique(dfCI$orderCategoryCombination)))
+  # cat('\n##\t selecColName: ',selecColName,', nameColPaste: ',nameColPaste,"\nunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination), "\ntoString(unique(dfCI$orderCategoryCombination)): ",toString(unique(dfCI$orderCategoryCombination)))
   d$categoryCombination  <- NA;
   arrStrCategoryCombination <- c()
   for (i in 1:length(select(d,selecColName)[,1] ) ) {
@@ -3206,14 +3313,14 @@ prettyEnrichOrderCategory <- function (d,dfCI){
       # cat("_identical WHERE_")
       valVariant <- "WHERE"
     }
-    cat("\tTo assign valVariant: ",valVariant)
+    # cat("\tTo assign valVariant: ",valVariant)
     # d$orderCategoryCombination <- paste( nameColPaste,": ",valVariant, sep="" )
     arrStrCategoryCombination <- c( arrStrCategoryCombination, paste( nameColPaste,": ",valVariant, sep="" ) )
   }
-  cat("\nいい\tunique(arrStrCategoryCombination): ",unique(arrStrCategoryCombination))
+  # cat("\nいい\tunique(arrStrCategoryCombination): ",unique(arrStrCategoryCombination))
   
   d$category_combination <- arrStrCategoryCombination
-  cat("\n\t\tunique(d$category_combination): ",unique(d$category_combination),"\n***")
+  # cat("\n\t\tunique(d$category_combination): ",unique(d$category_combination),"\n***")
   # I think we might have to factor to ensure the ordering goes as it should...?
   
   if (is_focus_complexity){
@@ -4712,7 +4819,6 @@ df_Distribution_correctB_per_idc <- function (d){
                       , focus <- focusNumIdc, dComplex_focus <- dComplex_focusNumIdc )
   return(resDf)
 }
-
 
 
 
