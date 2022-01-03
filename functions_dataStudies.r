@@ -1,7 +1,7 @@
 library(gridExtra)
 library(grid)
 library(boot) 
-library(ggplot2) 
+library(ggplot2)
 library(dplyr)
 library(lattice)
 library(scales)
@@ -32,8 +32,7 @@ allSame <- function(x) length(unique(x)) == 1
 
 
 genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
-  # cat("\ngenboot: question: ",question,", focus: ", focus," dMask: ", dMask,", dComplex_focus: ", dComplex_focus)
-  # cat("\n\t\t\t\td[[question]]: ",d[[question]])
+  # cat("\ngenboot: question: ",question,", focus: ", focus," dMask: ", dMask,", dComplex_focus: ", dComplex_focus) # cat("\n\t\t\t\td[[question]]: ",d[[question]])
   
   boot_d <- c()
   if (focus=="" & dMask == "" & dComplex_focus ==""){
@@ -58,24 +57,25 @@ genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
 }
 
 getMean_lowCI_highCI <- function (boot_d){
+  cat("\n--getMean_lowCI_highCI--")
   ci <- boot.ci(boot.out = boot_d, type = c("norm", "basic", "perc", "bca"));
-  # cat("\nci: ",toString(ci))
+  cat("\nci: ",toString(ci))
   mean <- boot_d$t0;
   l_ci <- ci$normal[2];
   h_ci <- ci$normal[3];
   res <- c(mean,l_ci,h_ci)
-  # cat("\n in getMean_lowCI_highCI, mean: ",mean,", l_ci:",l_ci,", h_ci: ",h_ci);
+  cat("\n in getMean_lowCI_highCI, mean: ",mean,", l_ci:",l_ci,", h_ci: ",h_ci);
   return (res);
 }
 
 make_gensMean_lowCI_highCI <- function (d,question, focus="", dMask="",dComplex_focus="",R=10000){
-  # cat("\n-- make_gensMean_lowCI_highCI; question : ",question,", focus: ",focus,", dMask: ",dMask,", dComplex_focus: ",dComplex_focus);
+  cat("\n-- make_gensMean_lowCI_highCI; question : ",question,", focus: ",focus,", dMask: ",dMask,", dComplex_focus: ",dComplex_focus,", dim(d): ",dim(d));
   if (dim(d)[1] == 0){
     return (NA)
   } else {
     # boot
     boot_s0 <- genBoot(d,question,focus,dMask,dComplex_focus,R)
-    cat("\nboot_s0: ",boot_s0);
+    # cat("\nboot_s0: ",toString(boot_s0));
     # call the summary
     gens_s0 <- getMean_lowCI_highCI(boot_s0)
     return( c(gens_s0) )
@@ -84,6 +84,7 @@ make_gensMean_lowCI_highCI <- function (d,question, focus="", dMask="",dComplex_
 
 make_gensMean_trustBased <- function (d, question, focus="",dMask="",dComplex_focus="",R=10000){
   boot_s0 <- genBoot_trust(d,question,focus,dMask,dComplex_focus,R)
+  cat("\nboot_s0 made...")
   # call the summary
   gens_s0 <- getMean_lowCI_highCI(boot_s0)
   return( c(gens_s0) )
@@ -2166,8 +2167,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       "\nbtw strFormula: ",strFormula,
       "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)),"\n\n")
   
-  View(dfCI_global);
-  View(d);
+  # View(dfCI_global);
+  # View(d);
     
   ####### TESTING!!! This is somehow buggy!!!
   # dfCI_global <- dfCI_global[sort(dfCI_global$orderCategoryCombination, reverse=TRUE),] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
@@ -2584,18 +2585,18 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     # #feedde #fdd0a2 #fdae6b #fd8d3c #e6550d #a63603
     plot_trustA1 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) 
+      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
     # if (length (d$cntrQ[d$trustA1==0] <= 2)){ plot_trustA1 <- plot_trustA1 + geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3, width = .02 ) )}
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  )
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  )
     # if (length (d$cntrQ[d$trustA1==1] <= 2)){ plot_trustA1 <- plot_trustA1 + geom_jitter( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3, width = .02 ) )}
       # geom_jitter( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, col=trustA1,alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 +  geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) 
+    plot_trustA1 <- plot_trustA1 +  geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
       # geom_jitter( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1,col=trustA1, alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) 
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
       # geom_jitter( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, col=trustA1, alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  )
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  )
       # geom_jitter( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1,col=trustA1,alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 ))+ #, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1,col=trustA1,alpha=0.3, width = .02 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mean with Mask', y = "" ) +
@@ -2603,17 +2604,17 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     
     plot_trustA2 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2, ,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2, col=trustA2,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2, alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2, alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2,col=trustA2, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2, col=trustA2, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2,col=trustA2,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2,col=trustA2,alpha=0.3 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Overall Mean', y = "" ) +
@@ -2621,17 +2622,17 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     
     plot_trustA3 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3, ,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3, col=trustA3,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3, alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3, alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3,col=trustA3, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3, col=trustA3, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3,col=trustA3,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3,col=trustA3,alpha=0.3 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mask Proportion', y = "" ) +
@@ -2639,7 +2640,7 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     
     plot_trustB <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 ), draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 ) )+# , draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_dotplot( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB, ,alpha=0.3, width = .02 ) ) +
       geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
       # geom_dotplot( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB, col=trustB,alpha=0.3, width = .02 ) ) +
@@ -3429,6 +3430,14 @@ getDF_WrongBCntrQ <- function(d){
 makeSummaryString <- function (d, factorScaling=FALSE, factorDistractor=FALSE, factorDMask= FALSE, factorFocus=FALSE, factorDComplex_focus=FALSE, 
                                factorDifference="",arrMixOrderFormula=c(),useLogDiff=TRUE){
   cat("\n--makeSummaryString--\n")
+  
+  df_summary <- data.frame();
+  df_summary$RF1<-c();	df_summary$RF2<-c();	df_summary$RF3<-c();	df_summary$RF4<-c();	df_summary$RF5<-c();	df_summary$RF6<-c();	df_summary$RF7<-c();	df_summary$RF8<-c();	df_summary$RF9<-c();	
+  df_summary$MwM1<-c();	df_summary$MwM2<-c(); df_summary$MwM3<-c();  df_summary$MwM4<-c();	df_summary$MwM5<-c();	df_summary$MwM6<-c(); df_summary$MwM7<-c();	df_summary$MwM8<-c();	df_summary$MwM9<-c();	
+  df_summary$OM1<- c();	df_summary$OM2<-c();	df_summary$OM3<-c();	df_summary$OM4<-c();	df_summary$OM5<-c();	df_summary$OM6<-c();	df_summary$OM7<-c(); df_summary$OM8<-c();	df_summary$OM9;
+  df_summary$MP1<-c();	df_summary$MP2<-c(); df_summary$MP3<-c();	df_summary$MP4<-c();	df_summary$MP5<-c(); df_summary$MP6<-c();	df_summary$MP7<-c(); df_summary$MP8<-c();	df_summary$MP9<-c();
+  df_summary$SC1<-c();	df_summary$SC2<-c(); df_summary$SC3<-c();	df_summary$SC4<-c();	df_summary$SC5<-c(); df_summary$SC6<-c(); df_summary$SC7<-c();	df_summary$SC8<-c();	df_summary$SC9<-c();
+  
   # d[sort(d$focus)] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
   d <- d[order(d$focus), ]
   if (!is.null(d$distractor)){d <- d[order(d$distractor), ]}  # necessary? useful?
@@ -3538,14 +3547,89 @@ makeSummaryString <- function (d, factorScaling=FALSE, factorDistractor=FALSE, f
   if(factorDifference == "focus"){arrFactorDifferences <- arrFocus} else if (factorDifference=="dMask"){arrFactorDifferences <- arrMask} else if (factorDifference=="dComplex_focus"){arrFactorDifferences <- arrDComplex_focus} else if (factorDifference=="scaling"){arrFactorDifferences <- arrScalings} else if (factorDifference=="distractor"){arrFactorDifferences <- arrDistractor}  
   
   cat("\nok no crash")
-  arrFactorization1 <- c(); arrFactorization2 <- c(); arrFactorization3 <- c();
-  if (!is.null(factorArr[1])){
-        
+  # TODO change
+  if (numFactor== 1 ){
+    factorArr[2] <- factorArr[1]; factorArr[3] <- factorArr[1];
+    maxIndxF1 <- 3;
+    maxIndxF2 <- 1;
+    maxIndxF3 <- 1;
+  } 
+  else if (numFactor== 2){
+    factorArr[3] <- factorArr[1];
+    maxIndxF1 <- 3;
+    maxIndxF2 <- 3;
+    maxIndxF3 <- 1;
+  } 
+  else if (numFactor== 3){
+    maxIndxF1 <- 3;
+    maxIndxF2 <- 3;
+    maxIndxF3 <- 3;
   }
   
+  maxIndxF1 <- 3; maxIndxF2 <- 3; maxIndxF3 <- 3;
   
-  for (f in )
-      
+  arrFactorization1 <- c(); arrFactorization2 <- c(); arrFactorization3 <- c();
+  if (!is.null(factorArr[1])){
+    if (factorArr[1] =="focus" ){ arrFactorization1 <- arrFocus } else if (factorArr[1] == "dMask"){ arrFactorization1 <- arrMask;}
+    else if (factorArr[1] =="dComplex_focus"){arrFactorization1 <- arrDComplex_focus } else if (factorArr[1] =="scaling"){arrFactorization1 <- arrScalings }
+    else if (factorArr[1] =="distractor"){arrFactorization1 <- arrDistractor }
+  }
+  if (!is.null(factorArr[2])){
+    if (factorArr[2] =="focus" ){ arrFactorization2 <- arrFocus } else if (factorArr[2] == "dMask"){ arrFactorization2 <- arrMask;}
+    else if (factorArr[2] =="dComplex_focus"){arrFactorization2 <- arrDComplex_focus } else if (factorArr[2] =="scaling"){arrFactorization2 <- arrScalings }
+    else if (factorArr[2] =="distractor"){arrFactorization2 <- arrDistractor }
+  }
+  if (!is.null(factorArr[3])){
+    if (factorArr[3] =="focus" ){ arrFactorization3 <- arrFocus } else if (factorArr[3] == "dMask"){ arrFactorization3 <- arrMask;}
+    else if (factorArr[3] =="dComplex_focus"){arrFactorization3 <- arrDComplex_focus } else if (factorArr[3] =="scaling"){arrFactorization3 <- arrScalings }
+    else if (factorArr[3] =="distractor"){arrFactorization3 <- arrDistractor }
+  }
+  
+  cat("\narrFactorization1: ",toString(arrFactorization1));
+  cat("\narrFactorization2: ",toString(arrFactorization2));
+  cat("\narrFactorization3: ",toString(arrFactorization3));
+  
+  if (numFactor>0){
+    indxF1 <- 0; indxF2 <- 0; indxF3 <- 0;
+    for (f1 in arrFactorization1){
+      cat("\n--f1: ",f1,", indxF1: ",indxF1,", maxIndxF1: ",maxIndxF1)
+      # if (numFactor<2){indxF2 <- indxF1}
+      indxF2 <- 0;
+      if (indxF1 < maxIndxF1){
+        for (f2 in arrFactorization2){
+          cat("\n----f2: ",f2,", indxF2: ",indxF2,", maxIndxF2: ",maxIndxF2)
+          # if (numFactor<3){indxF3 <- indxF1}
+          indxF3 <- 0
+          if (indxF2 < maxIndxF2){
+            for (f3 in arrFactorization3){
+              cat("\n------f3: ",f3,", indxF3: ",indxF3,", maxIndxF3: ",maxIndxF3)
+              if (indxF3 < maxIndxF3){
+                cat("\n\t\t\tf1: ",f1,", f2:",f2,", f3:",f3)
+                cat("\nindxF1: ",indxF1,", indxF2: ",indxF2,", indxF3: ",indxF3)
+                cat("\n# responses", ",mean MwM", ",mean OM",  ",mean MP",  ",mean SC\n",
+                  length(d$diffA1[d[[factorArr[1]]] == f1 & d[[factorArr[2]]] == f2 & d[[factorArr[3]]] == f3]),",",
+                  mean(abs(d$diffA1[d[[factorArr[1]]] == f1 & d[[factorArr[2]]] == f2 & d[[factorArr[3]]] == f3])),",",
+                  mean(abs(d$diffA2[d[[factorArr[1]]] == f1 & d[[factorArr[2]]] == f2 & d[[factorArr[3]]] == f3])),",",
+                  mean(abs(d$diffA3[d[[factorArr[1]]] == f1 & d[[factorArr[2]]] == f2 & d[[factorArr[3]]] == f3])),",",
+                  mean(abs(d$correctB[d[[factorArr[1]]] == f1 & d[[factorArr[2]]] == f2 & d[[factorArr[3]]] == f3]))
+                );
+                # df_summary
+              }
+              indxF3 <- indxF3 +1;
+            }
+          }
+          indxF2 <- indxF2 +1;
+        }
+      }
+      indxF1 <- indxF1 +1;
+    }
+  } else {
+    cat("\n# responses", ",mean MwM ",",mean OM",",mean MP ",",mean SC\n",
+        length(d$diffA1),",",mean(abs(d$diffA1)),",",mean(abs(d$diffA2)),",",mean(abs(d$diffA3)),",", mean(abs(d$correctB))
+    );
+    
+  }
+
 }
 
 
@@ -5434,12 +5518,66 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   cat("\n !!! length(arrFactorVariations)== 2")
                   selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
                   selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
+                  
+                  cat("\n~~\tmade selec_differences for selec1 and selec2. dim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2),", curQuestion: ",curQuestion,"\t~~")
+                  dataRandom <- c(0.0001, 0.00012, 0.00013, 0.00014, 0.00015, 0.00016, 0.00017, 0.00018)
+                  if (length (selec1[curQuestion] <=1)){
+                    cat("\nnhave to add things. length of selec1[curQuestion]: ",length(selec1[curQuestion]),", selec1[curQuestion]: ",toString(selec1[curQuestion]) )
+                    newRow <- selec1
+                    newRow[curQuestion] <- newRow[curQuestion] +0.00017
+                    d <- rbind(d, newRow)
+                    # selec1[curQuestion] <- c(selec1[curQuestion],selec1[curQuestion] +0.00017, selec1[curQuestion] +0.00018 )
+                  }
+                  if (length (selec2[curQuestion] <=1)){
+                    cat("\nnhave to add things. length of selec2[curQuestion]: ",length(selec2[curQuestion]),", selec2[curQuestion]: ",toString(selec2[curQuestion]) )
+                    newRow <- selec2
+                    newRow[curQuestion] <- newRow[curQuestion] +0.00017
+                    cat("\tdim(newRow): ",dim(newRow))
+                    d <- rbind(d, newRow)
+                    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
+                    # selec2[curQuestion] <- c(selec2[curQuestion],selec2[curQuestion] +0.00017, selec2[curQuestion] +0.00018 )
+                  }
+                  cat("\n++++Post addiition: length of selec1[curQuestion]: ",length(selec1[curQuestion]), 
+                      ", length of selec2[curQuestion]: ",length(selec2[curQuestion]) )
+                  
                   selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
                   selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
-                  cat("\nmade selec_differences for selec1 and selec2. dim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2))
+                  cat("\nselec1[1,1]: ", selec1[1,1], ", selec2[1,1]: ", selec2[1,1])
+                  cat("\n\n-- length selec1: ", length(selec1[curQuestion]), "\n\n-- length selec2: ", length(selec2[curQuestion]))
+                  
+                  View(selec1); View(selec2);
+                  
+                  selec1All0 = TRUE; selec1All1 = TRUE;
+                  for (v in selec1[curQuestion]){
+                    if (v != 0){
+                      selec1All0 <- FALSE
+                    } else {
+                      selec1All1 <- FALSE
+                    }
+                  }
+                  selec2All0 = TRUE; selec2All1 = TRUE;
+                  for (v in selec2[curQuestion]){
+                    if (v != 0){
+                      selec2All0 <- FALSE
+                    } else {
+                      selec2All1 <- FALSE
+                    }
+                  }
+                  cat("\nselec1All0: ",selec1All0,", selec1All1: ",selec1All1,", selec2All0: ",selec2All0,", selec2All1: ",selec2All1)
+
+                  randS1 <- sample(x=dataRandom, size=length(selec1[curQuestion]))
+                  randS2 <- sample(x=dataRandom, size=length(selec2[curQuestion]))
+                  if (selec1All0){selec1[curQuestion] <- selec1[curQuestion] + randS1  }
+                  if (selec1All1){selec1[curQuestion] <- selec1[curQuestion] - randS1}
+                  if (selec2All0){selec2[curQuestion] <- selec2[curQuestion] + randS2}
+                  if (selec2All1){selec2[curQuestion] <- selec2[curQuestion] - randS2}
+                  cat("\n**selec1[curQuestion]: ",toString(selec1[curQuestion]))
+                  cat("\n**selec2[curQuestion]: ",toString(selec2[curQuestion]))
+                  
                   group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                  cat("\ngroup1_CI: ",toString(group1_CI))
                   group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
-                  cat("\ngroup1_CI: ",toString(group1_CI),", group2_CI: ",toString(group2_CI))
+                  cat("\ngroup2_CI: ",toString(group2_CI))
                   
                   if (toString(group1_CI) == "1" ){
                     cat("\n very wrong group1_CI but we try to set a small variation that won't be visible")
@@ -5449,7 +5587,17 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                     cat("\n very wrong group2_CI but we try to set a small variation that won't be visible")
                     group2_CI <- c(0.999,0.998,1)
                   }
+                  if (toString(group1_CI) == "0" ){
+                    cat("\n very wrong group1_CI but we try to set a small variation that won't be visible")
+                    group1_CI <- c(0.001,0.002,000)
+                  }
+                  if (toString(group2_CI) == "0") {
+                    cat("\n very wrong group2_CI but we try to set a small variation that won't be visible")
+                    group2_CI <- c(0.001,0.002,000)
+                  }
                   
+                  
+                                    
                   group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
                   group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
                   cat("\n{{{ booted group_differences1_CI")
@@ -5785,6 +5933,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
     class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI);
     class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
     
+    d <- renameGroupedData(d)
     dfCI_global <- renameGroupedData(dfCI_global);
     dfCI_global_differences <- renameGroupedData(dfCI_global_differences);
 
@@ -5857,8 +6006,38 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
     cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global))
     cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
     
-    # View(dfCI_global_differences)
-    d <- renameGroupedData(d)
+    View(d);
+    View(dfCI_global);
+    if ( ! "orderCategoryCombination" %in% colnames(d)  ){
+      cat("\n¤¤--¤¤Need to fill orderCategoryCombination for d.")
+      cat("\n\tcolnames(d): ",colnames(d))
+      cat("\n\tcolnames(dfCI_global): ",colnames(dfCI_global))
+      d$orderCategoryCombination <- c()
+      order_dComplex_focus <- grepl( "focus complexity:" , dfCI_global$orderCategoryCombination[1] )
+      order_focus <- grepl( "focus:" , dfCI_global$orderCategoryCombination[1] )
+      order_dMask <- grepl( "Mask:" , dfCI_global$orderCategoryCombination[1] )
+      order_distractor <- grepl( "distractor:" , dfCI_global$orderCategoryCombination[1] )
+      order_scaling <- grepl( "scaling:" , dfCI_global$orderCategoryCombination[1] )
+      
+      cat("\norder_dComplex_focus: ",order_dComplex_focus,", order_focus: ",order_focus,", order_dMask: ",order_dMask,", order_distractor: ",order_distractor,", order_scaling: ",order_scaling)
+      if (order_dComplex_focus){ d$orderCategoryCombination[d$orderFocusComplex=="Focus Easy"] <- "focus complexity: Easy";
+                                 d$orderCategoryCombination[d$orderFocusComplex=="Focus Medium"] <- "focus complexity: Medium";
+                                 d$orderCategoryCombination[d$orderFocusComplex=="Focus Hard"] <- "focus complexity: Hard"; }
+      if (order_distractor){ d$orderCategoryCombination[d$distractor=="h"] <- "distractor: h";
+                                 d$orderCategoryCombination[d$distractor=="n"] <- "distractor: n"; }
+      if (order_scaling){ d$orderCategoryCombination[d$scaling==0] <- "scaling: 0";
+                          d$orderCategoryCombination[d$scaling==1] <- "scaling: 1";
+                          d$orderCategoryCombination[d$scaling==2] <- "scaling: 2"; }
+      if (order_focus){ d$orderCategoryCombination[d$focus=="WHAT_Ql"] <- "focus: WHAT_Ql";
+                        d$orderCategoryCombination[d$focus=="WHAT_Qn"] <- "focus: WHAT_Qn";
+                        d$orderCategoryCombination[d$focus=="WHERE"] <- "focus: WHERE"; }
+      if (order_dMask){ d$orderCategoryCombination[d$dMask=="easy"] <- "Mask: Easy";
+                        d$orderCategoryCombination[d$dMask=="medium"] <- "Mask: Medium";
+                        d$orderCategoryCombination[d$dMask=="hard"] <- "Mask: Hard"; } 
+    }
+    
+    
+    # we end up with d not having orderCategoryCombination...
     
     strTitleTotal <- NULL;
     if (numFactor!=0){ 
@@ -5901,6 +6080,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
       strTitleTotal <- paste("Error rates and differences for ",factorDifference,sep="")
       groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="reverseB",], aes(x=mean_CI,y=orderCategoryCombination )) +
         geom_vline(xintercept = 0) +
+        geom_violin( data = d,  aes (x=  abs(1 - correctB)  , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
         geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
         geom_point(size=3,col="black",fill="white", shape=1) +
         xlim(c(0,1)) + 

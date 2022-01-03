@@ -24,9 +24,12 @@ answers_onlyForIntros_nf <- read.table(file="Studies_2021_11_12/Results/forIntro
 length(answers_untransformed$Q11)
 length(answers_untransformed$Q11[answers_untransformed$Q11 =="Down" ])
 
-
 # summary attempts...
+length(d_measurement_all_noTikTok_filteredSemiRigorous$abs_diffA1)
 sum_d_measurement <- data.frame(unclass(summary(d_measurement_all_noTikTok_filteredSemiRigorous)), check.names = FALSE, stringsAsFactors = FALSE)
+View(sum_d_measurement)
+sum_d_measurement$`  abs_diffA1`[4]
+
 write.csv(sum_d_measurement , file = 'tst_sum_d_measurement.csv')
 summ_load <- read.table(file="tst_sum_d_measurement.csv",TRUE,",")
 
@@ -44,13 +47,13 @@ dim(measurement_rigorous_withDiffB)
 # d_measurement_all_noTikTok <- read.table(file="data/transformed/survey_measurement_all_headerAdapted_noTikTok.csv",TRUE,",")
 d_measurement_all_noTikTok <- read.table(file="data/transformed/survey_measurement_all_headerAdapted_noTikTok_withLog2.csv",TRUE,",")
 d_measurement_all_noTikTok <- enrich_absDiffs(d_measurement_all_noTikTok)
-length( unique (d_measurement_all_noTikTok$ResponseId ) )
+length( d_measurement_all_noTikTok$ResponseId  )
 # d_measurement_all_noTikTok_filteredRigorous <- filter_someTrust0or5_impossibleQualAnswer(d_measurement_all_noTikTok)
 d_measurement_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibleQualAnswer(d_measurement_all_noTikTok)
-length( unique (d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId ) )
+length( d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId ) 
+d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId)
 
-
-d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok)
 
 
 d_measurement_all_noTikTok_enriched <- enrichData_impossibleQualAnswer(enrichData_withTrustAll0or5(d_measurement_all_noTikTok))
@@ -168,8 +171,8 @@ d_measurement_forViolin$orderCategoryCombination
 View(d_measurement_forViolin)
 
 # ---- CorrectB # looks weird with logFunction = TRUE
-# rabbits
-combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok_filteredSemiRigorous,
+# rabbits TO PRETTIFY
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok_filteredSemiRigorous,
                                             factorFocus = TRUE, 
                                             factorDComplex_focus = FALSE, 
                                             factorDMask = TRUE, 
@@ -273,6 +276,8 @@ length( unique (d_distractor_all_noTikTok$ResponseId[d_distractor_all_noTikTok$d
 d_distractor_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibleQualAnswer(d_distractor_all_noTikTok) 
 length( unique (d_distractor_all_noTikTok_filteredSemiRigorous$ResponseId ) ) # 18 only!!!
 
+d_distractor_all_noTikTok_noneither <- filter_neitherLikert(d_distractor_all_noTikTok)
+
 # res_trust
 test_distr <- gen_res_trust_violin(d_distractor_all_noTikTok)
 display_res_trust_violin_distractor <- gen_res_trust_violin(d_distractor_all_noTikTok, factorDistractor = TRUE)
@@ -281,8 +286,8 @@ display_res_trust_violin_distractor <- gen_res_trust_violin(d_distractor_all_noT
 dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_distractor_all_noTikTok,
   factorScaling=FALSE,
   factorDistractor=FALSE,
-  factorDMask= TRUE,
-  factorFocus= TRUE,
+  factorDMask= FALSE,
+  factorFocus= FALSE,
   factorDComplex_focus=FALSE, 
   factorDifference="distractor",
   useLogDiff=TRUE)
@@ -291,7 +296,7 @@ dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_di
 d_distractor_all_noTikTok_errorRates <- combine_genPlot_ErrorRate_CIandDifferences( 
   d=d_distractor_all_noTikTok,
   factorFocus = TRUE, 
-  factorDComplex_focus = TRUE, 
+  factorDComplex_focus = FALSE, 
   factorDMask = FALSE, 
   factorDifference="distractor", filterNeither = TRUE )
 
@@ -349,6 +354,7 @@ length( unique (d_scaling_all_noTikTok_filteredSemiRigorous$ResponseId ) ) # 13 
 
 display_res_trust_violin <- gen_res_trust_violin(d_scaling_all_noTikTok, factorScaling = TRUE)
 
+d_scaling_all_noTikTok_noneither <- filter_neitherLikert(d_scaling_all_noTikTok)
 
 dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
                                          factorScaling=FALSE,factorDistractor=FALSE,
