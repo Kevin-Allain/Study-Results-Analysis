@@ -6,7 +6,7 @@ library(ggplot2)
 library(dplyr)
 library(lattice)
 library(scales)
-library(FSA)
+# library(FSA)
 # library(see) # buggy...
 
 
@@ -54,6 +54,7 @@ length( d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId )
 d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
 length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId)
 
+d_noneither_semi_rigorous <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
 
 
 d_measurement_all_noTikTok_enriched <- enrichData_impossibleQualAnswer(enrichData_withTrustAll0or5(d_measurement_all_noTikTok))
@@ -80,13 +81,13 @@ dim(d_scaling_all_noTikTok)
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
 
-dfCI_global_TikTok_measurement_factored_focusOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
-                                                                          factorDMask= FALSE,
+                                                                          factorDMask= TRUE,
                                                                           factorFocus=FALSE,
                                                                           factorDComplex_focus=FALSE,
-                                                                          factorDifference="focus",
+                                                                          factorDifference="dComplex_focus",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
@@ -104,7 +105,7 @@ dfCI_global_TikTok_measurement_factored_dComplex_focus_only <- combine_genPlot_C
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
                                                                           factorDMask= TRUE,
-                                                                          factorFocus=TRUE,
+                                                                          factorFocus=FALSE,
                                                                           factorDComplex_focus=FALSE,
                                                                           factorDifference="dComplex_focus",
                                                                           logFunction=FALSE,
@@ -123,7 +124,12 @@ ggplot( filt_0trust , aes( x=log_diffA1, y=focus, fill=focus, col=focus )) +    
 #   geom_jitter(data=d_measurement_all_noTikTok_filteredSemiRigorous ,  aes (x= log_diffA1 , y = trustA1, fill=focus) ) # d_measurement_all_noTikTok_filteredSemiRigorous, aes(x=log_diffA1, y=trustA1, col=focus)
 
 # performance according to trust... not too bad?
-display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok_filteredSemiRigorous)
+display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok_filteredSemiRigorous, 
+                                                 factorFocus = TRUE,
+                                                 factorDMask = FALSE,
+                                                 factorDComplex_focus = TRUE,
+                                                 filterNeither = TRUE)
+
 display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok_filteredSemiRigorous, factorFocus = TRUE)
 display_res_trust_violin <- gen_res_trust_violin(
   d_measurement_all_noTikTok_filteredSemiRigorous[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql",], 
@@ -172,11 +178,12 @@ View(d_measurement_forViolin)
 
 # ---- CorrectB # looks weird with logFunction = TRUE
 # rabbits TO PRETTIFY
-dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok_filteredSemiRigorous,
-                                            factorFocus = TRUE, 
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences_issues( d=d_measurement_all_noTikTok_filteredSemiRigorous,
+                                            factorFocus = FALSE, 
                                             factorDComplex_focus = FALSE, 
                                             factorDMask = TRUE, 
                                             factorDifference="dComplex_focus",
+                                            filterNeither = TRUE
                                             )
 
 # -- CorrectB filtere of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
@@ -194,7 +201,7 @@ write.csv(correctBdistribution,"distributionsB_measurement_noTikTok.csv",row.nam
 length(correctBdistribution$dMask[correctBdistribution$dMask == "easy"])
 
 # ---- Trusts
-genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok)
+genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigorous)
 # # Attempt to run Kruskal-Wallis, but it does not work on socscistatistics.com for more than 300 values in the same block (we have 990)
 # toString(d_measurement_all_noTikTok_filteredSemiRigorous$trustA1[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql"])
 # toString(d_measurement_all_noTikTok_filteredSemiRigorous$trustA2[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql"])
@@ -296,7 +303,7 @@ dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_di
 d_distractor_all_noTikTok_errorRates <- combine_genPlot_ErrorRate_CIandDifferences( 
   d=d_distractor_all_noTikTok,
   factorFocus = TRUE, 
-  factorDComplex_focus = FALSE, 
+  factorDComplex_focus = TRUE, 
   factorDMask = FALSE, 
   factorDifference="distractor", filterNeither = TRUE )
 
@@ -377,17 +384,22 @@ dfCombinationCI_differences_distractor_factoredby_NA <- combine_genPlot_CIandDif
                                          useLogDiff=TRUE);
 
 dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_scaling_all_noTikTok,
-                                       factorScaling=FALSE,factorDistractor=FALSE,factorDMask= TRUE,
-                                       factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling");
+                                       factorScaling=FALSE, factorDistractor=FALSE,
+                                       factorDMask= FALSE,
+                                       factorFocus=TRUE,
+                                       factorDComplex_focus=TRUE, factorDifference="scaling");
 
 
-d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( 
-  d=d_scaling_all_noTikTok,
-  factorFocus = TRUE, 
-  factorDComplex_focus = TRUE, 
-  factorDMask = FALSE, 
-  factorDifference="scaling",
-  filterNeither = TRUE)
+d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( d=d_scaling_all_noTikTok,
+                                      factorFocus = TRUE, 
+                                      factorDComplex_focus = TRUE, 
+                                      factorDMask = FALSE, 
+                                      factorDifference="scaling",
+                                      filterNeither = TRUE)
+
+display_scaling_res_trust_violin <- gen_res_trust_violin(d_scaling_all_noTikTok)
+display_scaling_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok_filteredSemiRigorous, factorFocus = TRUE)
+
 
 genAndPlotTrust_measurement_overall(d_scaling_all_noTikTok[d_scaling_all_noTikTok$scaling==0,])
 genAndPlotTrust_measurement_overall(d_scaling_all_noTikTok[d_scaling_all_noTikTok$scaling==1,])

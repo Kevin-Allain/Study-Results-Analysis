@@ -490,3 +490,80 @@ groupedData_scl2["mean_t0_DiffA1"]<-NA;groupedData_scl2["mean_t0_DiffA2"]<-NA;gr
 # dfCI_global <- data.frame()
 # dfCI_global$mean_CI[0] <- 0; dfCI_global$low_CI[0] <- 0;dfCI_global$high_CI[0] <- 0;dfCI_global$category_combination[0] <- 0; dfCI_global$question[0] <- 0;
 
+
+# ---- formerly part of combine_genPlot_CIandDifferences
+if (numFactor>3){
+  # numFactor == 4 This case is unlikely to be displayed due to lack of data with surprisingly poor quality in the answers from Prolific's participants.
+  dfTest_CI <- NULL;
+  dfTest_CI_differences <- NULL;
+  if (length(arrFactorVariations)== 2){
+    # cat("length(arrFactorVariations)== 2")
+    selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
+    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
+    selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1],]
+    selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2],]                    
+    
+    group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+    group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+    group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+    group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+    group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+    group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+    
+    dfTest_CI <- data.frame(group1_CI,group2_CI);
+    dfTest_CI_differences <- data.frame(group_differences1_CI);
+  } 
+  else {
+    selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1] ,]
+    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2] ,]
+    selec3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[3] ,]
+    selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1],]
+    selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2],]
+    selec_differences3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[3],]
+    
+    group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+    group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+    group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+    group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+    group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+    group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+    
+    group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+    group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+    group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
+    group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="") 
+    group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+    group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+    
+    dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
+    dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
+  }
+  # is.numeric(dfTest_CI$mean_CI[2])
+  dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); 
+  dfTest_CI <- rename(dfTest_CI,"category_combination"=X4);
+  dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); 
+  dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4);
+  
+  dfTest_CI[factor1] <- curFactor1; dfTest_CI[factor2] <- curFactor2; dfTest_CI[factor3] <- curFactor3;
+  dfTest_CI_differences[factor1] <- curFactor1; dfTest_CI_differences[factor2] <- curFactor2; dfTest_CI_differences[factor3] <- curFactor3;
+  
+  dfTest_CI$question <- i
+  dfTest_CI_differences$question <- i
+  
+  cols <- c("mean_CI","low_CI","high_CI");
+  dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric)
+  leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
+  rightEdgeGraph <- max(0.15,max(dfTest_CI$high_CI)+0.1)
+  absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+  strSentence <- paste("Confidence intervals, ",curQuestion)
+  dfCI_global <- rbind(dfCI_global, dfTest_CI)
+  
+  dfTest_CI_differences[,cols] <- lapply( dfTest_CI_differences[,cols],as.numeric)
+  leftEdgeGraph <- min(-0.15, min(dfTest_CI_differences$low_CI) -0.1 ); 
+  rightEdgeGraph <- max(0.15,max(dfTest_CI_differences$high_CI)+0.1)
+  absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+  strSentence <- paste("Differences of confidence intervals, ",curQuestion)
+  dfCI_global_differences <- rbind(dfCI_global_differences, dfTest_CI_differences)
+  # cat("\ngenerated the data to display, factor1-",factor1,": ",curFactor1,", factor2-",factor2,": ",curFactor2,", factor3-",factor3,": ",curFactor3)                  
+} 
+
