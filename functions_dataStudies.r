@@ -14,6 +14,7 @@ library(rlist)
 library(rlang)
 library(skimr)
 library(agricolae)
+# library(ggmap)
 # library(plotly) # not our version?!
 
 
@@ -33,8 +34,7 @@ generateAlternateCategories <- function (d, alt_masks, characterizations){
   return (jointdataset);
 }
 # jointTest <- generateAlternateCategories(d_alt,alt_masks,characterizations)
-# # dim(d_alt)
-# dim(jointTest)
+# # dim(d_alt); dim(jointTest)
 # jointTest$dMask == jointTest$refined_mask.x
 
 filterAccordingToMonth <- function (d,month){
@@ -43,7 +43,7 @@ filterAccordingToMonth <- function (d,month){
 }
 
 # Rename the categories for readability
-renameGroupedData <- function(groupedData_all) {  
+renameGroupedData <- function(groupedData_all){
   # cat("\n____renameGroupedData, colnames: ",toString(colnames(groupedData_all)))
   # cat("\nAt entry, length(groupedData_all$question): ",length(groupedData_all$question))
   if ("category_combination" %in% colnames(groupedData_all)) {
@@ -245,75 +245,6 @@ renameGroupedData <- function(groupedData_all) {
   
   cat("\nSO how are the questions now...: ",length(groupedData_all$question),", and what of the orderCategoryCombination[1]: ",groupedData_all$orderCategoryCombination[1], ", colnames(groupedData_all)",colnames(groupedData_all),", groupedData_all$orderCategoryCombination[5]: ",groupedData_all$orderCategoryCombination[5],"\n\n")
   return (groupedData_all);
-}
-
-
-
-# we need a function to display differences between scaling groups...! With confidence intervals... get the values according to groups, make boot for each group, make the sample proportion, and then put it as the middle
-# https://online.stat.psu.edu/stat100/lesson/9/9.3
-bootQuestionsDifferences_unorthodox <- function(d,d2,question="",focus="",dMask="",dComplex_focus="",R=10000){
-  boot_d <- c();boot_d2 <- c();
-  sampleSize <- -1; sampleSize2 <- -1;
-  
-  if (focus=="" & dMask == "" & dComplex_focus ==""){
-    sampleSize <- length(d[[question]]); 
-    sampleSize2 <- length(d2[[question]]); 
-  } 
-  else if (focus=="" & dMask != "" & dComplex_focus ==""){
-    sampleSize <- length(d[[question]][d$dMask == dMask]); 
-    sampleSize2 <- length(d2[[question]][d$dMask == dMask]); 
-  } 
-  else if (focus=="" & dMask == "" & dComplex_focus !=""){
-    sampleSize <- length(d[[question]][d$dComplex_focus == dComplex_focus]); 
-    sampleSize2 <- length(d2[[question]][d$dComplex_focus == dComplex_focus]); 
-  } 
-  else if (focus=="" & dMask != "" & dComplex_focus !=""){
-    sampleSize <- length(d[[question]][d$dComplex_focus == dComplex_focus & d$dMask == dMask]); 
-    sampleSize2 <- length(d2[[question]][d2$dComplex_focus == dComplex_focus & d2$dMask == dMask]); 
-  } 
-  else if (focus!="" & dMask == "" & dComplex_focus ==""){
-    sampleSize <- length(d[[question]][d$focus]);
-    sampleSize2 <- length(d2[[question]][d2$focus]);
-  } 
-  else if (focus!="" & dMask != "" & dComplex_focus ==""){
-    sampleSize <- length(d[[question]][d$focus == focus & d$dMask == dMask]); 
-    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dMask == dMask]);    
-  } 
-  else if (focus!="" & dMask == "" & dComplex_focus !=""){
-    sampleSize <- length(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus]); 
-    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dComplex_focus == dComplex_focus]);    
-  } 
-  else {
-    sampleSize <- length(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus & d$dMask == dMask]); 
-    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dComplex_focus == dComplex_focus & d2$dMask == dMask]);
-  }
-  
-  if (sampleSize == 0 & sampleSize2 == 0){ return (-1) }
-  else if (sampleSize == 0) {
-    boot_d2 <- genBoot(d2,question,focus,dMask,dComplex_focus,R)
-    return (boot_d2);    
-  } 
-  else if (sampleSize2 == 0) {
-    boot_d <- genBoot(d,question,focus,dMask,dComplex_focus,R)
-    return (boot_d)
-  } 
-  else {
-    boot_d <- genBoot(d,question,focus,dMask,dComplex_focus,R)
-    boot_d2 <- genBoot(d2,question,focus,dMask,dComplex_focus,R)
-    # calculate the differences and sample proportions...
-    sumD <- getMean_lowCI_highCI(boot_d)
-    sumD2 <- getMean_lowCI_highCI(boot_d2)
-    meanDiff <- sumD[1]-sumD2[1]
-    # print(meanDiff)
-    stdErr_d <- -1;stdErr_d2 <- -1
-    stdErr_d <- sd(boot_d$t);stdErr_d2 <- sd(boot_d2$t);
-    # print(stdErr_d)
-    SEM_d <- stdErr_d/sqrt(sampleSize); SEM_d2 <- stdErr_d2/sqrt(sampleSize2);
-    # print(SEM_d);print(SEM_d2);
-    std_Error_Difference <- sqrt(SEM_d*SEM_d + SEM_d2*SEM_d2)
-    res <- c(meanDiff, meanDiff - std_Error_Difference, meanDiff + std_Error_Difference)
-    return (res)
-  }
 }
 
 # Inspired by the function genAndPlot_differences_factorBased 
@@ -1494,7 +1425,6 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
                     selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[2] ,]
                     selec_differences3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[3] ,]
                     
-                    #   THIS IS THE PART THAT DIFFERS!
                     group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
                     group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
                     group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
@@ -1832,9 +1762,10 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   # cat("\n no complaints about scaling as a factor?")
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize_CI <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI));
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences));
+  min_log_diffA1 <- min(d[["log_diffA1"]]);max_log_diffA1 <- max(d[["log_diffA1"]]);min_log_diffA2 <- min(d[["log_diffA2"]]);max_log_diffA2 <- max(d[["log_diffA2"]]);min_log_diffA3 <- min(d[["log_diffA3"]]);max_log_diffA3 <- max(d[["log_diffA3"]]);
   
   # edge according to the CI
-  edgeSize <- max(edgeSize_CI,edgeSize_differences);
+  edgeSize <- max(edgeSize_CI,edgeSize_differences,max_log_diffA1,max_log_diffA2,max_log_diffA3);
   # edge according to the values
   # maxabsEdge <- max( select( d, arrQuestions[1])
   # maxabsEdgeValue <- max(max(select(d_measurement_all_noTikTok,arrQuestions[1])) , max(select(d_measurement_all_noTikTok,arrQuestions[2])) , max(select(d_measurement_all_noTikTok,arrQuestions[3])) )
@@ -1876,7 +1807,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     cat("\nno wrapping according to formula")
   } 
   
-  cat("\n\t---02---\tdfCI_global$category_combination: ",dfCI_global$category_combination)
+  cat("\n\t---02---\tunique(dfCI_global$category_combination): ",unique(dfCI_global$category_combination))
   
   groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL; groupedPlotCI_3<- NULL;
   group_differencesedPlotCI_1<-NULL;group_differencesedPlotCI_2<-NULL;group_differencesedPlotCI_3<-NULL;
@@ -1896,14 +1827,13 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   # d <- renameGroupedData((dfCI_global))
   cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
       "\nbtw strFormula: ",strFormula,
-      "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)),"\n\n")
-  
+      "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)))
   cat("\n\n\ndfCI_global$orderCategoryCombination: ", dfCI_global$orderCategoryCombination,
       "\nunique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination))
   
   strTitleTotal <- NULL;
   if (numFactor!=0){
-    cat("\n\t\t\tnumFactor!=0: ",(numFactor!=0))
+    cat("\n\t\t\t))))numFactor!=0: ",(numFactor!=0))
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], 
                               aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +

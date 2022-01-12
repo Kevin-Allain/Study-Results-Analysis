@@ -85,7 +85,7 @@ dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_me
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
                                                                           factorDMask= TRUE,
-                                                                          factorFocus=FALSE,
+                                                                          factorFocus=TRUE,
                                                                           factorDComplex_focus=FALSE,
                                                                           factorDifference="dComplex_focus",
                                                                           logFunction=FALSE,

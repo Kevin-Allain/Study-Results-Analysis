@@ -29,30 +29,27 @@ orderData <- function(d){
 }
 allSame <- function(x) length(unique(x)) == 1
 
-
 genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
   # cat("\ngenboot: question: ",question,", focus: ", focus," dMask: ", dMask,", dComplex_focus: ", dComplex_focus) # cat("\n\t\t\t\td[[question]]: ",d[[question]])
-  
-  boot_d <- c()
+  boot_d <- c();
   if (focus=="" & dMask == "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]],samplemean,R)
+    boot_d <- boot(d[[question]],samplemean,R);
   } else if (focus=="" & dMask != "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]][d$dMask == dMask],samplemean,R)
+    boot_d <- boot(d[[question]][d$dMask == dMask],samplemean,R);
   } else if (focus=="" & dMask == "" & dComplex_focus !=""){
-    boot_d <- boot(d[[question]][d$dComplex_focus == dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$dComplex_focus == dComplex_focus],samplemean,R);
   } else if (focus=="" & dMask != "" & dComplex_focus !=""){
-    boot_d <- boot(d[[question]][d$dComplex_focus == dComplex_focus & d$dMask == dMask],samplemean,R)
+    boot_d <- boot(d[[question]][d$dComplex_focus == dComplex_focus & d$dMask == dMask],samplemean,R);
   } else if (focus!="" & dMask == "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]][d$focus == focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus == focus],samplemean,R);
   } else if (focus!="" & dMask != "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]][d$focus == focus & d$dMask == dMask],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus == focus & d$dMask == dMask],samplemean,R);
   } else if (focus!="" & dMask == "" & dComplex_focus !=""){
-    boot_d <- boot(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus],samplemean,R);
   } else {
-    boot_d <- boot(d[[question]][d$focus == focus & d$dMask == dMask & d$dComplex_focus == dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus == focus & d$dMask == dMask & d$dComplex_focus == dComplex_focus],samplemean,R);
   }
-  # cat("\n~~~~~~boot made in genBoot...")
-  return (boot_d)
+  return (boot_d);
 }
 
 getMean_lowCI_highCI <- function (boot_d){
@@ -83,7 +80,6 @@ make_gensMean_lowCI_highCI <- function (d,question, focus="", dMask="",dComplex_
 
 make_gensMean_trustBased <- function (d, question, focus="",dMask="",dComplex_focus="",R=10000){
   boot_s0 <- genBoot_trust(d,question,focus,dMask,dComplex_focus,R)
-  # cat("\nboot_s0 made...")
   # call the summary
   gens_s0 <- getMean_lowCI_highCI(boot_s0)
   return( c(gens_s0) )
@@ -114,13 +110,13 @@ make_gensMean_lowCI_highCI_sclDependent <- function (d,question, focus="", dMask
 
 make_gensMean_lowCI_highCI_distractorDependent <- function (d,question, focus="", dMask="",dComplex_focus="",R=10000){
   # cat("\n-- make_gensMean_lowCI_highCI_distractorDependent; question : ",question,", focus: ",focus,", dMask: ",dMask,", dComplex_focus: ",dComplex_focus);
-  # select the data with scale 0
+  # select the data with distractor h
   d_s0 <- d[d$distractor=="h",]
   # boot
   boot_s0 <- genBoot(d_s0,question,focus=focus,dMask=dMask,dComplex_focus=dComplex_focus,R)
   # call the summary
   gens_s0 <- getMean_lowCI_highCI(boot_s0)
-  # select the data with scale 1
+  # select the data with distractor n
   d_s1 <- d[d$distractor=="n",]
   # boot
   boot_s1 <- genBoot(d_s1,question,focus=focus,dMask=dMask,dComplex_focus=dComplex_focus,R)
@@ -212,10 +208,6 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
   # cat("\n~~bootQuestionsDifferences_directSubstract res: ",toString(res))
   return (res)
 }
-# testbootQuestionsDifferences_conservative <- bootQuestionsDifferences_directSubstract(d_measurement_filtered[d_measurement_filtered$focus=="WHAT_Ql",],d_measurement_filtered[d_measurement_filtered$focus=="WHERE",],question = "diffA1" );
-# bootTest_substract <- bootQuestionsDifferences_directSubstract(d_measurement_filtered[d_measurement_filtered$focus=="WHAT_Ql",],d_measurement_filtered[d_measurement_filtered$focus=="WHERE",],question = "diffA1" );
-# bootTest_substract
-# bootQuestionsDifferences_directSubstract(d_measurement_filtered[d_measurement_filtered$focus=="WHAT_Ql",],d_measurement_filtered[d_measurement_filtered=="WHERE",],question="diffA1")
 
 # not used in the end...
 bootQuestionsDifferences_TukeyHSD <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000){
@@ -267,3 +259,86 @@ getDifferencesBoot <- function (boot_d,boot_d2){
   return (sumAbsDiffs)
 }
 
+# we need a function to display differences between scaling groups...! With confidence intervals... get the values according to groups, make boot for each group, make the sample proportion, and then put it as the middle
+# https://online.stat.psu.edu/stat100/lesson/9/9.3
+bootQuestionsDifferences_unorthodox <- function(d,d2,question="",focus="",dMask="",dComplex_focus="",R=10000){
+  boot_d <- c();boot_d2 <- c();
+  sampleSize <- -1; sampleSize2 <- -1;
+  
+  if (focus=="" & dMask == "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]]); 
+    sampleSize2 <- length(d2[[question]]); 
+  } 
+  else if (focus=="" & dMask != "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]][d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d$dMask == dMask]); 
+  } 
+  else if (focus=="" & dMask == "" & dComplex_focus !=""){
+    sampleSize <- length(d[[question]][d$dComplex_focus == dComplex_focus]); 
+    sampleSize2 <- length(d2[[question]][d$dComplex_focus == dComplex_focus]); 
+  } 
+  else if (focus=="" & dMask != "" & dComplex_focus !=""){
+    sampleSize <- length(d[[question]][d$dComplex_focus == dComplex_focus & d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d2$dComplex_focus == dComplex_focus & d2$dMask == dMask]); 
+  } 
+  else if (focus!="" & dMask == "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]][d$focus]);
+    sampleSize2 <- length(d2[[question]][d2$focus]);
+  } 
+  else if (focus!="" & dMask != "" & dComplex_focus ==""){
+    sampleSize <- length(d[[question]][d$focus == focus & d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dMask == dMask]);    
+  } 
+  else if (focus!="" & dMask == "" & dComplex_focus !=""){
+    sampleSize <- length(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus]); 
+    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dComplex_focus == dComplex_focus]);    
+  } 
+  else {
+    sampleSize <- length(d[[question]][d$focus == focus & d$dComplex_focus == dComplex_focus & d$dMask == dMask]); 
+    sampleSize2 <- length(d2[[question]][d2$focus == focus & d2$dComplex_focus == dComplex_focus & d2$dMask == dMask]);
+  }
+  
+  if (sampleSize == 0 & sampleSize2 == 0){ return (-1) }
+  else if (sampleSize == 0) {
+    boot_d2 <- genBoot(d2,question,focus,dMask,dComplex_focus,R)
+    return (boot_d2);    
+  } 
+  else if (sampleSize2 == 0) {
+    boot_d <- genBoot(d,question,focus,dMask,dComplex_focus,R)
+    return (boot_d)
+  } 
+  else {
+    boot_d <- genBoot(d,question,focus,dMask,dComplex_focus,R)
+    boot_d2 <- genBoot(d2,question,focus,dMask,dComplex_focus,R)
+    # calculate the differences and sample proportions...
+    sumD <- getMean_lowCI_highCI(boot_d)
+    sumD2 <- getMean_lowCI_highCI(boot_d2)
+    meanDiff <- sumD[1]-sumD2[1]
+    # print(meanDiff)
+    stdErr_d <- -1;stdErr_d2 <- -1
+    stdErr_d <- sd(boot_d$t);stdErr_d2 <- sd(boot_d2$t);
+    # print(stdErr_d)
+    SEM_d <- stdErr_d/sqrt(sampleSize); SEM_d2 <- stdErr_d2/sqrt(sampleSize2);
+    # print(SEM_d);print(SEM_d2);
+    std_Error_Difference <- sqrt(SEM_d*SEM_d + SEM_d2*SEM_d2)
+    res <- c(meanDiff, meanDiff - std_Error_Difference, meanDiff + std_Error_Difference)
+    return (res)
+  }
+}
+
+
+testDistribReal <- function(d_measurement_all_noTikTok_filteredSemiRigorous, strFormula = "~focus+dMask"){
+  groupedPlotCI_3 <- ggplot(d_measurement_all_noTikTok_filteredSemiRigorous, aes(x=log_diffA3,y=dComplex_focus, show.legend = FALSE )) +
+    geom_vline(xintercept = -3) +
+    geom_violin( aes (x= log_diffA3 , y = dComplex_focus,alpha = 0.3), show.legend = FALSE ) +
+    geom_point(  aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
+    xlim(c(-3,6)) +
+    ggtitle("Test display responses log_diffA3") +
+    facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+    labs(title = 'The test display responses log_diffA3', y = "" ) +
+    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none") + 
+    guides(fill = FALSE) + 
+    guides(col = FALSE)
+
+  groupedPlotCI_3
+}
