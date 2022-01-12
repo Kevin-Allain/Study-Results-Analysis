@@ -16,15 +16,18 @@ library(skimr)
 library(agricolae)
 # library(plotly) # not our version?!
 
-
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
 
 samplemean <- function(x, d) {
   return(mean(x[d]))
 }
 orderData <- function(d){
-  d$dMask <- factor(d$dMask, levels=c("easy", "medium", "hard"))
-  d$dComplex_focus <- factor(d$dComplex_focus, levels=c("E", "M", "H"))
+  if (!is.null(d$dMask)){d$dMask <- factor(d$dMask, levels=c("easy", "medium", "hard"));}
+  if (!is.null(d$dComplex_focus)){d$dComplex_focus <- factor(d$dComplex_focus, levels=c("E", "M", "H"));}
+  if (!is.null(d$focus)){d$focus <- factor(d$focus, levels=c("WHAT_Ql", "WHAT_Qn", "WHERE"));}
+  if (grepl("Focus ",d$dComplex_focus[1]), fixed=TRUE){d$dComplex_focus <- factor(d$dComplex_focus, levels=c("Focus Easy", "Focus Medium", "Focus Hard"));}
+  if (!is.null(d$orderMaskComplex)){ d$orderMaskComplex <- factor(d$orderMaskComplex, levels=c("Mask Easy", "Mask Medium", "Mask Hard"));}
+  if (!is.null(d$orderFocusComplex)){d$orderFocusComplex <- factor(d$orderFocusComplex, levels=c("Focus Easy", "Focus Medium", "Focus Hard"));}
   return (d)
 }
 allSame <- function(x) length(unique(x)) == 1
@@ -334,9 +337,9 @@ testDistribReal <- function(d_measurement_all_noTikTok_filteredSemiRigorous, str
     geom_point(  aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
     xlim(c(-3,6)) +
     ggtitle("Test display responses log_diffA3") +
-    facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+    facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
     labs(title = 'The test display responses log_diffA3', y = "" ) +
-    theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none") + 
+    # theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none") + 
     guides(fill = FALSE) + 
     guides(col = FALSE)
 

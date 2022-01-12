@@ -84,10 +84,10 @@ dim(d_scaling_all_noTikTok)
 dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
-                                                                          factorDMask= TRUE,
+                                                                          factorDMask= FALSE,
                                                                           factorFocus=TRUE,
-                                                                          factorDComplex_focus=FALSE,
-                                                                          factorDifference="dComplex_focus",
+                                                                          factorDComplex_focus=TRUE,
+                                                                          factorDifference="dMask",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
@@ -142,9 +142,6 @@ distrib_performancesB <- performancesB_correct_neither_incorrect(measurement_rig
 # get worst cntrQ
 res_best_worst_cntrQ <- get_best_worst_perfoms_cntrQ(measurement_rigorous_withDiffB)
 
-# buggy?!
-# dfCI_global_TikTok_factoredByTrust <-combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous, factorScaling=FALSE, factorDistractor=FALSE, factorDMask= FALSE, factorFocus=FALSE, factorDComplex_focus=FALSE, factorTrust=TRUE, factorDifference="dComplex_focus", logFunction=FALSE, useLogDiff=TRUE) 
-
 View(d_measurement_all_noTikTok_filteredSemiRigorous)
 View(dfCI_global_TikTok_measurement_factored)
 unique(dfCI_global_TikTok_measurement_factored$orderCategoryCombination)
@@ -167,7 +164,6 @@ selecColName <- "focus"
 modifiedColumn <- c()
 select(d_measurement_all_noTikTok_filteredSemiRigorous,selecColName)
 for (i in select(d_measurement_all_noTikTok_filteredSemiRigorous,selecColName) ){
-  # cat(" ",i)
   modifiedColumn <- c(modifiedColumn, paste( selecColName,": ",i, sep="" ) )
 }
 modifiedColumn
@@ -178,7 +174,7 @@ View(d_measurement_forViolin)
 
 # ---- CorrectB # looks weird with logFunction = TRUE
 # rabbits TO PRETTIFY
-dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences_issues( d=d_measurement_all_noTikTok_filteredSemiRigorous,
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous,
                                             factorFocus = FALSE, 
                                             factorDComplex_focus = FALSE, 
                                             factorDMask = TRUE, 
@@ -187,12 +183,13 @@ dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences_issues( d=d_measure
                                             )
 
 # -- CorrectB filtere of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
-combine_genPlot_ErrorRate_CIandDifferences( d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
                                             factorFocus = TRUE, 
                                             factorDComplex_focus = FALSE, 
                                             factorDMask = TRUE, 
                                             factorDifference="dComplex_focus",
-)
+                                            filterNeither = TRUE
+                                            )
 
 
 # Distributions of errors: get the numbers to get the CHI square
@@ -366,10 +363,11 @@ d_scaling_all_noTikTok_noneither <- filter_neitherLikert(d_scaling_all_noTikTok)
 dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
                                          factorScaling=FALSE,factorDistractor=FALSE,
                                          factorDMask= FALSE,
-                                         factorFocus=TRUE,
+                                         factorFocus=FALSE,
                                          factorDComplex_focus=TRUE, 
                                          factorDifference="scaling",
-                                         useLogDiff=TRUE);
+                                         useLogDiff=TRUE,
+                                         );
 
 
 dfCombinationCI_differences_distractor_factoredby_focus <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
