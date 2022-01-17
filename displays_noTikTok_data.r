@@ -57,7 +57,7 @@ length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId)
 d_noneither_semi_rigorous <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
 
 
-d_measurement_all_noTikTok_enriched <- enrichData_impossibleQualAnswer(enrichData_withTrustAll0or5(d_measurement_all_noTikTok))
+d_measurement_all_noTikTok_enriched <- enrichData_impossibleQualAnswer(enrichData_withTrustAll0or5(d_measurement_all_noTikTok_filteredSemiRigorous))
 length ( unique(d_measurement_all_noTikTok_enriched$ResponseId ) )
 length ( unique(d_measurement_all_noTikTok_enriched$ResponseId[d_measurement_all_noTikTok_enriched$allSameTrust == TRUE | d_measurement_all_noTikTok_enriched$impossibleQualAnswer == TRUE] ) )
 
@@ -84,10 +84,10 @@ dim(d_scaling_all_noTikTok)
 dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
-                                                                          factorDMask= FALSE,
+                                                                          factorDMask= TRUE,
                                                                           factorFocus=TRUE,
-                                                                          factorDComplex_focus=TRUE,
-                                                                          factorDifference="dMask",
+                                                                          factorDComplex_focus=FALSE,
+                                                                          factorDifference="dComplex_focus",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
@@ -291,8 +291,8 @@ dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_di
   factorScaling=FALSE,
   factorDistractor=FALSE,
   factorDMask= FALSE,
-  factorFocus= FALSE,
-  factorDComplex_focus=FALSE, 
+  factorFocus= TRUE,
+  factorDComplex_focus=TRUE, 
   factorDifference="distractor",
   useLogDiff=TRUE)
 
@@ -362,9 +362,9 @@ d_scaling_all_noTikTok_noneither <- filter_neitherLikert(d_scaling_all_noTikTok)
 
 dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
                                          factorScaling=FALSE,factorDistractor=FALSE,
-                                         factorDMask= FALSE,
+                                         factorDMask= TRUE,
                                          factorFocus=FALSE,
-                                         factorDComplex_focus=TRUE, 
+                                         factorDComplex_focus=FALSE, 
                                          factorDifference="scaling",
                                          useLogDiff=TRUE,
                                          );

@@ -14,6 +14,8 @@ library(rlist)
 library(rlang)
 library(skimr)
 library(agricolae)
+library(GGally, quietly = TRUE)
+
 # library(plotly) # not our version?!
 
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
@@ -25,7 +27,7 @@ orderData <- function(d){
   if (!is.null(d$dMask)){d$dMask <- factor(d$dMask, levels=c("easy", "medium", "hard"));}
   if (!is.null(d$dComplex_focus)){d$dComplex_focus <- factor(d$dComplex_focus, levels=c("E", "M", "H"));}
   if (!is.null(d$focus)){d$focus <- factor(d$focus, levels=c("WHAT_Ql", "WHAT_Qn", "WHERE"));}
-  if (grepl("Focus ",d$dComplex_focus[1]), fixed=TRUE){d$dComplex_focus <- factor(d$dComplex_focus, levels=c("Focus Easy", "Focus Medium", "Focus Hard"));}
+  if (grepl("Focus ",d$dComplex_focus[1], fixed=TRUE)){d$dComplex_focus <- factor(d$dComplex_focus, levels=c("Focus Easy", "Focus Medium", "Focus Hard"));}
   if (!is.null(d$orderMaskComplex)){ d$orderMaskComplex <- factor(d$orderMaskComplex, levels=c("Mask Easy", "Mask Medium", "Mask Hard"));}
   if (!is.null(d$orderFocusComplex)){d$orderFocusComplex <- factor(d$orderFocusComplex, levels=c("Focus Easy", "Focus Medium", "Focus Hard"));}
   return (d)
@@ -330,11 +332,101 @@ bootQuestionsDifferences_unorthodox <- function(d,d2,question="",focus="",dMask=
 }
 
 
+addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dComplex_focus"){
+  arr_focus <- c("WHAT_Ql","WHAT_Qn","WHERE"); arr_dMask <- c("easy","medium","hard"); arr_dComplex_focus <- c("E","M","H"); arr_scaling <- c(0,1,2); arr_distractor <- c("h","n");
+  arr_orderMaskComplex <- c("Mask Easy","Mask Medium","Mask Hard"); arr_orderFocusComplex <- c("Focus Easy","Focus Medium","Focus Hard")
+  # get the factors from formula, and last one is made by distractor...
+
+  # # for testing...
+  # arrFactor1 <- arr_dMask; arrFactor2 <- arr_focus; arrVariation <- arr_dComplex_focus;
+  # factor1<- "dMask"; factor2 <- "focus"; variant <- "dComplex_focus";
+
+  variant <- factorVariation
+  
+  strFormula <- as.character(str_remove_all(strFormula," "));
+  tildePresence <- grepl("~" ,strFormula, fixed=TRUE); # can we ever finish without the tilde in strFormula? Don't think so.
+  plusPresence <- grepl("+" ,strFormula, fixed=TRUE);
+  # if + it means there are two factors.
+  strFormula <- substring(strFormula, first =2);
+  cat("\nstrFormula: ",strFormula,", factorVariation: ",factorVariation,", variant: ",variant);
+  splitFormula <-  strsplit(as.character(strFormula), "+", fixed=TRUE);
+  # cat("\nsplitFormula: ",toString(splitFormula))
+  
+  factor1 <- splitFormula[[1]][1]
+  if (factor1 == "focus"){arrFactor1 <- arr_focus} else if (factor1 == "dMask"){ arrFactor1 <- arr_dMask } else if (factor1 == "dComplex_focus"){arrFactor1 <- arr_dComplex_focus}
+  if (factor1 == "orderFocusComplex"){arrFactor1 <- arr_orderFocusComplex} else if (factor1 == "orderMaskComplex"){arrFactor1 <- arr_orderMaskComplex}
+  
+  # cat("\nfactor1: ",factor1);
+  if(!plusPresence){
+    factor2 <- factor1; arrFactor2 <- arrFactor1;
+  } 
+  else {
+    factor2 <- splitFormula[[1]][2];
+    # cat("\nfactor2: ",factor2)
+    if (factor2 == "focus"){arrFactor2 <- arr_focus} else if (factor2 == "dMask"){ arrFactor2 <- arr_dMask } else if (factor2 == "dComplex_focus"){arrFactor2 <- arr_dComplex_focus}
+    if (factor2 == "orderFocusComplex"){arrFactor2 <- arr_orderFocusComplex} else if (factor2 == "orderMaskComplex"){arrFactor2 <- arr_orderMaskComplex}
+  }
+  
+  if (factorVariation == "focus"){arrVariation <- arr_focus} else if (factorVariation == "dMask"){ arrVariation <- arr_dMask } else if (factorVariation == "dComplex_focus"){arrVariation <- arr_dComplex_focus}
+  if (factorVariation == "orderFocusComplex"){arrVariation <- arr_orderFocusComplex} else if (factorVariation == "orderMaskComplex"){arrVariation <- arr_orderMaskComplex}
+  if (factorVariation == "distractor"){arrVariation <- arr_distractor} else if (factorVariation == "scaling"){arrVariation <- arr_scaling}
+  
+  cat("\naddCountColumn--\nstrFormula: ",strFormula,", plusPresence: ",plusPresence,", factor1: ",factor1,", arrFactor1: ",arrFactor1,", factor2: ",factor2,", arrFactor2: ",arrFactor2,", factorVariation: ",factorVariation,", arrVariation: ",arrVariation)
+  
+  d$countFactor <- c();
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[2]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[1]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]])
+  d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]])
+  
+  return (d)
+}
+
 testDistribReal <- function(d_measurement_all_noTikTok_filteredSemiRigorous, strFormula = "~focus+dMask"){
-  groupedPlotCI_3 <- ggplot(d_measurement_all_noTikTok_filteredSemiRigorous, aes(x=log_diffA3,y=dComplex_focus, show.legend = FALSE )) +
+  
+  factorDifference <- "dComplex_focus"
+  d_measurement_all_noTikTok_filteredSemiRigorous <- addCountColumn(d_measurement_all_noTikTok_filteredSemiRigorous, strFormula = strFormula, factorVariation = factorDifference)
+  
+  
+  groupedPlotCI_3 <- ggplot(d_measurement_all_noTikTok_filteredSemiRigorous, aes(x=log_diffA3,y=as.factor(factorDifference), show.legend = TRUE )) +
     geom_vline(xintercept = -3) +
-    geom_violin( aes (x= log_diffA3 , y = dComplex_focus,alpha = 0.3), show.legend = FALSE ) +
-    geom_point(  aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
+    geom_violin(data=d_measurement_all_noTikTok_filteredSemiRigorous, aes (x= log_diffA3 , y =  as.factor(factorDifference) ), alpha = 0.5, show.legend = TRUE ) +
+    geom_beeswarm(data=d_measurement_all_noTikTok_filteredSemiRigorous, aes(alpha=0.5), cex=3, color="blue" , fill="blue", priority = "density", groupOnX = FALSE, show.legend = TRUE, size=0.001) +
+    geom_label(data=d_measurement_all_noTikTok_filteredSemiRigorous, label= factor(d_measurement_all_noTikTok_filteredSemiRigorous$countFactor) , x=-3.25, size=3.5) +
+    # geom_text(aes(label = paste0( "attempt..." ,1, sep="" ),x= -3 , y = dComplex_focus, alpha = 0.5 ), show.legend = FALSE ) +
+    # geom_text(stat = "cross", mapping = aes(label = after_stat(observed))) +
+    # geom_count() +
+    # geom_smooth(method = strFormula)+
+    # geom_text(label = count, color="red")+
+    # geom_point(  aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
+    # geom_jitter(  aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5, height= 0, col=dComplex_focus), show.legend = FALSE, size=1, shape=1, position=position_jitter(0,0.5)) + # sooooooort of ok... color according to dComplex_focus?
+    # geom_beeswarm( aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5),colour="blue", size=1, show.legend = FALSE ) +
+    # geom_sina(aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5), size=1,col="green",fill="green", show.legend = FALSE) + # not working...
+    # geom_quasirandom(aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5), size=1, col="purple",fill="purple") +
+        # make tests about the other potential distributions of points...?!
     xlim(c(-3,6)) +
     ggtitle("Test display responses log_diffA3") +
     facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 

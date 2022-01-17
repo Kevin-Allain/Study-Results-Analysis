@@ -14,6 +14,8 @@ library(rlist)
 library(rlang)
 library(skimr)
 library(agricolae)
+library(ggforce)
+library(ggbeeswarm)
 # library(ggmap)
 # library(plotly) # not our version?!
 
@@ -1180,7 +1182,7 @@ genAndPlot_differences_factorBased <- function (d,factorScaling=FALSE,factorDist
 # dfCI_test_differences2 <- genAndPlot_differences_factorBased(d_sclAll,factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling")
 # dfCI_test_differences2
 
-combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, 
+combine_genPlot_CIandDifferences_problem  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, 
                                                factorTrust = FALSE, factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE){
 
   # d[sort(d$focus)] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
@@ -1827,19 +1829,27 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   d <- orderData(d);
   # dfCI_global <- orderData(dfCI_global);
   
+  cat("\nformula before count: ",strFormula)
+  d <- addCountColumn(d, strFormula, "orderCategoryCombination")
+  View(d);
+  cat("\nAdded count column...$countFactor: ",unique(d$countFactor))  
     
+  # TODO issue might not be due to our latest addition...?!
+  
   strTitleTotal <- NULL;
   if (numFactor!=0){
     cat("\n\t\t\t))))numFactor!=0: ",(numFactor!=0))
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
       geom_vline(xintercept = -3) +
-      geom_violin( data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) + # change alpha?
+      geom_violin(data = d,  aes (x= arrQuestions[1] , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) + # change alpha?
+      # geom_beeswarm(data = d, aes(x= arrQuestions[1] ,  alpha=0.5), cex=3, priority = "density", groupOnX = FALSE, show.legend = TRUE) + #  color=dComplex_focus, y = orderCategoryCombination,
+      # geom_label(data = d, label= factor(d$countFactor) , x=-3.25, size=3.5) +
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       xlim(c(-3,edgeSize)) +
-      geom_point(data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3) , show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
-      geom_jitter(data = d,  aes (x= log_diffA1, alpha = 0.1), size=0.5,col="blue",fill="blue", show.legend = FALSE) +
+      # geom_point(data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3) , show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
+      # geom_sina(data = d,  aes (x= log_diffA1,y=orderCategoryCombination, alpha = 0.1), size=0.5,col="blue",fill="blue", show.legend = FALSE) + # geom_beeswarm(data = d, aes(color=dComplex_focus, alpha=0.5), cex=3, priority = "density", groupOnX = FALSE, show.legend = FALSE) + # geom_label(data = d, label= factor(d_measurement_all_noTikTok_filteredSemiRigorous$countFactor) , x=-3.25, size=3.5) +
       ggtitle("Mean with Mask") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
       labs(title = 'Mean with Mask', y = "" ) +
@@ -1858,8 +1868,9 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       # geom_point(data = d[dfCI_global$question== arrQuestions[2] ,],  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
-      geom_point(data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
-      geom_jitter(data = d,  aes (x= log_diffA2, alpha = 0.1), width = 0.5, size=0.5,col="blue",fill="blue", show.legend = FALSE) +
+      # geom_point(data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +
+      # geom_jitter(data = d,  aes (x= log_diffA2, alpha = 0.1), size=0.5,col="blue",fill="blue", show.legend = FALSE) + # width = 0.5,
+      # geom_quasirandom(data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.5), alpha = 0.2, width = 0.2) +
       xlim(c(-3,edgeSize)) +
       ggtitle("Overall Mean") +
       # annotate(geom="text", x=3, y=5, label="TEST LABEL 2", color="blue")+
@@ -1879,8 +1890,9 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
       # geom_point(data = d[dfCI_global$question== arrQuestions[3] ,],  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +      
-      geom_point(data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +      
-      geom_jitter(data = d,  aes (x= log_diffA3, alpha = 0.1),width = 1, size=0.5,col="blue",fill="blue", show.legend = FALSE) +
+      # geom_point(data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE, size=1,col="red",fill="red", shape=1) +      
+      # geom_jitter(data = d,  aes (x= log_diffA3, alpha = 0.1),width = 1,col="blue",fill="blue", show.legend = FALSE) + # , size=0.5
+      # geom_beeswarm(data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.5),alpha = 0.5, colour="blue", size=0.5, dodge.width=0.5 ) +
       xlim(c(-3,edgeSize)) +
       ggtitle("Mask Proportion") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
@@ -2053,6 +2065,887 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   # return (dfCI_global_differences)
   return (dfCI_global)
 }
+
+
+
+combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, 
+                                               factorTrust = FALSE, factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE){
+  
+  # d[sort(d$focus)] # https://stackoverflow.com/questions/51501989/how-to-sort-data-by-column-in-descending-order-in-r
+  d <- d[order(d$focus), ]
+  if (!is.null(d$distractor)){d <- d[order(d$distractor), ]}  # necessary? useful?
+  if (!is.null(d$scaling)){d <- d[order(d$scaling), ]}  # necessary? useful?
+  
+  factorVariation <- factorDifference
+  arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Ql","WHAT_Qn","WHERE"); arrMask <- c("easy","medium","hard"); 
+  arrDComplex_focus <- c("E","M","H");  
+  arrTrust  <- c("trustA1","trustA2","trustA3","trustB")
+  if (factorScaling | factorVariation=="scaling"){arrFocus <- c("WHAT_Ql","WHAT_Qn")}
+  
+  # IMPORTANT NOTE ABOUT logFunction. If we use the log_diffA1 instead of diffA1, then isn't the usage again of the formula transforming it again?! To think about
+  arrQuestions <- c();
+  if (!useLogDiff){ arrQuestions <- c("diffA1","diffA2","diffA3"); } else { arrQuestions <- c("log_diffA1","log_diffA2","log_diffA3"); }
+  
+  numGraphs <- length(arrQuestions); 
+  groupedPlotCI_1 <- NULL;groupedPlotCI_2 <- NULL;groupedPlotCI_3 <- NULL;
+  # call the function to get the factors
+  factorArr <- returnFactorsCombination(factorScaling=factorScaling,factorDistractor=factorDistractor,factorFocus=factorFocus,factorDMask=factorDMask,factorDComplex_focus=factorDComplex_focus,factorTrust=factorTrust);
+  # cat("\nfactorArr: ",factorArr);
+  numFactor <- length(factorArr)
+  if (length(arrMixOrderFormula) == 0){
+    factor1 <- factorArr[1]; factor2 <- factorArr[2]; factor3 <- factorArr[3]; factor4 <- factorArr[4]  
+  }
+  else {
+    factor1 <- factorArr[arrMixOrderFormula[1]]; factor2 <- factorArr[arrMixOrderFormula[2]]; factor3 <- factorArr[arrMixOrderFormula[3]]; factor4 <- factorArr[arrMixOrderFormula[4]];
+  }
+  
+  numFactor <- length(factorArr);
+  cat("\n}}}}factorArr: ",toString(factorArr)); cat("\nnumFactor: ",numFactor)
+  
+  arrFactor1 <- NULL; arrFactor2 <- NULL; arrFactor3 <- NULL; arrFactor4 <- NULL;
+  if(numFactor>0){
+    if (factor1 == "scaling"){
+      arrFactor1 <- arrScalings
+    } 
+    else if (factor1 == "distractor"){
+      arrFactor1 <- arrDistractor
+    } 
+    else if (factor1 == "focus"){
+      arrFactor1 <- arrFocus
+    } 
+    else if (factor1 == "dMask"){
+      arrFactor1 <- arrMask 
+    } 
+    else if (factor1 == "dComplex_focus"){
+      arrFactor1 <- arrDComplex_focus
+    } 
+    else if (factor1=="trust"){
+      arrFactor1 <- arrTrust
+    }
+    else {
+      return ("Error? We have no factor for the display")
+    }
+    if (numFactor>1){
+      if (factor2 == "focus"){
+        arrFactor2 <- arrFocus
+      } 
+      else if (factor2 == "dMask"){
+        arrFactor2 <- arrMask 
+      } 
+      else if (factor2 == "dComplex_focus"){
+        arrFactor2 <- arrDComplex_focus
+      }
+      else if (factor2=="trust"){
+        arrFactor2 <- arrTrust
+      }
+    }
+    if (numFactor>2){
+      if (factor3 == "focus"){
+        arrFactor3 <- arrFocus
+      } 
+      else if (factor3 == "dMask"){
+        arrFactor3 <- arrMask 
+      } 
+      else if (factor3 == "dComplex_focus"){
+        arrFactor3 <- arrDComplex_focus
+      }
+      else if (factor3 == "trust"){
+        arrFactor3 <- arrTrust
+      }
+    }
+    if (numFactor>3){
+      if (factor4 == "focus"){
+        arrFactor4 <- arrFocus
+      } 
+      else if (factor4 == "dMask"){
+        arrFactor4 <- arrMask 
+      } 
+      else if (factor4 == "dComplex_focus"){
+        arrFactor4 <- arrDComplex_focus
+      }
+    }
+  }
+  arrFactorVariations <- c(); if(factorVariation == "focus"){arrFactorVariations <- arrFocus} else if (factorVariation=="dMask"){arrFactorVariations <- arrMask} else if (factorVariation=="dComplex_focus"){arrFactorVariations <- arrDComplex_focus} else if (factorVariation=="scaling"){arrFactorVariations <- arrScalings} else if (factorVariation=="distractor"){arrFactorVariations <- arrDistractor}
+  arrFactorDifferences <- c(); if(factorDifference == "focus"){arrFactorDifferences <- arrFocus} else if (factorDifference=="dMask"){arrFactorDifferences <- arrMask} else if (factorDifference=="dComplex_focus"){arrFactorDifferences <- arrDComplex_focus} else if (factorDifference=="scaling"){arrFactorDifferences <- arrScalings} else if (factorDifference=="distractor"){arrFactorDifferences <- arrDistractor}  
+  
+  dfCI_global <- data.frame()
+  dfCI_global$mean_CI[0] <- 0; dfCI_global$low_CI[0] <- 0;dfCI_global$high_CI[0] <- 0;dfCI_global$category_combination[0] <- 0; dfCI_global$question[0] <- 0;
+  dfCI_global_differences <- data.frame(); dfCI_global_differences$mean_CI[0] <- 0; dfCI_global_differences$low_CI[0] <- 0;dfCI_global_differences$high_CI[0] <- 0;dfCI_global_differences$category_combination[0] <- 0; dfCI_global_differences$question[0] <- 0; dfCI_global$orderAdded[0] <- 0# doubt about this approach...
+  
+  if (numFactor>=1){ 
+    if(factor1=="focus"){dfCI_global$focus[0] <- 0}; if(factor1=="scaling"){dfCI_global$scaling[0] <- 0}; if(factor1=="dComplex_focus"){dfCI_global$dComplex_focus[0] <- 0}
+    # 
+    if(factor1=="focus"){dfCI_global_differences$focus[0] <- 0}; if(factor1=="scaling"){dfCI_global_differences$scaling[0] <- 0}; if(factor1=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
+  }
+  if (numFactor>=2){ 
+    if(factor2=="focus"){dfCI_global$focus[0] <- 0}; if(factor2=="scaling"){dfCI_global$scaling[0] <- 0}; if(factor2=="dComplex_focus"){dfCI_global$dComplex_focus[0] <- 0}
+    # 
+    if(factor2=="focus"){dfCI_global_differences$focus[0] <- 0}; if(factor2=="scaling"){dfCI_global_differences$scaling[0] <- 0}; if(factor2=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
+  }
+  if (numFactor>=3){ 
+    if(factor3=="focus"){dfCI_global$focus[0] <- 0}; if(factor3=="scaling"){dfCI_global$scaling[0] <- 0}; if(factor3=="dComplex_focus"){dfCI_global$dComplex_focus[0] <- 0}
+    # 
+    if(factor3=="focus"){dfCI_global_differences$focus[0] <- 0}; if(factor3=="scaling"){dfCI_global_differences$scaling[0] <- 0}; if(factor3=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
+  }
+  if (numFactor>=4){ 
+    if(factor4=="focus"){dfCI_global$focus[0] <- 0}; if(factor4=="scaling"){dfCI_global$scaling[0] <- 0}; if(factor4=="dComplex_focus"){dfCI_global$dComplex_focus[0] <- 0}
+    # 
+    if(factor4=="focus"){dfCI_global_differences$focus[0] <- 0}; if(factor4=="scaling"){dfCI_global_differences$scaling[0] <- 0}; if(factor4=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
+  }
+  
+  cat("\nAbout to loop arrQuestions")
+  for (i in arrQuestions){
+    cat("\nLoop questions. i: ",i)
+    curQuestion <- i;
+    if (numFactor>0){
+      for (j in arrFactor1){
+        curFactor1 <- j
+        if (numFactor > 1 ){
+          for (k in arrFactor2){
+            curFactor2 <- k
+            if (numFactor>2){
+              for (l in arrFactor3){
+                curFactor3 <- l
+                if (numFactor>3){
+                  # numFactor == 4 This case is unlikely to be displayed due to lack of data with surprisingly poor quality in the answers from Prolific's participants.
+                  dfTest_CI <- NULL;
+                  dfTest_CI_differences <- NULL;
+                  if (length(arrFactorVariations)== 2){
+                    # cat("length(arrFactorVariations)== 2")
+                    selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
+                    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
+                    selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1],]
+                    selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2],]                    
+                    
+                    group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                    group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+                    group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                    group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+                    group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+                    group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                    
+                    dfTest_CI <- data.frame(group1_CI,group2_CI);
+                    dfTest_CI_differences <- data.frame(group_differences1_CI);
+                  } 
+                  else {
+                    selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1] ,]
+                    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2] ,]
+                    selec3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[3] ,]
+                    selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1],]
+                    selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2],]
+                    selec_differences3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[3],]
+                    
+                    group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                    group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+                    group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+                    group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                    group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+                    group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+                    
+                    group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+                    group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+                    group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
+                    group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="") 
+                    group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                    group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                    
+                    dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
+                    dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
+                  }
+                  # is.numeric(dfTest_CI$mean_CI[2])
+                  dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); 
+                  dfTest_CI <- rename(dfTest_CI,"category_combination"=X4);
+                  dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); 
+                  dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4);
+                  
+                  dfTest_CI[factor1] <- curFactor1; dfTest_CI[factor2] <- curFactor2; dfTest_CI[factor3] <- curFactor3;
+                  dfTest_CI_differences[factor1] <- curFactor1; dfTest_CI_differences[factor2] <- curFactor2; dfTest_CI_differences[factor3] <- curFactor3;
+                  
+                  dfTest_CI$question <- i
+                  dfTest_CI_differences$question <- i
+                  
+                  cols <- c("mean_CI","low_CI","high_CI");
+                  dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric)
+                  leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
+                  rightEdgeGraph <- max(0.15,max(dfTest_CI$high_CI)+0.1)
+                  absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+                  strSentence <- paste("Confidence intervals, ",curQuestion)
+                  dfCI_global <- rbind(dfCI_global, dfTest_CI)
+                  
+                  dfTest_CI_differences[,cols] <- lapply( dfTest_CI_differences[,cols],as.numeric)
+                  leftEdgeGraph <- min(-0.15, min(dfTest_CI_differences$low_CI) -0.1 ); 
+                  rightEdgeGraph <- max(0.15,max(dfTest_CI_differences$high_CI)+0.1)
+                  absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+                  strSentence <- paste("Differences of confidence intervals, ",curQuestion)
+                  dfCI_global_differences <- rbind(dfCI_global_differences, dfTest_CI_differences)
+                  # cat("\ngenerated the data to display, factor1-",factor1,": ",curFactor1,", factor2-",factor2,": ",curFactor2,", factor3-",factor3,": ",curFactor3)                  
+                } 
+                else {
+                  # numFactor == 3 
+                  dfTest_CI <- NULL
+                  # DISTRACTOR CASE FIRST
+                  if (length(arrFactorVariations)== 2){ 
+                    cat("\t\n\n\n\t\t DISTRACTOR CASE. length(arrFactorVariations)== 2")
+                    selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1] ,]
+                    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2] ,]
+                    selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[1] ,]
+                    selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[2] ,]
+                    
+                    group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                    group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+                    group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                    
+                    group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+                    group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+                    group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                    
+                    dfTest_CI <- data.frame(group1_CI,group2_CI);
+                    dfTest_CI_differences <- data.frame(group_differences1_CI);
+                  } 
+                  else {
+                    selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[1] ,]
+                    selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[2] ,]
+                    selec3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorVariation]==arrFactorVariations[3] ,]
+                    selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[1] ,]
+                    selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[2] ,]
+                    selec_differences3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factor3]==curFactor3 & d[factorDifference]==arrFactorDifferences[3] ,]
+                    
+                    group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                    group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+                    group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+                    group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                    group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+                    group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+                    
+                    group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="");
+                    group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="");
+                    group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="");
+                    group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                    group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[3]),sep="")
+                    group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[2],"_",arrFactorDifferences[3]),sep="")
+                    
+                    dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
+                    dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
+                  }
+                  # is.numeric(dfTest_CI$mean_CI[2])
+                  dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); dfTest_CI <- rename(dfTest_CI,"category_combination"=X4);
+                  dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4);
+                  
+                  dfTest_CI[factor1] <- curFactor1; dfTest_CI[factor2] <- curFactor2; dfTest_CI[factor3] <- curFactor3;
+                  dfTest_CI_differences[factor1] <- curFactor1; dfTest_CI_differences[factor2] <- curFactor2; dfTest_CI_differences[factor3] <- curFactor3;
+                  
+                  dfTest_CI$question <- i
+                  dfTest_CI_differences$question <- i
+                  
+                  cols <- c("mean_CI","low_CI","high_CI");
+                  dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric);
+                  leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
+                  rightEdgeGraph <- max(0.15,max(dfTest_CI$high_CI)+0.1);
+                  absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) );
+                  strSentence <- paste("Confidence intervals, ",curQuestion);
+                  dfCI_global <- rbind(dfCI_global, dfTest_CI);
+                  dfTest_CI_differences[,cols] <- lapply( dfTest_CI_differences[,cols],as.numeric);
+                  leftEdgeGraph <- min(-0.15, min(dfTest_CI_differences$low_CI) -0.1 ); 
+                  rightEdgeGraph <- max(0.15,max(dfTest_CI_differences$high_CI)+0.1);
+                  absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) );
+                  strSentence <- paste("Differences of confidence intervals, ",curQuestion);
+                  dfCI_global_differences <- rbind(dfCI_global_differences, dfTest_CI_differences);
+                  # cat("\ngenerated the data to display, factor1-",factor1,": ",curFactor1,", factor2-",factor2,": ",curFactor2,", factor3-",factor3,": ",curFactor3)
+                }
+              }
+            }
+            else {
+              # Most likely the case that will happen the most, since we don't have all cases of dComplex_focus medium... 
+              # numFactor==2
+              # warning: remember that factorVariation can be distractor
+              dfTest_CI <- NULL
+              dfTest_CI_differences <- NULL
+              if (length(arrFactorVariations)== 2){
+                # cat("\n HEY 2 length(arrFactorVariations)== 2")
+                selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
+                selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
+                selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
+                selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
+                
+                group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+                group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                
+                group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+                group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+                group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                
+                dfTest_CI <- data.frame(group1_CI,group2_CI);
+                dfTest_CI_differences <- data.frame(group_differences1_CI);
+              } 
+              else {
+                # cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1," factor2: ",factor2,", curFactor2: ",curFactor2,", factorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
+                selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]
+                selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
+                selec3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[3] ,]
+                selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
+                selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
+                selec_differences3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[3] ,]
+                
+                group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+                group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+                group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+                group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+                group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+                
+                group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+                group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+                group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
+                group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+                group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[3]),sep="")
+                group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[2],"_",arrFactorDifferences[3]),sep="")
+                
+                dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
+                dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
+              }
+              # is.numeric(dfTest_CI$mean_CI[2])
+              dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); dfTest_CI <- rename(dfTest_CI,"category_combination"=X4);
+              dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4);
+              
+              dfTest_CI[factor1] <- curFactor1; 
+              dfTest_CI[factor2] <- curFactor2;
+              dfTest_CI_differences[factor1] <- curFactor1; 
+              dfTest_CI_differences[factor2] <- curFactor2;
+              
+              dfTest_CI$question <- i
+              dfTest_CI_differences$question <- i
+              
+              cols <- c("mean_CI","low_CI","high_CI");
+              dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric)
+              leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
+              rightEdgeGraph <- max(0.15,max(dfTest_CI$high_CI)+0.1)
+              absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+              strSentence <- paste("Confidence intervals, ",curQuestion)
+              dfCI_global <- rbind(dfCI_global, dfTest_CI)
+              dfTest_CI_differences[,cols] <- lapply( dfTest_CI_differences[,cols],as.numeric)
+              leftEdgeGraph <- min(-0.15, min(dfTest_CI_differences$low_CI) -0.1 ); 
+              rightEdgeGraph <- max(0.15,max(dfTest_CI_differences$high_CI)+0.1)
+              absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+              strSentence <- paste("Differences of confidence intervals, ",curQuestion)
+              dfCI_global_differences <- rbind(dfCI_global_differences, dfTest_CI_differences)
+              
+              # cat("\ngenerated the data to display, factorVariation-",factorVariation,", factor1-",factor1,": ",curFactor1,", factor2-",factor2,": ",curFactor2)
+            }
+          }
+        }
+        else {
+          if(numFactor==1){
+            cat("\ncase with numFactor == 1"); # is this where we need to investigate X4?! # solved
+            # numFactor==1
+            # warning: remember that factorVariation can be distractor
+            dfTest_CI <- NULL
+            dfTest_CI_differences <- NULL
+            if (length(arrFactorVariations)== 2){
+              cat("\n\t HEY 3 length(arrFactorVariations)== 2")
+              selec1 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[1] ,]
+              selec2 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[2] ,]
+              selec_differences1 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[1] ,]
+              selec_differences2 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[2] ,]
+              
+              group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+              group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+              group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+              
+              group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1] ,sep="") )
+              group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2] ,sep="") )
+              group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+              
+              dfTest_CI <- data.frame(group1_CI,group2_CI);
+              dfTest_CI_differences <- data.frame(group_differences1_CI); 
+            } 
+            else {
+              # cat("\nfactor1: ",factor1,", curFactor1: ",curFactor1,", factorVariation: ",factorVariation,", arrFactorVariations: ",toString(arrFactorVariations))
+              selec1 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[1] ,]
+              selec2 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[2] ,]
+              selec3 <- d[d[factor1]==curFactor1 & d[factorVariation]==arrFactorVariations[3] ,]
+              selec_differences1 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[1] ,]
+              selec_differences2 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[2] ,]
+              selec_differences3 <- d[d[factor1]==curFactor1 & d[factorDifference]==arrFactorDifferences[3] ,]
+              # cat("\n dim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2),", dim(selec3): ",dim(selec3))
+              group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+              group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+              group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+              group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+              group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+              group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+              # cat("\n dim(group1_CI): ",dim(group1_CI),", dim(group2_CI): ",dim(group2_CI),", dim(group3_CI): ",dim(group3_CI))
+              group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1] ,sep="") )
+              group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2] ,sep="") )
+              group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3] ,sep="") )
+              group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+              group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[3]),sep="")
+              group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[2],"_",arrFactorDifferences[3]),sep="")
+              
+              # cat("\nand added the strings. Might be a typo in all the cases of this code...")
+              dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
+              dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
+            }
+            
+            # cat("\ncolnames(dfTest_CI): ",colnames(dfTest_CI))
+            dfTest_CI <- data.frame(t(dfTest_CI)); 
+            # cat("\ncolnames(dfTest_CI) right after turning data frame: ",colnames(dfTest_CI))
+            # cat("\ndfTest_CI$X4  right after turning data frame: ", toString(dfTest_CI$X4))
+            dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); 
+            dfTest_CI <- rename(dfTest_CI,"category_combination"=X4); dfTest_CI[factor1] <- curFactor1; dfTest_CI$question <- i
+            # cat("\ncolnames(dfTest_CI): ",colnames(dfTest_CI))
+            # cat("\nRenamed dfTest_CI")
+            # cat("\ncolnames(dfTest_CI_differences): ", colnames(dfTest_CI_differences)," ---- \n")
+            dfTest_CI_differences <- data.frame(t(dfTest_CI_differences));
+            # cat("\ncolnames(dfTest_CI_differences) right after turning data frame: ", colnames(dfTest_CI_differences),
+            #     "\n-- dfTest_CI_differences$X1: ",toString(dfTest_CI_differences$X1),
+            #     "\n-- dfTest_CI_differences$X2: ",toString(dfTest_CI_differences$X2),
+            #     "\n-- dfTest_CI_differences$X3: ",toString(dfTest_CI_differences$X3),
+            #     "\n-- dfTest_CI_differences$X4: ",toString(dfTest_CI_differences$X4),", dfTest_CI_differences$X5: ",toString(dfTest_CI_differences$X5)," ---- \n")
+            dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); 
+            dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4); dfTest_CI_differences[factor1] <- curFactor1; dfTest_CI_differences$question <- i
+            cat("\nRenamed dfTest_CI_differences")
+            cols <- c("mean_CI","low_CI","high_CI");
+            dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric)
+            leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
+            rightEdgeGraph <- max(0.15,max(dfTest_CI$high_CI)+0.1)
+            absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+            strSentence <- paste("Confidence intervals, ",curQuestion)
+            dfCI_global <- rbind(dfCI_global, dfTest_CI)
+            dfTest_CI_differences[,cols] <- lapply( dfTest_CI_differences[,cols],as.numeric)
+            leftEdgeGraph <- min(-0.15, min(dfTest_CI_differences$low_CI) -0.1 ); 
+            rightEdgeGraph <- max(0.15,max(dfTest_CI_differences$high_CI)+0.1)
+            absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) )
+            strSentence <- paste("Differences of confidence intervals, ",curQuestion)
+            dfCI_global_differences <- rbind(dfCI_global_differences, dfTest_CI_differences)
+            
+            cat("\ngenerated the data to display, factorVariation-",factorVariation,", factor1-",factor1,": ",curFactor1)
+          }
+        }
+      }
+      
+    }
+    else {
+      # no factoring... so which differences do we display?!
+      cat("\ncase with numFactor == 0")
+      # numFactor==0
+      # warning: remember that factorVariation can be distractor
+      dfTest_CI <- NULL
+      dfTest_CI_differences <- NULL
+      
+      if (length(arrFactorVariations)== 2){
+        cat("\nHEY 4 length(arrFactorVariations)== 2, factorVariation: ",factorVariation,", factorDifference: ",factorDifference,
+            ", arrFactorVariations: ",arrFactorVariations,", arrFactorDifferences: ",arrFactorDifferences)
+        cat("\nlength selec1: ",length(d[factorDifference]==arrFactorDifferences[1])," length selec2: ",length(d[factorDifference]==arrFactorDifferences[2]))
+        selec1 <- d[d[factorVariation]==arrFactorVariations[1] ,]
+        selec2 <- d[d[factorVariation]==arrFactorVariations[2] ,]
+        selec_differences1 <- d[d[factorDifference]==arrFactorDifferences[1] ,]
+        selec_differences2 <- d[d[factorDifference]==arrFactorDifferences[2] ,]
+        cat("\n__toString(selec1): ",toString(selec1),", toString(selec2): ",toString(selec2),", selec_differences1 and selec_differences2 made. Also, curQuestion is: ",curQuestion);
+        group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+        group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+        cat("\n__group1_CI and group2_CI");
+        group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+        cat("\n__bootQuestionsDifferences_conservative passed");
+        group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+        group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+        group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+        
+        dfTest_CI <- data.frame(group1_CI,group2_CI);
+        dfTest_CI_differences <- data.frame(group_differences1_CI);
+      } 
+      else {
+        cat("\nfactorVariation: ",factorVariation,", arrFactorVariations: ",arrFactorVariations,
+            "\ntoString(arrFactorVariations): ",toString(arrFactorVariations),", curQuestion: ",curQuestion)
+        selec1 <- d[d[factorVariation]==arrFactorVariations[1] ,]
+        selec2 <- d[d[factorVariation]==arrFactorVariations[2] ,]
+        selec3 <- d[d[factorVariation]==arrFactorVariations[3] ,]
+        selec_differences1 <- d[d[factorDifference]==arrFactorDifferences[1] ,]
+        selec_differences2 <- d[d[factorDifference]==arrFactorDifferences[2] ,]
+        selec_differences3 <- d[d[factorDifference]==arrFactorDifferences[3] ,]
+        
+        group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
+        group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
+        group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+        group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+        group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+        group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+        
+        group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
+        group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
+        group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
+        group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
+        group_differences2_CI <- c(group_differences2_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[3]),sep="")
+        group_differences3_CI <- c(group_differences3_CI, paste(factorDifference,",",arrFactorDifferences[2],"_",arrFactorDifferences[3]),sep="")
+        
+        dfTest_CI <- data.frame(group1_CI,group2_CI,group3_CI);
+        dfTest_CI_differences <- data.frame(group_differences1_CI,group_differences2_CI,group_differences3_CI);
+      }
+      dfTest_CI <- data.frame(t(dfTest_CI)); dfTest_CI <- rename(dfTest_CI,mean_CI=X1); dfTest_CI <- rename(dfTest_CI,low_CI=X2); dfTest_CI <- rename(dfTest_CI,high_CI=X3); 
+      dfTest_CI <- rename(dfTest_CI,"category_combination"=X4);dfTest_CI$question <- i;
+      # cat("\n****length(dfTest_CI$question): ",length(dfTest_CI$question))
+      # cat("\n****length(dfTest_CI_differences$question): ",length(dfTest_CI_differences$question))
+      # dfTest_CI[factor1] <- curFactor1; dfTest_CI$question <- i
+      # cat("\ndfTest_CI$category_combination: ",dfTest_CI$category_combination)
+      dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4); dfTest_CI_differences$question <- i;
+      
+      cols <- c("mean_CI","low_CI","high_CI");
+      dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric);
+      leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
+      rightEdgeGraph <- max(0.15,max(dfTest_CI$high_CI)+0.1);
+      absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) );
+      strSentence <- paste("Confidence intervals, ",curQuestion);
+      dfCI_global <- rbind(dfCI_global, dfTest_CI);
+      dfTest_CI_differences[,cols] <- lapply( dfTest_CI_differences[,cols],as.numeric);
+      leftEdgeGraph <- min(-0.15, min(dfTest_CI_differences$low_CI) -0.1 ); 
+      rightEdgeGraph <- max(0.15,max(dfTest_CI_differences$high_CI)+0.1);
+      absGraphEdge <- max( abs(leftEdgeGraph),abs(rightEdgeGraph) );
+      strSentence <- paste("Differences of confidence intervals, ",curQuestion);
+      dfCI_global_differences <- rbind(dfCI_global_differences, dfTest_CI_differences);
+      
+      cat("\ngenerated the data to display, factorVariation-",factorVariation);
+    }
+  }
+  
+  # we should have the dfCI_global loaded now, but still need to display it.
+  cat("\n####about to draw")
+  cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question),
+      "\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
+  # cat("\n\t\t****dfCI_global$category_combination: ",dfCI_global$category_combination,"****\t\t\n")
+  class(dfCI_global$category_combination); class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI); class(dfCI_global$low_CI); dfCI_global$low_CI <- as.numeric(dfCI_global$low_CI); class(dfCI_global$low_CI); class(dfCI_global$high_CI); dfCI_global$high_CI <- as.numeric(dfCI_global$high_CI); class(dfCI_global$high_CI); class(dfCI_global_differences$category_combination); class(dfCI_global_differences$mean_CI); dfCI_global_differences$mean_CI <- as.numeric(dfCI_global_differences$mean_CI); class(dfCI_global_differences$mean_CI); class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI); class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
+  
+  dfCI_global <- renameGroupedData(dfCI_global)
+  dfCI_global_differences <- renameGroupedData(dfCI_global_differences)
+  
+  cat("\n\t---01---\tunique(dfCI_global$category_combination): ",unique(dfCI_global$category_combination)) # seems fine still. There are several of them, but I guess that's fine.
+  
+  if (numFactor ==3 ){
+    if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
+      dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
+      dfCI_global_differences$scaling[dfCI_global_differences$scaling==0] <- "Scaling 0";dfCI_global_differences$scaling[dfCI_global_differences$scaling==1] <- "Scaling 1";dfCI_global_differences$scaling[dfCI_global_differences$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==2) {
+    if (factor1=="scaling" | factor2=="scaling"){
+      dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
+      dfCI_global_differences$scaling[dfCI_global_differences$scaling==0] <- "Scaling 0";dfCI_global_differences$scaling[dfCI_global_differences$scaling==1] <- "Scaling 1";dfCI_global_differences$scaling[dfCI_global_differences$scaling==2] <- "Scaling 2";
+    }
+  } 
+  else if(numFactor ==1){
+    if (factor1=="scaling"){
+      dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
+      dfCI_global_differences$scaling[dfCI_global_differences$scaling==0] <- "Scaling 0";dfCI_global_differences$scaling[dfCI_global_differences$scaling==1] <- "Scaling 1";dfCI_global_differences$scaling[dfCI_global_differences$scaling==2] <- "Scaling 2";
+    }
+  } 
+  
+  minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI)); # very odd. but should be fine...
+  minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences)); # very odd. but should be fine...
+  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,",minLow_cI_differences: ",minLow_cI_differences,", maxHigh_CI_differences: ",maxHigh_CI_differences,",edgeSize_differences: ",edgeSize_differences)
+  # cat("\n no complaints about scaling as a factor?")
+  minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize_CI <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI));
+  minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences));
+  min_log_diffA1 <- min(d[["log_diffA1"]]);max_log_diffA1 <- max(d[["log_diffA1"]]);min_log_diffA2 <- min(d[["log_diffA2"]]);max_log_diffA2 <- max(d[["log_diffA2"]]);min_log_diffA3 <- min(d[["log_diffA3"]]);max_log_diffA3 <- max(d[["log_diffA3"]]);
+  
+  # edge according to the CI
+  edgeSize <- max(edgeSize_CI,edgeSize_differences,max_log_diffA1,max_log_diffA2,max_log_diffA3);
+  # edge according to the values
+  # maxabsEdge <- max( select( d, arrQuestions[1])
+  # maxabsEdgeValue <- max(max(select(d_measurement_all_noTikTok,arrQuestions[1])) , max(select(d_measurement_all_noTikTok,arrQuestions[2])) , max(select(d_measurement_all_noTikTok,arrQuestions[3])) )
+  # edgeSize <- max(edgeSize, maxabsEdgeValue)
+  
+  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,
+      "\n^^^^what's the length of question for dfCI_global now? ",length(dfCI_global$question), "\ndfCI_global$orderAdded: ", dfCI_global$orderAdded)
+  strFormula <- ""
+  if (numFactor==2){
+    strFormula<-paste("~",factor1,"+",factor2)
+    cat("\nnumFactor==2. strFormula: ",strFormula,"... what about dfCI_global: ",toString(dfCI_global[1,]))
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling"); strFormula <- str_replace(strFormula,"dMask","orderMaskComplex"); strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1,"+",factor2)
+    cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences,"... what about dfCI_global_differences: ",toString(dfCI_global_differences[1,]))
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling"); strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex"); strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+  }
+  else if (numFactor==1){
+    strFormula<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula: ",strFormula,"... what about dfCI_global: ",toString(dfCI_global[1,]))
+    strFormula <- str_replace(strFormula,"scaling","orderedScaling")
+    strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula: ",strFormula)
+    strFormula_differences<-paste("~",factor1)
+    cat("\nnumFactor==1. strFormula_differences: ",strFormula_differences,"... what about dfCI_global_differences: ",toString(dfCI_global_differences[1,]))
+    strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
+    strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
+    cat("\npost modif strFormula_differences: ",strFormula_differences)
+    
+  }
+  else {
+    # no wrapping.
+    cat("\nno wrapping according to formula")
+  }
+  
+  cat("\n\t---02---\tunique(dfCI_global$category_combination): ",unique(dfCI_global$category_combination))
+  
+  groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL; groupedPlotCI_3<- NULL;
+  group_differencesedPlotCI_1<-NULL;group_differencesedPlotCI_2<-NULL;group_differencesedPlotCI_3<-NULL;
+  cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global)); cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
+  dfCI_global_differences <- addInfoCiDifferenceSignificant(dfCI_global_differences)
+  
+  # histogram... # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
+  # geom_histogram()
+  # or violin? # geom_violin(aes(x=cut, y=price))
+  
+  cat("\n\n¤¤¤¤arrQuestions: ",arrQuestions,
+      "\n\nunique(dfCI_global$orderCategoryCombination): ",unique(dfCI_global$orderCategoryCombination),
+      "\n\ttoString(unique(dfCI_global$orderCategoryCombination)): ",toString(unique(dfCI_global$orderCategoryCombination)))
+  
+  d <- prettyEnrichOrderCategory(d,dfCI_global) # TODO CRITICAL MISSING SOME COLUMNS
+  
+  # d <- renameGroupedData((dfCI_global))
+  cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
+      "\nbtw strFormula: ",strFormula,
+      "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)))
+  cat("\n\n\ndfCI_global$orderCategoryCombination: ", dfCI_global$orderCategoryCombination,
+      "\nunique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination))
+  
+  if (grepl("dComplex_focus",strFormula,fixed=TRUE)){
+    strFormula <- str_replace(strFormula, "dComplex_focus", "orderFocusComplex")
+  }
+  
+  d <- orderData(d);
+  # dfCI_global <- orderData(dfCI_global);
+  # factorDifference <- "dComplex_focus"
+  cat("\nfactorDifference: ",factorDifference)
+  d <- addCountColumn(d, strFormula = strFormula, factorVariation = factorDifference)
+  cat("\nAdded the countColumn... unique(d$countFactor): ", unique(d$countFactor))
+  cbp1 <- c("#0072B2", "#009E73", "#CC79A7", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999", "#E69F00")
+  
+    
+  strTitleTotal <- NULL;
+  if (numFactor!=0){
+    cat("\n\t\t\t))))numFactor!=0: ",(numFactor!=0))
+    strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
+    groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
+      geom_label(data=d, label= factor(d$countFactor) , x=-3.3, size=2) +
+      geom_violin( data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) + # change alpha?
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=3,col="black",fill="white", shape=1) +
+      xlim(c(-3.25,edgeSize)) +
+      geom_vline(xintercept = -3) +
+      ggtitle("Mean with Mask") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
+      labs(title = 'Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      guides(fill = FALSE) + 
+      guides(col = FALSE) + 
+      geom_beeswarm(data=d, aes(x=log_diffA1,  alpha=0.3, size=0.001), cex=3, priority = "density", color="blue" , fill="blue",  groupOnX = FALSE, show.legend = FALSE, size=0.001)  # might have to add x and y... test. # color=dComplex_focus, fill=dComplex_focus,
+      # scale_fill_manual(values = cbp1) + scale_colour_manual(values = cbp1)
+      
+    groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
+      geom_violin( data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=3,col="black",fill="white", shape=1) +
+      xlim(c(-3.25,edgeSize)) +
+      geom_vline(xintercept = -3) +
+      ggtitle("Overall Mean") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'Overall Mean', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      guides(fill = FALSE) + 
+      guides(col = FALSE) +
+      geom_beeswarm(data=d, aes(x=log_diffA2, alpha=0.3, size=0.001), cex=3, priority = "density", color="blue" , fill="blue",  groupOnX = FALSE, show.legend = FALSE, size=0.001) # + # might have to add x and y... test. # color=dComplex_focus, fill=dComplex_focus, 
+      # scale_fill_manual(values = cbp1) + scale_colour_manual(values = cbp1)
+      
+    groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
+      geom_violin( data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=3,col="black",fill="white", shape=1) +
+      xlim(c(-3.25,edgeSize)) +
+      scale_fill_manual(values = cbp1) + scale_colour_manual(values = cbp1) +
+      geom_vline(xintercept = -3) +
+      ggtitle("Mask Proportion") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      labs(title = 'Mask Proportion', y = "" ) +
+      theme(
+        strip.background = element_blank(),
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      guides(fill = FALSE) + 
+      guides(col = FALSE) + 
+      geom_beeswarm(data=d, aes(x=log_diffA3, alpha=0.3, size=0.001), cex=3, priority = "density", color="blue" , fill="blue",  groupOnX = FALSE, show.legend = FALSE, size=0.001) # + # might have to add x and y... test. # color=dComplex_focus, fill=dComplex_focus,
+      # scale_fill_manual(values = cbp1) + scale_colour_manual(values = cbp1) +
+      
+    # 
+    groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[1],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_vline(xintercept = 0) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5, show.legend = FALSE)+
+      scale_size_manual(values=c(0.1,5)) +
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mean with Mask") +
+      labs(title = 'Differences for Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+        legend.position="none"
+      ) +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    
+    groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[2] ,], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_vline(xintercept = 0) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5, show.legend = FALSE)+
+      scale_size_manual(values=c(0.1,5)) +
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Overall Means")  + 
+      labs(title = 'Differences for Overall Means', y = "" ) +
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+        legend.position="none"
+      )+
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    
+    groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_vline(xintercept = 0) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference,size=significantDifference), alpha = 0.5, show.legend = FALSE)+
+      scale_size_manual(values=c(0.1,5)) +
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mask Proportion") +
+      facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") + 
+      labs(title = 'Differences for Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none") +
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+  } 
+  else {
+    cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
+    strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,sep="")
+    groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1],], aes(x=mean_CI,y= orderCategoryCombination )) +
+      geom_label(data=d, label= factor(d$countFactor) , x=-3.3, size=2) +
+      geom_vline(xintercept = -3) +
+      geom_violin( data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=3,col="black",fill="white", shape=1) +
+      xlim(c(-3,edgeSize)) +
+      ggtitle("Mean with Mask")+
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      labs(title = "Mean with Mask",y="") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    groupedPlotCI_2 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[2],], aes(x=mean_CI,y= orderCategoryCombination )) +
+      geom_vline(xintercept = -3) +
+      geom_violin( data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=3,col="black",fill="white", shape=1) +
+      xlim(c(-3,edgeSize)) +
+      ggtitle("Mean Overall") +
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      labs(title = "Mean Overall",y="") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    groupedPlotCI_3 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[3],], aes(x=mean_CI,y= orderCategoryCombination )) +
+      geom_vline(xintercept = -3) +
+      geom_violin( data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=3,col="black",fill="white", shape=1) +
+      xlim(c(-3,edgeSize)) +
+      ggtitle("Mask Proportion")+
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank()
+      ) +
+      labs(title = "Mask Proportion",y="") + 
+      guides(fill = FALSE) + 
+      guides(col = FALSE)
+    # 
+    
+    cat("\nAbout to generate the graphs for dfCI_global_differences")
+    arrSizesDifferent <- c(0.1,5); arrSizesSamePositive <- c(5); arrSizesSameNegative <- c(0.1)
+    arrSize1 <- c(); arrSize2 <- c(); arrSize3 <- c();
+    cat("\nlength(dfCI_global_differences$significantDifference): ",length(dfCI_global_differences$significantDifference))
+    boolArrSize1 <- dfCI_global_differences$significantDifference[1] & dfCI_global_differences$significantDifference[2] & dfCI_global_differences$significantDifference[3]
+    boolArrSize2 <- boolArrSize1; boolArrSize3 <- boolArrSize1;
+    if ( length(dfCI_global_differences$significantDifference) > 3 ){
+      boolArrSize2 <- dfCI_global_differences$significantDifference[4] & dfCI_global_differences$significantDifference[5] & dfCI_global_differences$significantDifference[6]
+      boolArrSize3 <- dfCI_global_differences$significantDifference[7] & dfCI_global_differences$significantDifference[8] & dfCI_global_differences$significantDifference[9]
+    }
+    if (boolArrSize1){arrSize1 <- arrSizesSamePositive} else {arrSize1 <- arrSizesDifferent}
+    if (boolArrSize2){arrSize2 <- arrSizesSamePositive} else {arrSize2 <- arrSizesDifferent}
+    if (boolArrSize3){arrSize3 <- arrSizesSamePositive} else {arrSize3 <- arrSizesDifferent}
+    
+    groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[1],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_vline(xintercept = 0) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      xlim(c(-edgeSize,edgeSize)) +
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference, size=significantDifference ), alpha = 0.5)+
+      scale_size_manual(values= arrSize1 ) +
+      ggtitle("Differences for Mean with Mask") +
+      labs(title = 'Differences for Mean with Mask', y = "" ) +
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
+        legend.position="none"
+      )
+    groupedPlotCI_differences2 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[2],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_vline(xintercept = 0) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference, size= significantDifference ), alpha = 0.5)+
+      scale_size_manual(values=  arrSize2 ) +
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Overall Means")  + 
+      labs(title = 'Differences for Overall Means', y = "" ) +
+      theme(
+        strip.background = element_blank(), 
+        strip.text.x = element_blank(), axis.ticks.y = element_blank(),  axis.text.y = element_blank(),
+        legend.position="none"
+      )
+    groupedPlotCI_differences3 <- ggplot(dfCI_global_differences[dfCI_global_differences$question== arrQuestions[3],], aes(x=mean_CI,y=orderCategoryCombination )) +
+      geom_vline(xintercept = 0) +
+      geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
+      geom_point(size=2,col="black",fill="white", shape=1) +
+      geom_point( aes(x=-edgeSize,fill=significantDifference, col="#FF0000", alpha = 0.5 *significantDifference, size= significantDifference ), alpha = 0.5) +
+      scale_size_manual(values= arrSize3 ) +
+      xlim(c(-edgeSize,edgeSize)) +
+      ggtitle("Differences for Mask Proportion") +
+      labs(title = 'Differences for Mask Proportion', y = "" ) +
+      theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
+  }
+  
+  cat("\n\n\t\t WTH!!! toString( unique(dfCI_global$orderCategoryCombination) ): ", toString (unique(dfCI_global$orderCategoryCombination) )," dfCI_global$orderCategoryCombination[1]: ",dfCI_global$orderCategoryCombination[1])
+  
+  cat("\nThe plots are generated. But are they fine?\n")
+  grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1,
+                          groupedPlotCI_2,groupedPlotCI_differences2,
+                          groupedPlotCI_3,groupedPlotCI_differences3), ncol=6,top=textGrob( strTitleTotal ) )
+  # cat("not sure what to return")
+  # return (dfCI_global_differences)
+  return (dfCI_global)
+}
+
+
 
 
 # dfCombinationCI_differences_test__CIandDiff_dMask_factoredby_scaling_focus <- combine_genPlot_CIandDifferences(d_sclAll,factorScaling=TRUE,factorDistractor=FALSE,factorDMask= FALSE,factorFocus=TRUE,factorDComplex_focus=TRUE, factorDifference="dMask");
@@ -2239,21 +3132,21 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     
       # geom_point(data= df_mean_diffA1, aes(x = mean, y = trustA1, group=dMask, colour= trustA1  )  ) + # , group= .data[[factor1]] # IT REPEATS ITSELF OVER FACTOR?! I don't understand why. Might have to drop it unfortunately. Alternative could be jitter points but that's annoying to read...!
 
-    # #feedde #fdd0a2 #fdae6b #fd8d3c #e6550d #a63603
+    # #ffffb2 #fed976 #feb24c #fd8d3c #f03b20 #bd0026
     plot_trustA1 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
+      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1 ), fill="#ffffb2") #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
     # if (length (d$cntrQ[d$trustA1==0] <= 2)){ plot_trustA1 <- plot_trustA1 + geom_jitter( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3, width = .02 ) )}
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  )
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1 ), fill="#fed976") #, draw_quantiles = c(0.25, 0.5, 0.75)  )
     # if (length (d$cntrQ[d$trustA1==1] <= 2)){ plot_trustA1 <- plot_trustA1 + geom_jitter( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3, width = .02 ) )}
       # geom_jitter( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1, col=trustA1,alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 +  geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1, alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
+    plot_trustA1 <- plot_trustA1 +  geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1 ), fill="#feb24c" ) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
       # geom_jitter( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1,col=trustA1, alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1 ), fill="#fd8d3c" ) #, draw_quantiles = c(0.25, 0.5, 0.75)  ) 
       # geom_jitter( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1, col=trustA1, alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 )) #, draw_quantiles = c(0.25, 0.5, 0.75)  )
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1 ), fill="#f03b20" ) #, draw_quantiles = c(0.25, 0.5, 0.75)  )
       # geom_jitter( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1,col=trustA1,alpha=0.3, width = .02 ) ) +
-    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1,alpha=0.3 ))+ #, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+    plot_trustA1 <- plot_trustA1 + geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1 ),fill="#bd0026" )+ #, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1,col=trustA1,alpha=0.3, width = .02 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mean with Mask', y = "" ) +
@@ -2261,17 +3154,17 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     
     plot_trustA2 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2 ), fill="#ffffb2" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2, ,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2 ), fill="#fed976" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2, col=trustA2,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2, alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2 ), fill="#feb24c" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2,col=trustA2, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2 ), fill="#fd8d3c" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2, col=trustA2, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2 ), fill="#f03b20" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2,col=trustA2,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2 ),fill="#bd0026" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2,col=trustA2,alpha=0.3 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Overall Mean', y = "" ) +
@@ -2279,17 +3172,17 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     
     plot_trustA3 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3 ), fill="#ffffb2" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3, ,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3 ), fill="#fed976" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3, col=trustA3,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3, alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3 ), fill="#feb24c" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3,col=trustA3, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3 ), fill="#fd8d3c" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3, col=trustA3, alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3 ), fill="#f03b20" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3,col=trustA3,alpha=0.3 ) ) +
-      geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 ))+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3 ),fill="#bd0026" )+#, draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_jitter( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3,col=trustA3,alpha=0.3 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
       labs(title = 'Mask Proportion', y = "" ) +
@@ -2299,29 +3192,29 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     if (filterNeither){
       plot_trustB <- ggplot(d_noneither)+
         geom_vline(xintercept = 0) +
-        geom_violin( data=d_noneither[d_noneither$trustB==0,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 ) )+
-        geom_violin( data=d_noneither[d_noneither$trustB==1,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
-        geom_violin( data=d_noneither[d_noneither$trustB==2,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-        geom_violin( data=d_noneither[d_noneither$trustB==3,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
-        geom_violin( data=d_noneither[d_noneither$trustB==4,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
-        geom_violin( data=d_noneither[d_noneither$trustB==5,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
+        geom_violin( data=d_noneither[d_noneither$trustB==0,] , aes( x=abs(1-correctB), y=trustB ), fill="#ffffb2" )+
+        geom_violin( data=d_noneither[d_noneither$trustB==1,] , aes( x=abs(1-correctB), y=trustB ), fill="#fed976"  ) +
+        geom_violin( data=d_noneither[d_noneither$trustB==2,] , aes( x=abs(1-correctB), y=trustB ), fill="#feb24c"  ) +
+        geom_violin( data=d_noneither[d_noneither$trustB==3,] , aes( x=abs(1-correctB), y=trustB ), fill="#fd8d3c"  ) +
+        geom_violin( data=d_noneither[d_noneither$trustB==4,] , aes( x=abs(1-correctB), y=trustB ), fill="#f03b20"  ) +
+        geom_violin( data=d_noneither[d_noneither$trustB==5,] , aes( x=abs(1-correctB), y=trustB ),fill="#bd0026"  ) +
         facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
         labs(title = 'Stability Comparison', y = "" ) +
         theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
     } else {
     plot_trustB <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 ) )+# , draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+      geom_violin( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB ), fill="#ffffb2" )+# , draw_quantiles = c(0.25, 0.5, 0.75)  ) +
       # geom_dotplot( data=d[d$trustB==0,] , aes( x=abs(1-correctB), y=trustB, ,alpha=0.3, width = .02 ) ) +
-      geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB ), fill="#fed976"  ) +
       # geom_dotplot( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB, col=trustB,alpha=0.3, width = .02 ) ) +
-      geom_violin( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB ), fill="#feb24c"  ) +
       # geom_dotplot( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB,col=trustB, alpha=0.3, width = .02 ) ) +
-      geom_violin( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB ), fill="#fd8d3c"  ) +
       # geom_dotplot( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB, col=trustB, alpha=0.3, width = .02 ) ) +
-      geom_violin( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB ), fill="#f03b20"  ) +
       # geom_dotplot( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB,col=trustB,alpha=0.3, width = .02 ) ) +
-      geom_violin( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
+      geom_violin( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB ),fill="#bd0026"  ) +
       # geom_dotplot( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB,col=trustB,alpha=0.3, width = .02 ) ) +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
       labs(title = 'Stability Comparison', y = "" ) +
@@ -2333,34 +3226,34 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
     cat("\nnumFactor==0")
     plot_trustA1 <- ggplot(d)+
       geom_vline(xintercept = 0) +
-      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1,alpha=0.4 )  ) +
-      geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1,alpha=0.4 )  ) +
-      geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1,,alpha=0.4 )  ) +
-      geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1,alpha=0.4 )  ) +
-      geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1,alpha=0.4 )  ) +
-      geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1,alpha=0.4 )  ) +
+      geom_violin( data=d[d$trustA1==0,] , aes( x=abs(diffA1), y=trustA1 ), fill="#ffffb2"  ) +
+      geom_violin( data=d[d$trustA1==1,] , aes( x=abs(diffA1), y=trustA1 ), fill="#fed976"  ) +
+      geom_violin( data=d[d$trustA1==2,] , aes( x=abs(diffA1), y=trustA1 ), fill="#feb24c"  ) +
+      geom_violin( data=d[d$trustA1==3,] , aes( x=abs(diffA1), y=trustA1 ), fill="#fd8d3c"  ) +
+      geom_violin( data=d[d$trustA1==4,] , aes( x=abs(diffA1), y=trustA1 ), fill="#f03b20"  ) +
+      geom_violin( data=d[d$trustA1==5,] , aes( x=abs(diffA1), y=trustA1 ),fill="#bd0026"  ) +
       labs(title = 'Mean with Mask', y = "" ) +
       theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
         
       plot_trustA2 <- ggplot(d)+
         geom_vline(xintercept = 0) +
-        geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2,alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA2==0,] , aes( x=abs(diffA2), y=trustA2 ), fill="#ffffb2"  ) +
+        geom_violin( data=d[d$trustA2==1,] , aes( x=abs(diffA2), y=trustA2 ), fill="#fed976"   ) +
+        geom_violin( data=d[d$trustA2==2,] , aes( x=abs(diffA2), y=trustA2 ), fill="#feb24c"  ) +
+        geom_violin( data=d[d$trustA2==3,] , aes( x=abs(diffA2), y=trustA2 ), fill="#fd8d3c"  ) +
+        geom_violin( data=d[d$trustA2==4,] , aes( x=abs(diffA2), y=trustA2 ), fill="#f03b20"  ) +
+        geom_violin( data=d[d$trustA2==5,] , aes( x=abs(diffA2), y=trustA2 ),fill="#bd0026"  ) +
         labs(title = 'Mean Overall', y = "" ) +
         theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
       
       plot_trustA3 <- ggplot(d)+
         geom_vline(xintercept = 0) +
-        geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 )  ) +
-        geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3,alpha=0.3 )  ) +
+        geom_violin( data=d[d$trustA3==0,] , aes( x=abs(diffA3), y=trustA3 ), fill="#ffffb2"  ) +
+        geom_violin( data=d[d$trustA3==1,] , aes( x=abs(diffA3), y=trustA3 ), fill="#fed976"  ) +
+        geom_violin( data=d[d$trustA3==2,] , aes( x=abs(diffA3), y=trustA3 ), fill="#feb24c"  ) +
+        geom_violin( data=d[d$trustA3==3,] , aes( x=abs(diffA3), y=trustA3 ), fill="#fd8d3c"  ) +
+        geom_violin( data=d[d$trustA3==4,] , aes( x=abs(diffA3), y=trustA3 ), fill="#f03b20"  ) +
+        geom_violin( data=d[d$trustA3==5,] , aes( x=abs(diffA3), y=trustA3 ),fill="#bd0026"  ) +
         labs(title = 'Mask Proportion', y = "" ) +
         theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
 
@@ -2375,23 +3268,23 @@ gen_res_trust_violin <- function (d, factorScaling=FALSE, factorDistractor=FALSE
       if (filterNeither){
         plot_trustB <- ggplot(d_noneither)+
           geom_vline(xintercept = 0) +
-          geom_violin( data=d_noneither[d_noneither$trustB==0,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 ) )+# , draw_quantiles = c(0.25, 0.5, 0.75)  ) +
-          geom_violin( data=d_noneither[d_noneither$trustB==1,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
-          geom_violin( data=d_noneither[d_noneither$trustB==2,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-          geom_violin( data=d_noneither[d_noneither$trustB==3,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
-          geom_violin( data=d_noneither[d_noneither$trustB==4,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
-          geom_violin( data=d_noneither[d_noneither$trustB==5,] , aes( x=abs(1-correctB), y=trustB,alpha=0.3 )  ) +
+          geom_violin( data=d_noneither[d_noneither$trustB==0,] , aes( x=abs(1-correctB), y=trustB ), fill="#ffffb2" )+# , draw_quantiles = c(0.25, 0.5, 0.75)  ) +
+          geom_violin( data=d_noneither[d_noneither$trustB==1,] , aes( x=abs(1-correctB), y=trustB ) , fill="#fed976" ) +
+          geom_violin( data=d_noneither[d_noneither$trustB==2,] , aes( x=abs(1-correctB), y=trustB ), fill="#feb24c"  ) +
+          geom_violin( data=d_noneither[d_noneither$trustB==3,] , aes( x=abs(1-correctB), y=trustB ), fill="#fd8d3c"  ) +
+          geom_violin( data=d_noneither[d_noneither$trustB==4,] , aes( x=abs(1-correctB), y=trustB ), fill="#f03b20"  ) +
+          geom_violin( data=d_noneither[d_noneither$trustB==5,] , aes( x=abs(1-correctB), y=trustB ),fill="#bd0026"  ) +
           labs(title = 'Stability Comparison', y = "" ) +
           theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none")
       } else {
         plot_trustB <- ggplot(d)+
           geom_vline(xintercept = 0) +
-          geom_violin( data=d[d$trustB==0,] , aes( x=  abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-          geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-          geom_violin( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-          geom_violin( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-          geom_violin( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
-          geom_violin( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB, alpha=0.3 )  ) +
+          geom_violin( data=d[d$trustB==0,] , aes( x=  abs(1-correctB), y=trustB ), fill="#ffffb2"  ) +
+          geom_violin( data=d[d$trustB==1,] , aes( x=abs(1-correctB), y=trustB ), fill="#fed976"  ) +
+          geom_violin( data=d[d$trustB==2,] , aes( x=abs(1-correctB), y=trustB ), fill="#feb24c"  ) +
+          geom_violin( data=d[d$trustB==3,] , aes( x=abs(1-correctB), y=trustB ), fill="#fd8d3c"  ) +
+          geom_violin( data=d[d$trustB==4,] , aes( x=abs(1-correctB), y=trustB ), fill="#f03b20"  ) +
+          geom_violin( data=d[d$trustB==5,] , aes( x=abs(1-correctB), y=trustB ),fill="#bd0026"  ) +
           labs(title = 'Stability Comparison', y = "" ) +
           theme( strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),legend.position="none" )
       }
@@ -3478,8 +4371,8 @@ prettyEnrichOrderCategory <- function (d,dfCI){
     d$orderCategoryCombination <- factor(d$category_combination,c("scaling: 2","scaling: 1","scaling: 0"))
   } 
   
-  View(d)
-  View(dfCI)
+  # View(d)
+  # View(dfCI)
   
   cat("\n||\tunique(dfCI$orderCategoryCombination): ",unique(dfCI$orderCategoryCombination), "\n||\tunique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination))
   cat("\n\t|||| class(dfCI$orderCategoryCombination): ",class(dfCI$orderCategoryCombination),", class(dfCI$orderCategoryCombination[1]): ",class(dfCI$orderCategoryCombination[1]))
