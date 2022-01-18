@@ -175,7 +175,7 @@ View(d_measurement_forViolin)
 # ---- CorrectB # looks weird with logFunction = TRUE
 # rabbits TO PRETTIFY
 dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous,
-                                            factorFocus = FALSE, 
+                                            factorFocus = TRUE, 
                                             factorDComplex_focus = FALSE, 
                                             factorDMask = TRUE, 
                                             factorDifference="dComplex_focus",
@@ -292,7 +292,7 @@ dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_di
   factorDistractor=FALSE,
   factorDMask= FALSE,
   factorFocus= TRUE,
-  factorDComplex_focus=TRUE, 
+  factorDComplex_focus=TRUE,
   factorDifference="distractor",
   useLogDiff=TRUE)
 
@@ -362,9 +362,9 @@ d_scaling_all_noTikTok_noneither <- filter_neitherLikert(d_scaling_all_noTikTok)
 
 dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
                                          factorScaling=FALSE,factorDistractor=FALSE,
-                                         factorDMask= TRUE,
-                                         factorFocus=FALSE,
-                                         factorDComplex_focus=FALSE, 
+                                         factorDMask= FALSE,
+                                         factorFocus=TRUE,
+                                         factorDComplex_focus=TRUE, 
                                          factorDifference="scaling",
                                          useLogDiff=TRUE,
                                          );
@@ -385,7 +385,8 @@ dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_Error
                                        factorScaling=FALSE, factorDistractor=FALSE,
                                        factorDMask= FALSE,
                                        factorFocus=TRUE,
-                                       factorDComplex_focus=TRUE, factorDifference="scaling");
+                                       factorDComplex_focus=TRUE, 
+                                       factorDifference="scaling");
 
 
 d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( d=d_scaling_all_noTikTok,

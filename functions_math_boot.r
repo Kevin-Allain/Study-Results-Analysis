@@ -351,25 +351,32 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
   cat("\nstrFormula: ",strFormula,", factorVariation: ",factorVariation,", variant: ",variant);
   splitFormula <-  strsplit(as.character(strFormula), "+", fixed=TRUE);
   # cat("\nsplitFormula: ",toString(splitFormula))
-  
-  factor1 <- splitFormula[[1]][1]
-  if (factor1 == "focus"){arrFactor1 <- arr_focus} else if (factor1 == "dMask"){ arrFactor1 <- arr_dMask } else if (factor1 == "dComplex_focus"){arrFactor1 <- arr_dComplex_focus}
-  if (factor1 == "orderFocusComplex"){arrFactor1 <- arr_orderFocusComplex} else if (factor1 == "orderMaskComplex"){arrFactor1 <- arr_orderMaskComplex}
-  
-  # cat("\nfactor1: ",factor1);
-  if(!plusPresence){
-    factor2 <- factor1; arrFactor2 <- arrFactor1;
-  } 
-  else {
-    factor2 <- splitFormula[[1]][2];
-    # cat("\nfactor2: ",factor2)
-    if (factor2 == "focus"){arrFactor2 <- arr_focus} else if (factor2 == "dMask"){ arrFactor2 <- arr_dMask } else if (factor2 == "dComplex_focus"){arrFactor2 <- arr_dComplex_focus}
-    if (factor2 == "orderFocusComplex"){arrFactor2 <- arr_orderFocusComplex} else if (factor2 == "orderMaskComplex"){arrFactor2 <- arr_orderMaskComplex}
-  }
-  
+
   if (factorVariation == "focus"){arrVariation <- arr_focus} else if (factorVariation == "dMask"){ arrVariation <- arr_dMask } else if (factorVariation == "dComplex_focus"){arrVariation <- arr_dComplex_focus}
   if (factorVariation == "orderFocusComplex"){arrVariation <- arr_orderFocusComplex} else if (factorVariation == "orderMaskComplex"){arrVariation <- arr_orderMaskComplex}
   if (factorVariation == "distractor"){arrVariation <- arr_distractor} else if (factorVariation == "scaling"){arrVariation <- arr_scaling}
+  
+  if (nchar(strFormula) > 0){
+  factor1 <- splitFormula[[1]][1]
+    if (factor1 == "focus"){arrFactor1 <- arr_focus} else if (factor1 == "dMask"){ arrFactor1 <- arr_dMask } else if (factor1 == "dComplex_focus"){arrFactor1 <- arr_dComplex_focus}
+    if (factor1 == "orderFocusComplex"){arrFactor1 <- arr_orderFocusComplex} else if (factor1 == "orderMaskComplex"){arrFactor1 <- arr_orderMaskComplex}
+    
+    # cat("\nfactor1: ",factor1);
+    if(!plusPresence){
+      factor2 <- factor1; arrFactor2 <- arrFactor1;
+    } 
+    else {
+      factor2 <- splitFormula[[1]][2];
+      # cat("\nfactor2: ",factor2)
+      if (factor2 == "focus"){arrFactor2 <- arr_focus} else if (factor2 == "dMask"){ arrFactor2 <- arr_dMask } else if (factor2 == "dComplex_focus"){arrFactor2 <- arr_dComplex_focus}
+      if (factor2 == "orderFocusComplex"){arrFactor2 <- arr_orderFocusComplex} else if (factor2 == "orderMaskComplex"){arrFactor2 <- arr_orderMaskComplex}
+    }
+    
+  } else {
+    factor1 <- factorVariation;factor2 <- factorVariation; arrFactor1 <- arrVariation; arrFactor2 <- arrVariation;
+  }
+    
+  
   
   cat("\naddCountColumn--\nstrFormula: ",strFormula,", plusPresence: ",plusPresence,", factor1: ",factor1,", arrFactor1: ",arrFactor1,", factor2: ",factor2,", arrFactor2: ",arrFactor2,", factorVariation: ",factorVariation,", arrVariation: ",arrVariation)
   
