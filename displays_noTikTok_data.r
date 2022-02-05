@@ -53,6 +53,13 @@ d_measurement_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibl
 length( d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId ) 
 d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
 length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId)
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="easy"] )
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="medium"] )
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="hard"] )
+
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="easy" & d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$focus=="WHAT_Ql"] )
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="easy" & d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$focus=="WHAT_Qn"] )
+length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="easy" & d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$focus=="WHERE"] )
 
 d_noneither_semi_rigorous <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
 
@@ -91,7 +98,7 @@ dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_me
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
-dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
+dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
                                                                           factorDMask= TRUE,
@@ -104,10 +111,10 @@ dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDiffer
 dfCI_global_TikTok_measurement_factored_dComplex_focus_only <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                           factorScaling=FALSE,
                                                                           factorDistractor=FALSE,
-                                                                          factorDMask= TRUE,
+                                                                          factorDMask= FALSE,
                                                                           factorFocus=FALSE,
                                                                           factorDComplex_focus=FALSE,
-                                                                          factorDifference="dComplex_focus",
+                                                                          factorDifference="focus",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
@@ -174,8 +181,8 @@ View(d_measurement_forViolin)
 
 # ---- CorrectB # looks weird with logFunction = TRUE
 # rabbits TO PRETTIFY
-dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous,
-                                            factorFocus = TRUE, 
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+                                            factorFocus = FALSE, 
                                             factorDComplex_focus = FALSE, 
                                             factorDMask = TRUE, 
                                             factorDifference="dComplex_focus",
@@ -206,16 +213,26 @@ genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigor
 # toString(d_measurement_all_noTikTok_filteredSemiRigorous$trustB[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql"])
 
 # --trust according to question type
-trust_overAll <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB) )
+trust_overAll <- kruskal.test( x= list( d_measurement_all_noTikTok_filteredSemiRigorous$trustA1, 
+                                        d_measurement_all_noTikTok_filteredSemiRigorous$trustA2, 
+                                        d_measurement_all_noTikTok_filteredSemiRigorous$trustA3, 
+                                        d_measurement_all_noTikTok_filteredSemiRigorous$trustB) )
 trust_overAll
 
 # dunnTest(data= list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB))
 # -- trust according to focus
-trustA1_focus <- kruskal.test( x= list( d_measurement_all_noTikTok$trustA1[d_measurement_all_noTikTok$dMask=="easy"], d_measurement_all_noTikTok$trustA1[d_measurement_all_noTikTok$dMask=="medium"], d_measurement_all_noTikTok$trustA1[d_measurement_all_noTikTok$dMask=="hard"] ) )
+trustA1_focus <- kruskal.test( x= list( d_measurement_all_noTikTok_filteredSemiRigorous$trustA1[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"], 
+                                        d_measurement_all_noTikTok_filteredSemiRigorous$trustA1[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="medium"],
+                                        d_measurement_all_noTikTok_filteredSemiRigorous$trustA1[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="hard"] ) )
+trustA1_focus
 
-dunnTest(x = list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB), g =  ~ dMask)
+kruskal.test(trustA1 ~ dMask, data = d_measurement_all_noTikTok_filteredSemiRigorous)
 
-dunnTest( trustA1~trustB, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+# package not working anymore?
+# dunnTest(x = list( d_measurement_all_noTikTok$trustA1, d_measurement_all_noTikTok$trustA2, d_measurement_all_noTikTok$trustA3, d_measurement_all_noTikTok$trustB), g =  ~ dMask)
+# this method works
+dunnTest( trustA1~focus, data = d_measurement_all_noTikTok_filteredSemiRigorous, method="bonferroni" )
+
 
 # Strange result here...
 mean(d_measurement_all_noTikTok_filteredSemiRigorous$trustA3[d_measurement_all_noTikTok_filteredSemiRigorous$dMask=="easy"])
@@ -288,21 +305,21 @@ display_res_trust_violin_distractor <- gen_res_trust_violin(d_distractor_all_noT
 
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
 dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_distractor_all_noTikTok,
-  factorScaling=FALSE,
-  factorDistractor=FALSE,
-  factorDMask= FALSE,
-  factorFocus= TRUE,
-  factorDComplex_focus=TRUE,
-  factorDifference="distractor",
-  useLogDiff=TRUE)
+                                                                            factorScaling=FALSE,
+                                                                            factorDistractor=FALSE,
+                                                                            factorDMask= FALSE,
+                                                                            factorFocus= TRUE,
+                                                                            factorDComplex_focus=TRUE,
+                                                                            factorDifference="distractor",
+                                                                            useLogDiff=TRUE)
 
 # Error rates
 d_distractor_all_noTikTok_errorRates <- combine_genPlot_ErrorRate_CIandDifferences( 
-  d=d_distractor_all_noTikTok,
-  factorFocus = TRUE, 
-  factorDComplex_focus = TRUE, 
-  factorDMask = FALSE, 
-  factorDifference="distractor", filterNeither = TRUE )
+  d=d_distractor_all_noTikTok_noneither,
+  factorFocus = TRUE,
+  factorDComplex_focus = TRUE,
+  factorDMask = FALSE,
+  factorDifference="distractor", filterNeither = TRUE)
 
 d_distractor_all_noTikTok$correctB[d_distractor_all_noTikTok$focus=="WHAT_Qn" & d_distractor_all_noTikTok$dComplex_focus=="H"]
 
@@ -360,12 +377,12 @@ display_res_trust_violin <- gen_res_trust_violin(d_scaling_all_noTikTok, factorS
 
 d_scaling_all_noTikTok_noneither <- filter_neitherLikert(d_scaling_all_noTikTok)
 
-dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
+dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_distractor_all_noTikTok,
                                          factorScaling=FALSE,factorDistractor=FALSE,
                                          factorDMask= FALSE,
                                          factorFocus=TRUE,
-                                         factorDComplex_focus=TRUE, 
-                                         factorDifference="scaling",
+                                         factorDComplex_focus=FALSE, 
+                                         factorDifference="distractor",
                                          useLogDiff=TRUE,
                                          );
 
@@ -381,7 +398,7 @@ dfCombinationCI_differences_distractor_factoredby_NA <- combine_genPlot_CIandDif
                                          factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling",
                                          useLogDiff=TRUE);
 
-dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_scaling_all_noTikTok,
+dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_scaling_all_noTikTok_noneither,
                                        factorScaling=FALSE, factorDistractor=FALSE,
                                        factorDMask= FALSE,
                                        factorFocus=TRUE,
@@ -389,9 +406,9 @@ dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_Error
                                        factorDifference="scaling");
 
 
-d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( d=d_scaling_all_noTikTok,
+d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( d=d_scaling_all_noTikTok_noneither,
                                       factorFocus = TRUE, 
-                                      factorDComplex_focus = TRUE, 
+                                      factorDComplex_focus = FALSE, 
                                       factorDMask = FALSE, 
                                       factorDifference="scaling",
                                       filterNeither = TRUE)

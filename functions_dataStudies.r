@@ -18,6 +18,7 @@ library(ggforce)
 library(ggbeeswarm)
 # library(ggmap)
 # library(plotly) # not our version?!
+library(FSA)
 
 
 setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
@@ -2193,7 +2194,6 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     if(factor4=="focus"){dfCI_global_differences$focus[0] <- 0}; if(factor4=="scaling"){dfCI_global_differences$scaling[0] <- 0}; if(factor4=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
   }
   
-  cat("\nAbout to loop arrQuestions")
   for (i in arrQuestions){
     cat("\nLoop questions. i: ",i)
     curQuestion <- i;
@@ -2609,16 +2609,11 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   
   # we should have the dfCI_global loaded now, but still need to display it.
   cat("\n####about to draw")
-  cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question),
-      "\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
-  # cat("\n\t\t****dfCI_global$category_combination: ",dfCI_global$category_combination,"****\t\t\n")
+  cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question), "\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
   class(dfCI_global$category_combination); class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI); class(dfCI_global$low_CI); dfCI_global$low_CI <- as.numeric(dfCI_global$low_CI); class(dfCI_global$low_CI); class(dfCI_global$high_CI); dfCI_global$high_CI <- as.numeric(dfCI_global$high_CI); class(dfCI_global$high_CI); class(dfCI_global_differences$category_combination); class(dfCI_global_differences$mean_CI); dfCI_global_differences$mean_CI <- as.numeric(dfCI_global_differences$mean_CI); class(dfCI_global_differences$mean_CI); class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI); class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
-  
-  dfCI_global <- renameGroupedData(dfCI_global)
-  dfCI_global_differences <- renameGroupedData(dfCI_global_differences)
+  dfCI_global <- renameGroupedData(dfCI_global); dfCI_global_differences <- renameGroupedData(dfCI_global_differences);
   
   cat("\n\t---01---\tunique(dfCI_global$category_combination): ",unique(dfCI_global$category_combination)) # seems fine still. There are several of them, but I guess that's fine.
-  
   if (numFactor ==3 ){
     if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
       dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
@@ -2641,43 +2636,27 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI)); # very odd. but should be fine...
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences)); # very odd. but should be fine...
   cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,",minLow_cI_differences: ",minLow_cI_differences,", maxHigh_CI_differences: ",maxHigh_CI_differences,",edgeSize_differences: ",edgeSize_differences)
-  # cat("\n no complaints about scaling as a factor?")
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize_CI <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI));
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences));
   min_log_diffA1 <- min(d[["log_diffA1"]]);max_log_diffA1 <- max(d[["log_diffA1"]]);min_log_diffA2 <- min(d[["log_diffA2"]]);max_log_diffA2 <- max(d[["log_diffA2"]]);min_log_diffA3 <- min(d[["log_diffA3"]]);max_log_diffA3 <- max(d[["log_diffA3"]]);
   
   # edge according to the CI
   edgeSize <- max(edgeSize_CI,edgeSize_differences,max_log_diffA1,max_log_diffA2,max_log_diffA3);
-  # edge according to the values
-  # maxabsEdge <- max( select( d, arrQuestions[1])
-  # maxabsEdgeValue <- max(max(select(d_measurement_all_noTikTok,arrQuestions[1])) , max(select(d_measurement_all_noTikTok,arrQuestions[2])) , max(select(d_measurement_all_noTikTok,arrQuestions[3])) )
-  # edgeSize <- max(edgeSize, maxabsEdgeValue)
-  
-  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,
-      "\n^^^^what's the length of question for dfCI_global now? ",length(dfCI_global$question), "\ndfCI_global$orderAdded: ", dfCI_global$orderAdded)
+  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize, "\n^^^^what's the length of question for dfCI_global now? ",length(dfCI_global$question), "\ndfCI_global$orderAdded: ", dfCI_global$orderAdded)
   strFormula <- ""
   if (numFactor==2){
     strFormula<-paste("~",factor1,"+",factor2)
-    cat("\nnumFactor==2. strFormula: ",strFormula,"... what about dfCI_global: ",toString(dfCI_global[1,]))
     strFormula <- str_replace(strFormula,"scaling","orderedScaling"); strFormula <- str_replace(strFormula,"dMask","orderMaskComplex"); strFormula <- str_replace(strFormula,"dComplex_focus","orderFocusComplex")
-    cat("\npost modif strFormula: ",strFormula)
     strFormula_differences<-paste("~",factor1,"+",factor2)
-    cat("\nnumFactor==2. strFormula_differences: ",strFormula_differences,"... what about dfCI_global_differences: ",toString(dfCI_global_differences[1,]))
     strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling"); strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex"); strFormula_differences <- str_replace(strFormula_differences,"dComplex_focus","orderFocusComplex")
-    cat("\npost modif strFormula_differences: ",strFormula_differences)
   }
   else if (numFactor==1){
     strFormula<-paste("~",factor1)
-    cat("\nnumFactor==1. strFormula: ",strFormula,"... what about dfCI_global: ",toString(dfCI_global[1,]))
     strFormula <- str_replace(strFormula,"scaling","orderedScaling")
     strFormula <- str_replace(strFormula,"dMask","orderMaskComplex")
-    cat("\npost modif strFormula: ",strFormula)
     strFormula_differences<-paste("~",factor1)
-    cat("\nnumFactor==1. strFormula_differences: ",strFormula_differences,"... what about dfCI_global_differences: ",toString(dfCI_global_differences[1,]))
     strFormula_differences <- str_replace(strFormula_differences,"scaling","orderedScaling")
     strFormula_differences <- str_replace(strFormula_differences,"dMask","orderMaskComplex")
-    cat("\npost modif strFormula_differences: ",strFormula_differences)
-    
   }
   else {
     # no wrapping.
@@ -2688,20 +2667,14 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   
   groupedPlotCI_1 <- NULL; groupedPlotCI_2 <- NULL; groupedPlotCI_3<- NULL;
   group_differencesedPlotCI_1<-NULL;group_differencesedPlotCI_2<-NULL;group_differencesedPlotCI_3<-NULL;
-  cat("\n:::: dfCI_global colNames: ",colnames(dfCI_global)); cat("\n:::: dfCI_global_differences colNames: ",colnames(dfCI_global_differences))
   dfCI_global_differences <- addInfoCiDifferenceSignificant(dfCI_global_differences)
-  
-  # histogram... # http://www.sthda.com/english/wiki/ggplot2-histogram-plot-quick-start-guide-r-software-and-data-visualization
-  # geom_histogram()
-  # or violin? # geom_violin(aes(x=cut, y=price))
   
   cat("\n\n¤¤¤¤arrQuestions: ",arrQuestions,
       "\n\nunique(dfCI_global$orderCategoryCombination): ",unique(dfCI_global$orderCategoryCombination),
       "\n\ttoString(unique(dfCI_global$orderCategoryCombination)): ",toString(unique(dfCI_global$orderCategoryCombination)))
   
-  d <- prettyEnrichOrderCategory(d,dfCI_global) # TODO CRITICAL MISSING SOME COLUMNS
+  d <- prettyEnrichOrderCategory(d,dfCI_global);
   
-  # d <- renameGroupedData((dfCI_global))
   cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
       "\nbtw strFormula: ",strFormula,
       "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)))
@@ -2713,24 +2686,32 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
   }
   
   d <- orderData(d);
-  # dfCI_global <- orderData(dfCI_global);
-  # factorDifference <- "dComplex_focus"
   cat("\nfactorDifference: ",factorDifference)
   d <- addCountColumn(d, strFormula = strFormula, factorVariation = factorDifference)
   cat("\nAdded the countColumn... unique(d$countFactor): ", unique(d$countFactor))
-  cbp1 <- c("#0072B2", "#009E73", "#CC79A7", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999", "#E69F00")
+  # cbp1 <- c("#0072B2", "#009E73", "#CC79A7", "#F0E442", "#0072B2", "#D55E00", "#CC79A7", "#999999", "#E69F00")
+  # low number of factors results in high space necessary
+  if (numFactor == 0){
+    xPosLabel <- -3.7
+    leftXlim <- -3.72
+    sizeText <- 3
+  } 
+  else {
+    xPosLabel <- -3.4
+    leftXlim <- -3.28
+    sizeText <- 3
+  }
   
-    
   strTitleTotal <- NULL;
   if (numFactor!=0){
     cat("\n\t\t\t))))numFactor!=0: ",(numFactor!=0))
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,", factored by ",toString(factorArr),sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1] ,], aes(x=mean_CI,y=orderCategoryCombination, show.legend = FALSE )) +
-      geom_label(data=d, label= factor(d$countFactor) , x=-3.3, size=2) +
+      geom_label(data=d, label= factor(d$countFactor) , x= xPosLabel, size= sizeText ) +
       geom_violin( data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) + # change alpha?
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-3.25,edgeSize)) +
+      xlim(c( leftXlim ,edgeSize)) +
       geom_vline(xintercept = -3) +
       ggtitle("Mean with Mask") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
@@ -2748,7 +2729,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_violin( data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) +
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-3.25,edgeSize)) +
+      xlim(c( leftXlim ,edgeSize)) +
       geom_vline(xintercept = -3) +
       ggtitle("Overall Mean") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
@@ -2766,8 +2747,8 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_violin( data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), adjust = .75, show.legend = FALSE ) +
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-3.25,edgeSize)) +
-      scale_fill_manual(values = cbp1) + scale_colour_manual(values = cbp1) +
+      xlim(c( leftXlim ,edgeSize)) +
+      # scale_fill_manual(values = cbp1) + scale_colour_manual(values = cbp1) +
       geom_vline(xintercept = -3) +
       ggtitle("Mask Proportion") +
       facet_wrap( as.formula(strFormula) , dir="v", ncol=1) + 
@@ -2836,12 +2817,12 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
     cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
     strTitleTotal <- paste("Confidence intervals and differences for ",factorDifference,sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question== arrQuestions[1],], aes(x=mean_CI,y= orderCategoryCombination )) +
-      geom_label(data=d, label= factor(d$countFactor) , x=-3.375, size=1.85) +
+      geom_label(data=d, label= factor(d$countFactor) , x= xPosLabel, size= sizeText) +
       geom_vline(xintercept = -3) +
       geom_violin( data = d,  aes (x= log_diffA1 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-3.25,edgeSize)) +
+      xlim(c( leftXlim ,edgeSize)) +
       ggtitle("Mean with Mask")+
       theme(
         strip.background = element_blank(), 
@@ -2857,7 +2838,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_violin( data = d,  aes (x= log_diffA2 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-3,edgeSize)) +
+      xlim(c( leftXlim ,edgeSize)) +
       ggtitle("Mean Overall") +
       theme(
         strip.background = element_blank(), 
@@ -2873,7 +2854,7 @@ combine_genPlot_CIandDifferences  <- function (d,factorScaling=FALSE,factorDistr
       geom_violin( data = d,  aes (x= log_diffA3 , y = orderCategoryCombination, alpha = 0.3), show.legend = FALSE ) +
       geom_errorbarh(aes(xmin=low_CI, xmax=high_CI, height= .5)) +
       geom_point(size=3,col="black",fill="white", shape=1) +
-      xlim(c(-3,edgeSize)) +
+      xlim(c( leftXlim ,edgeSize)) +
       ggtitle("Mask Proportion")+
       theme(
         strip.background = element_blank(), 
@@ -5873,7 +5854,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
     d$reverseB <- abs(d$correctB -1);
     
     factorVariation <- factorDifference
-    arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Qn","WHAT_Ql","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
+    arrScalings <- c(0,1,2); arrDistractor <- c("h","n"); arrFocus <- c("WHAT_Ql","WHAT_Qn","WHERE"); arrMask <- c("easy","medium","hard"); arrDComplex_focus <- c("E","M","H");  
     if (factorScaling | factorDifference =="scaling" | factorVariation=="scaling"){arrFocus <- c("WHAT_Qn","WHAT_Ql")}  
     arrQuestions <- c("reverseB");
     numGraphs <- length(arrQuestions); 
@@ -6036,7 +6017,12 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                       group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
                       group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
                       group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
-                      
+
+                      cat("\n--------")
+                      cat("\ngroup1_CI: ",group1_CI,", group2_CI: ",group2_CI,", group3_CI: ",group3_CI);
+                      cat("\ngroup_differences1_CI: ",group_differences1_CI,", group_differences2_CI: ",group_differences2_CI,", group_differences3_CI: ",group_differences3_CI);
+                      cat("\n--------")
+                                            
                       group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
                       group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
                       group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
@@ -6112,7 +6098,12 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                       group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
                       group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
                       group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
-                      
+
+                      cat("\n--------")
+                      cat("\ngroup1_CI: ",group1_CI,", group2_CI: ",group2_CI,", group3_CI: ",group3_CI);
+                      cat("\ngroup_differences1_CI: ",group_differences1_CI,", group_differences2_CI: ",group_differences2_CI,", group_differences3_CI: ",group_differences3_CI);
+                      cat("\n--------")
+                                            
                       group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="");
                       group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="");
                       group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="");
@@ -6152,25 +6143,25 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
               }
               else {
                 # Most likely the case that will happen the most, since we don't have all cases of dComplex_focus medium... 
-                cat("\n !-!-! numFactor==2 ... ");
+                cat("\n !-!-! numFactor==2 ... hey");
                 # warning: remember that factorVariation can be distractor
                 dfTest_CI <- NULL
                 dfTest_CI_differences <- NULL
                 if (length(arrFactorVariations)== 2){
-                  # cat("\n !!! length(arrFactorVariations)== 2")
+                  cat("\n !!! length(arrFactorVariations)== 2")
                   selec1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[1] ,]; selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
                   # cat("\n~~\tmade selec_differences for selec1 and selec2. dim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2),", curQuestion: ",curQuestion,"\t~~")
                   dataRandom <- c(0.0001, 0.00012, 0.00013, 0.00014, 0.00015, 0.00016, 0.00017, 0.00018)
                   randV <- runif(1, 0.00005, 0.00010)
                   if (length (selec1[curQuestion] <=1)){
-                    # cat("\nnhave to add things. length of selec1[curQuestion]: ",length(selec1[curQuestion]),", selec1[curQuestion]: ",toString(selec1[curQuestion]) )
+                    cat("\nnhave to add things. length of selec1[curQuestion]: ",length(selec1[curQuestion]),", selec1[curQuestion]: ",toString(selec1[curQuestion]) )
                     newRow <- selec1
                     newRow[curQuestion] <- newRow[curQuestion] +randV
                     d <- rbind(d, newRow)
                     # selec1[curQuestion] <- c(selec1[curQuestion],selec1[curQuestion] +0.00017, selec1[curQuestion] +0.00018 )
                   }
                   if (length (selec2[curQuestion] <=1)){
-                    # cat("\nnhave to add things. length of selec2[curQuestion]: ",length(selec2[curQuestion]),", selec2[curQuestion]: ",toString(selec2[curQuestion]) )
+                    cat("\nnhave to add things. length of selec2[curQuestion]: ",length(selec2[curQuestion]),", selec2[curQuestion]: ",toString(selec2[curQuestion]) )
                     newRow <- selec2
                     newRow[curQuestion] <- newRow[curQuestion] +randV
                     # cat("\tdim(newRow): ",dim(newRow))
@@ -6178,7 +6169,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                     selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
                     # selec2[curQuestion] <- c(selec2[curQuestion],selec2[curQuestion] +0.00017, selec2[curQuestion] +0.00018 )
                   }
-                  # cat("\n++++Post addiition: dim(selec1): ",dim(selec1), ", dim(selec2): ",dim(selec2) )
+                  cat("\n++++Post addiition: dim(selec1): ",dim(selec1), ", dim(selec2): ",dim(selec2) )
                   selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]; selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
                   # cat("\nselec1[1,1]: ", selec1[1,1], ", selec2[1,1]: ", selec2[1,1])
                   # cat("\n\n-- length selec1: ", length(selec1[curQuestion]), "\n\n-- length selec2: ", length(selec2[curQuestion]))
@@ -6208,7 +6199,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   if (selec1All1){selec1[curQuestion] <- selec1[curQuestion] - randS1}
                   if (selec2All0){selec2[curQuestion] <- selec2[curQuestion] + randS2}
                   if (selec2All1){selec2[curQuestion] <- selec2[curQuestion] - randS2}
-                  # cat("\n**selec1[curQuestion]: ",toString(selec1[curQuestion])); cat("\n**selec2[curQuestion]: ",toString(selec2[curQuestion]))
+                  cat("\n**selec1[curQuestion]: ",toString(selec1[curQuestion])); cat("\n**selec2[curQuestion]: ",toString(selec2[curQuestion]))
                   
                   group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion); group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
                   if (toString(group1_CI) == "1"){ group1_CI <- c(0.999,0.998,1) }
@@ -6218,11 +6209,17 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                                     
                   group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
                   group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
-                  # cat("\n{{{ booted group_differences1_CI")
+                  cat("\n{{{ booted group_differences1_CI")
                   if ( is.na( as.numeric(group1_CI[2] ) ) ){ 
                       # cat("\n\n\n\t need to modify group1_CI, because it returned a single value. We will simply reproduce it")
                       group1_CI <- c(group1_CI[1],as.numeric(group1_CI[1]),as.numeric(group1_CI[1]),group1_CI[2],group1_CI[3])
-                    }
+                  }
+
+                  cat("\n--------")
+                  cat("\ngroup1_CI: ",group1_CI,", group2_CI: ",group2_CI,", group3_CI: ",group3_CI);
+                  cat("\ngroup_differences1_CI: ",group_differences1_CI,", group_differences2_CI: ",group_differences2_CI,", group_differences3_CI: ",group_differences3_CI);
+                  cat("\n--------")
+                  
                   group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
                   group_differences1_CI <- c(group_differences1_CI, paste(factorDifference,",",arrFactorDifferences[1],"_",arrFactorDifferences[2]),sep="")
                   dfTest_CI <- data.frame(group1_CI,group2_CI);
@@ -6234,8 +6231,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   selec2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[2] ,]
                   selec3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorVariation]==arrFactorVariations[3] ,]
                   
-                  all0 <- TRUE;
-                  for (a in selec1$reverseB){
+                  all0 <- TRUE; for (a in selec1$reverseB){
                     if (a != 0){
                       all0 <- FALSE;
                     }
@@ -6243,8 +6239,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   if (all0){
                     selec1$reverseB[1] <- 0.000000001
                   }
-                  all0 <- TRUE;
-                  for (a in selec2$reverseB){
+                  all0 <- TRUE; for (a in selec2$reverseB){
                     if (a != 0){
                       all0 <- FALSE;
                     }
@@ -6252,8 +6247,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   if (all0){
                     selec2$reverseB[1] <- 0.000000001
                   }
-                  all0 <- TRUE;
-                  for (a in selec3$reverseB){
+                  all0 <- TRUE; for (a in selec3$reverseB){
                     if (a != 0){
                       all0 <- FALSE;
                     }
@@ -6262,9 +6256,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                     selec3$reverseB[1] <- 0.000000001
                   }
 
-                  
-                  all1 <- TRUE;
-                  for (a in selec1$reverseB){
+                  all1 <- TRUE; for (a in selec1$reverseB){
                     if (a != 1){
                       all1 <- FALSE;
                     }
@@ -6272,8 +6264,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   if (all1){
                     selec1$reverseB[1] <- 0.99999999
                   }
-                  all1 <- TRUE;
-                  for (a in selec2$reverseB){
+                  all1 <- TRUE; for (a in selec2$reverseB){
                     if (a != 1){
                       all1 <- FALSE;
                     }
@@ -6281,8 +6272,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   if (all1){
                     selec2$reverseB[1] <- 0.99999999
                   }
-                  all1 <- TRUE;
-                  for (a in selec3$reverseB){
+                  all1 <- TRUE; for (a in selec3$reverseB){
                     if (a != 1){
                       all1 <- FALSE;
                     }
@@ -6294,15 +6284,29 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                   selec_differences1 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[1] ,]
                   selec_differences2 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[2] ,]
                   selec_differences3 <- d[d[factor1]==curFactor1 & d[factor2]==curFactor2 & d[factorDifference]==arrFactorDifferences[3] ,]
-                  # cat("\ndim(selec1): ",dim(selec1),", dim(selec2): ",dim(selec2),", dim(selec3): ",dim(selec3),", curQuestion: ",curQuestion )
                   # View(selec3)
                   group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
                   group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
                   group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
-                  group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
-                  group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
-                  group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
 
+                  # Noticed a weird case with bootQuestionsDifferences_directSubstract for scaling factored by focus, dComplex_focus. Alternatives are:
+                  # bootQuestionsDifferences_conservative; bootQuestionsDifferences_TukeyHSD
+                  group_differences1_CI_directSubstract<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
+                  group_differences2_CI_directSubstract<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
+                  group_differences3_CI_directSubstract<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
+                  
+                  group_differences1_CI_conservative<- bootQuestionsDifferences_conservative(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                  group_differences2_CI_conservative<- bootQuestionsDifferences_conservative(d=selec_differences1, d2=selec_differences3,question=curQuestion);
+                  group_differences3_CI_conservative<- bootQuestionsDifferences_conservative(d=selec_differences2, d2=selec_differences3,question=curQuestion);
+                  
+                  # group_differences1_CI_TukeyHSD<- bootQuestionsDifferences_TukeyHSD(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                  # group_differences2_CI_TukeyHSD<- bootQuestionsDifferences_TukeyHSD(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                  # group_differences3_CI_TukeyHSD<- bootQuestionsDifferences_TukeyHSD(d=selec_differences1, d2= selec_differences2,question=curQuestion);
+                  
+                  group_differences1_CI<- group_differences1_CI_directSubstract;
+                  group_differences2_CI<- group_differences2_CI_directSubstract;
+                  group_differences3_CI<- group_differences3_CI_directSubstract;
+                  
                   if (is.na(group_differences1_CI[2])){
                     fVal<- group_differences1_CI[1]; leftFVal <- fVal - 0.00001; rightFVal <- fVal + 0.00001; 
                     txtV <- group_differences1_CI[4]; txtL <- group_differences1_CI[5]
@@ -6318,8 +6322,14 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                     txtV <- group_differences3_CI[4]; txtL <- group_differences3_CI[5]
                     group_differences3_CI <- c(fVal,leftFVal,rightFVal, txtV, txtL)
                   }
-                  # cat("\nheeeeeeeeeeeeeeeeeeeeeeeeeeeee)
-                                    
+
+                  cat("\n-\n--------curFactor1: ",curFactor1,", curFactor2: ",curFactor2,", logFunction: ", logFunction);
+                  cat("\ngroup1_CI: ",group1_CI,", group2_CI: ",group2_CI,", group3_CI: ",group3_CI);
+                  cat("\ngroup_differences1_CI_directSubstract: ",group_differences1_CI_directSubstract,", group_differences2_CI_directSubstract: ",group_differences2_CI_directSubstract,", group_differences3_CI_directSubstract: ",group_differences3_CI_directSubstract);
+                  cat("\ngroup_differences1_CI_conservative: ",group_differences1_CI_conservative,", group_differences2_CI_conservative: ",group_differences2_CI_conservative,", group_differences3_CI_conservative: ",group_differences3_CI_conservative);
+                  # cat("\ngroup_differences1_CI_TukeyHSD: ",group_differences1_CI_TukeyHSD,", group_differences2_CI_TukeyHSD: ",group_differences2_CI_TukeyHSD,", group_differences3_CI_TukeyHSD: ",group_differences3_CI_TukeyHSD);
+                  cat("\n-\n--------")
+
                   group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
                   group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
                   group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
@@ -6490,14 +6500,20 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
           selec_differences1 <- d[d[factorDifference]==arrFactorDifferences[1] ,]
           selec_differences2 <- d[d[factorDifference]==arrFactorDifferences[2] ,]
           selec_differences3 <- d[d[factorDifference]==arrFactorDifferences[3] ,]
-          
+
           group1_CI<- make_gensMean_lowCI_highCI(d=selec1,question=curQuestion);
           group2_CI<- make_gensMean_lowCI_highCI(d=selec2,question=curQuestion);
           group3_CI<- make_gensMean_lowCI_highCI(d=selec3,question=curQuestion);
+          
           group_differences1_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2= selec_differences2,question=curQuestion, logFunction=logFunction);
           group_differences2_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences1, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
           group_differences3_CI<- bootQuestionsDifferences_directSubstract(d=selec_differences2, d2=selec_differences3,question=curQuestion, logFunction=logFunction);
           
+          cat("\n--------")
+          cat("\ngroup1_CI: ",group1_CI,", group2_CI: ",group2_CI,", group3_CI: ",group3_CI);
+          cat("\ngroup_differences1_CI: ",group_differences1_CI,", group_differences2_CI: ",group_differences2_CI,", group_differences3_CI: ",group_differences3_CI);
+          cat("\n--------")
+                    
           group1_CI <- c(group1_CI, paste(factorVariation,",",arrFactorVariations[1]),sep="")
           group2_CI <- c(group2_CI, paste(factorVariation,",",arrFactorVariations[2]),sep="")
           group3_CI <- c(group3_CI, paste(factorVariation,",",arrFactorVariations[3]),sep="")
@@ -6640,10 +6656,63 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
                         d$orderCategoryCombination[d$dMask=="hard"] <- "Mask: Hard"; } 
     }
     
-    d <- orderData(d)
-    # we end up with d not having orderCategoryCombination...
-    d <- addCountColumn(d, strFormula = strFormula, factorVariation = factorDifference)
+    View(d); View(dfCI_global);
+    d <- prettyEnrichOrderCategory(d,dfCI_global);
     
+    cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
+        "\nbtw strFormula: ",strFormula,
+        "\ntoString(unique(d$orderCategoryCombination)): ",toString(unique(d$orderCategoryCombination)))
+    cat("\n\n\ndfCI_global$orderCategoryCombination: ", dfCI_global$orderCategoryCombination,
+        "\nunique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination))
+    if (grepl("dComplex_focus",strFormula,fixed=TRUE)){
+      cat("\n**\tchanging strFormula from dComplex_focus to orderFocusComplex")
+      strFormula <- str_replace(strFormula, "dComplex_focus", "orderFocusComplex")
+    }
+    
+    d <- orderData(d);
+    View(d);
+    cat("\nunique(d$category_combination): ",unique(d$category_combination),", unique(d$dComplex_focus): ",unique(d$dComplex_focus),", unique(d$orderFocusComplex): ",unique(d$orderFocusComplex))
+    if ( is.na(d$dComplex_focus[1]) & factorVariation=="dComplex_focus" ){
+      cat("\nMessed up here... Let's see")
+      d$dComplex_focus[d$orderFocusComplex=="Focus Easy"] <- "E";
+      d$dComplex_focus[d$orderFocusComplex=="Focus Medium"] <- "M";
+      d$dComplex_focus[d$orderFocusComplex=="Focus Hard"] <- "H";
+      cat("\nPost modif 1... is.na(d$dComplex_focus[1]): ",is.na(d$dComplex_focus[1]), ", is.na(d$orderCategoryCombination[1]): ", is.na(d$orderCategoryCombination[1])  )
+      d <- orderData(d);
+      d$orderCategoryCombination <- c();
+      d$orderCategoryCombination[d$orderFocusComplex=="Focus Easy"] <- "focus complexity: Easy"; d$orderCategoryCombination[d$orderFocusComplex=="Focus Medium"] <- "focus complexity: Medium"; d$orderCategoryCombination[d$orderFocusComplex=="Focus Hard"] <- "focus complexity: Hard";
+      d$orderCategoryCombination <- factor(d$orderCategoryCombination, levels=c("focus complexity: Hard" , "focus complexity: Medium",  "focus complexity: Easy"));
+      cat("\nPost modif 2... is.na(d$dComplex_focus[1]): ",is.na(d$dComplex_focus[1]), ", is.na(d$orderCategoryCombination[1]): ", is.na(d$orderCategoryCombination[1]) );
+    }
+    else if (is.na(d$dComplex_focus[1])){
+      cat("\n##still wrong dComplex_focus?!")
+      d$dComplex_focus <- substr(d$info_dComplex_dMask,0,1)
+      d$orderFocusComplex[d$dComplex_focus=="E"] <- "Focus Easy";
+      d$orderFocusComplex[d$dComplex_focus=="M"] <- "Focus Medium";
+      d$orderFocusComplex[d$dComplex_focus=="H"] <- "Focus Hard";
+      # d <- orderData(d);
+      
+      cat("\n\t\tTEST length(d$log_diffA3[d$dMask=='easy' & d$orderFocusComplex== 'Focus Easy']): ", length(d$log_diffA3[d$dMask=="easy" & d$orderFocusComplex== "Focus Easy"]) )
+      cat("\n\t\tTEST length(d$log_diffA3[d$dMask=='easy' & d$orderFocusComplex== 'Focus Easy'  & ",factorDifference,"== ",arrFactorDifferences[1]," ]) : ", length(d$log_diffA3[d$dMask=="easy" & d$orderFocusComplex== "Focus Easy" & d[[factorDifference]]  == arrFactorDifferences[1] ]) )
+      cat("\n\t\tTEST length(d$log_diffA3[d$dMask=='easy' & d$orderFocusComplex== 'Focus Easy'  & ",factorDifference,"== ",arrFactorDifferences[2]," ]) : ", length(d$log_diffA3[d$dMask=="easy" & d$orderFocusComplex== "Focus Easy" & d[[factorDifference]]  == arrFactorDifferences[2] ]) )      
+      
+      d$orderFocusComplex <- factor(d$orderFocusComplex, levels= c("Focus Easy","Focus Medium","Focus Hard") )
+      cat("\nunique(d$dComplex_focus): ", unique(d$dComplex_focus),", unique(d$orderFocusComplex): ",unique(d$orderFocusComplex))
+      cat("\n##what about  ? unique(d$dMask): ",unique(d$dMask),", unique(d$orderMaskComplex): ",unique(d$orderMaskComplex))
+    }
+    
+    strFormula <- str_replace_all(strFormula, pattern = " ", repl = "")
+    # we end up with d not having orderCategoryCombination...
+    d <- addCountColumn(d, strFormula = strFormula, factorVariation = factorVariation);
+    cat("\nAdded count column...unique $countFactor: ",unique(d$countFactor),", factorVariation: ",factorVariation,", strFormula: ", strFormula);
+    View(dfCI_global);
+    View(d);
+    
+    # the transformations require to retransform numbers accordingly for specific cases: i.e. distractor with two factors... those should be divided by two...
+    if (factorVariation=="distractor" & numFactor == 2) { #& (factor1 == "dComplex_focus" | factor2 == "dComplex_focus")
+      cat("\n need to deal with the cases with too few elements and fix the values... factorVariation: ",factorVariation,", factor1: ",factor1,", factor2: ",factor2 )
+      d$countFactor <- d$countFactor/2
+    }
     
     strTitleTotal <- NULL;
     if (numFactor!=0){ 
@@ -6659,13 +6728,10 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
         facet_wrap( as.formula(strFormula) , dir="v", ncol=1)+ 
         labs(title = 'Error Rate', y = "" ) +
         theme(
-          strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),
+          strip.background = element_blank(), strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(),
         ) # + 
         # geom_beeswarm(data=d, aes(x=abs(1 - correctB), alpha=0.3, size=0.001), cex=3, priority = "density", color="blue" , fill="blue",  groupOnX = FALSE, show.legend = FALSE, size=0.001) # + # might have to add x and y... test. # color=dComplex_focus, fill=dComplex_focus,
       
-      # 
       groupedPlotCI_differences1 <- ggplot(dfCI_global_differences[dfCI_global_differences$question=="reverseB",], aes(x=mean_CI,y=orderCategoryCombination )) +
         # geom_label(data=d, label= factor(d$countFactor) , x=-0.3, size=2) +
         geom_vline(xintercept = 0) +
@@ -6678,12 +6744,9 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
         labs(title = 'Differences for Error Rate', y = "" ) +
         theme(
           # strip.background = element_blank(),
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-          legend.position="none"
+          strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none"
         ) +
         facet_wrap( as.formula(strFormula) , dir="v", ncol=1 , strip.position = "right") 
-        
     } 
     else {
       cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
@@ -6697,9 +6760,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
         xlim(c(-0.1,1)) + 
         ggtitle("Error Rate")+
         theme(
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-          legend.position="none"
+          strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none"
         ) +
         labs(title = "Error Rate",y="") #+ 
         #geom_beeswarm(data=d, aes(x=abs(1 - correctB), alpha=0.3, size=0.001), cex=3, priority = "density", color="blue" , fill="blue",  groupOnX = FALSE, show.legend = FALSE, size=0.001) # + # might have to add x and y... test. # color=dComplex_focus, fill=dComplex_focus, 
@@ -6715,9 +6776,7 @@ combine_genPlot_ErrorRate_CIandDifferences <- function (d,factorScaling=FALSE,fa
         ggtitle("Differences for Error Rate") +
         labs(title = 'Differences for Error Rate', y = "" ) +
         theme(
-          strip.text.x = element_blank(),
-          axis.ticks.y = element_blank(), axis.text.y = element_blank(),
-          legend.position="none"
+          strip.text.x = element_blank(), axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none"
         )
     }
     cat("\nThe plots are generated. But are they fine?\n")
@@ -6940,14 +6999,14 @@ genAndPlotTrust_measurement_overall <- function(d){
     labs(x = "Trust MwM", y = "percent", fill = "trustA1") +
     scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
     theme_minimal(base_size = 5)+ 
-    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+    theme(text = element_text(size = 10), axis.text.x = element_blank() ) 
   
   plotTrustA2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
     geom_bar(stat="identity", width = 0.4) +
     labs(x = "Trust OM", y = "", fill = "trustA2") +
     scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
     theme_minimal(base_size = 10)+ 
-    theme(text = element_text(size = 10), axis.text.x = element_blank())
+    theme(text = element_text(size = 10), axis.text.x = element_blank() )
   
   plotTrustA3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
     geom_bar(stat="identity", width = 0.4) +
@@ -6965,7 +7024,766 @@ genAndPlotTrust_measurement_overall <- function(d){
   
   plotTrustA1_overAll +  plotTrustA2_overAll +  plotTrustA3_overAll +  plotTrustB_overAll + plot_layout(ncol = 4, widths = c(1, 1))
 }
-# genAndPlotTrust_measurement_overall(d_measurement_filtered)
+
+genAndPlotTrust_distractor_overall_lotsoftext <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$distractor=="h",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_hidden_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM hidden", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_hidden_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM hidden", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_hidden_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP hidden", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_hidden_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC hidden", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$distractor=="n",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_normal_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM normal", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_normal_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM normal", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_normal_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP normal", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_normal_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC normal", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  plotTrust_hidden_A1_overAll + plotTrust_normal_A1_overAll +  plotTrust_hidden_A2_overAll + plotTrust_normal_A2_overAll +  
+    plotTrust_hidden_A3_overAll + plotTrust_normal_A3_overAll +  plotTrust_hidden_B_overAll + plotTrust_normal_B_overAll + plot_layout(ncol = 8, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+genAndPlotTrust_scaling_overall_lotsoftext <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$scaling==0,]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_scl0_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM scaling 0", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_scl0_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM scaling 0", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl0_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP scaling 0", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl0_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC scaling 0", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$scaling==1,]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_scl1_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM scaling 1", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_scl1_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM scaling 1", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl1_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP scaling 1", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl1_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC scaling 1", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d3 <- d[d$scaling==2,]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d3)
+  plotTrust_scl2_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM scaling 2", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_scl2_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM scaling 2", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl2_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP scaling 2", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl2_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC scaling 2", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  
+  plotTrust_scl0_A1_overAll + plotTrust_scl1_A1_overAll + plotTrust_scl2_A1_overAll +  
+    plotTrust_scl0_A2_overAll + plotTrust_scl1_A2_overAll +  plotTrust_scl2_A2_overAll +  
+    plotTrust_scl0_A3_overAll + plotTrust_scl1_A3_overAll + plotTrust_scl2_A3_overAll + 
+    plotTrust_scl0_B_overAll + plotTrust_scl1_B_overAll + plotTrust_scl2_B_overAll + plot_layout(ncol = 12, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+genAndPlotTrust_measurement_focus_lotsoftext <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$focus=="WHAT_Ql",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_fcs_WHAT_Ql_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM focus WHAT_Ql", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_fcs_WHAT_Ql_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM focus WHAT_Ql", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Ql_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP focus WHAT_Ql", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Ql_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC focus WHAT_Ql", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$focus=="WHAT_Qn",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_fcs_WHAT_Qn_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM focus WHAT_Qn", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_fcs_WHAT_Qn_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM focus WHAT_Qn", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Qn_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP focus WHAT_Qn", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Qn_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC focus WHAT_Qn", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d3 <- d[d$focus=="WHERE",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d3)
+  plotTrust_fcs_WHERE_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM focus WHERE", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_fcs_WHERE_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM focus WHERE", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHERE_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP focus WHERE", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHERE_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC focus WHERE", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  
+  plotTrust_fcs_WHAT_Ql_A1_overAll + plotTrust_fcs_WHAT_Qn_A1_overAll + plotTrust_fcs_WHERE_A1_overAll +  
+    plotTrust_fcs_WHAT_Ql_A2_overAll + plotTrust_fcs_WHAT_Qn_A2_overAll +  plotTrust_fcs_WHERE_A2_overAll +  
+    plotTrust_fcs_WHAT_Ql_A3_overAll + plotTrust_fcs_WHAT_Qn_A3_overAll + plotTrust_fcs_WHERE_A3_overAll + 
+    plotTrust_fcs_WHAT_Ql_B_overAll + plotTrust_fcs_WHAT_Qn_B_overAll + plotTrust_fcs_WHERE_B_overAll + plot_layout(ncol = 12, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+genAndPlotTrust_measurement_dMask_lotsoftext <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$dMask=="easy",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_dMask_easy_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM dMask easy", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_dMask_easy_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM dMask easy", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_easy_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP dMask easy", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_easy_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC dMask easy", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$dMask=="medium",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_dMask_medium_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM dMask medium", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_dMask_medium_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM dMask medium", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_medium_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP dMask medium", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_medium_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC dMask medium", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d3 <- d[d$dMask=="hard",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d3)
+  plotTrust_dMask_hard_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MwM dMask hard", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_dMask_hard_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust OM dMask hard", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_hard_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust MP dMask hard", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_hard_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "Trust SC dMask hard", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  
+  plotTrust_dMask_easy_A1_overAll + plotTrust_dMask_medium_A1_overAll + plotTrust_dMask_hard_A1_overAll +  
+    plotTrust_dMask_easy_A2_overAll + plotTrust_dMask_medium_A2_overAll +  plotTrust_dMask_hard_A2_overAll +  
+    plotTrust_dMask_easy_A3_overAll + plotTrust_dMask_medium_A3_overAll + plotTrust_dMask_hard_A3_overAll + 
+    plotTrust_dMask_easy_B_overAll + plotTrust_dMask_medium_B_overAll + plotTrust_dMask_hard_B_overAll + plot_layout(ncol = 12, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+
+genAndPlotTrust_distractor_overall <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$distractor=="h",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_hidden_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "hidden", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_hidden_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "hidden", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_hidden_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "hidden", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_hidden_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "hidden", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$distractor=="n",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_normal_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "normal", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_normal_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "normal", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_normal_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "normal", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_normal_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "normal", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  plotTrust_hidden_A1_overAll + plotTrust_normal_A1_overAll +  plotTrust_hidden_A2_overAll + plotTrust_normal_A2_overAll +  
+    plotTrust_hidden_A3_overAll + plotTrust_normal_A3_overAll +  plotTrust_hidden_B_overAll + plotTrust_normal_B_overAll + plot_layout(ncol = 8, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+genAndPlotTrust_scaling_overall <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$scaling==0,]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_scl0_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 0", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_scl0_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 0", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl0_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 0", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl0_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 0", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$scaling==1,]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_scl1_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 1", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_scl1_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 1", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl1_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 1", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl1_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 1", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d3 <- d[d$scaling==2,]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d3)
+  plotTrust_scl2_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 2", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_scl2_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 2", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl2_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 2", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_scl2_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "scaling 2", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  
+  plotTrust_scl0_A1_overAll + plotTrust_scl1_A1_overAll + plotTrust_scl2_A1_overAll +  
+    plotTrust_scl0_A2_overAll + plotTrust_scl1_A2_overAll +  plotTrust_scl2_A2_overAll +  
+    plotTrust_scl0_A3_overAll + plotTrust_scl1_A3_overAll + plotTrust_scl2_A3_overAll + 
+    plotTrust_scl0_B_overAll + plotTrust_scl1_B_overAll + plotTrust_scl2_B_overAll + plot_layout(ncol = 12, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+genAndPlotTrust_measurement_focus <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$focus=="WHAT_Ql",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_fcs_WHAT_Ql_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Ql", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_fcs_WHAT_Ql_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Ql", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Ql_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Ql", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Ql_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Ql", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$focus=="WHAT_Qn",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_fcs_WHAT_Qn_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Qn", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_fcs_WHAT_Qn_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Qn", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Qn_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Qn", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHAT_Qn_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHAT_Qn", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d3 <- d[d$focus=="WHERE",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d3)
+  plotTrust_fcs_WHERE_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHERE", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_fcs_WHERE_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHERE", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHERE_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHERE", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_fcs_WHERE_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "focus WHERE", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  
+  plotTrust_fcs_WHAT_Ql_A1_overAll + plotTrust_fcs_WHAT_Qn_A1_overAll + plotTrust_fcs_WHERE_A1_overAll +  
+    plotTrust_fcs_WHAT_Ql_A2_overAll + plotTrust_fcs_WHAT_Qn_A2_overAll +  plotTrust_fcs_WHERE_A2_overAll +  
+    plotTrust_fcs_WHAT_Ql_A3_overAll + plotTrust_fcs_WHAT_Qn_A3_overAll + plotTrust_fcs_WHERE_A3_overAll + 
+    plotTrust_fcs_WHAT_Ql_B_overAll + plotTrust_fcs_WHAT_Qn_B_overAll + plotTrust_fcs_WHERE_B_overAll + plot_layout(ncol = 12, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+genAndPlotTrust_measurement_dMask <- function(d){
+  d <- subset(d, is.numeric(d$trustA1) & is.numeric(d$trustA2) & is.numeric(d$trustA3) & is.numeric(d$trustB))
+  
+  d1 <- d[d$dMask=="easy",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d1)
+  plotTrust_dMask_easy_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask easy", y = "percent", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank()) 
+  
+  plotTrust_dMask_easy_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask easy", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_easy_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask easy", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_easy_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask easy", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d2 <- d[d$dMask=="medium",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d2)
+  plotTrust_dMask_medium_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask medium", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_dMask_medium_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask medium", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_medium_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask medium", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_medium_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask medium", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  d3 <- d[d$dMask=="hard",]
+  
+  dfTrust_measurement_overAll <- genDF_measurement_trust(d3)
+  plotTrust_dMask_hard_A1_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA1",], aes(x=0,y = perc*100, fill = factor(trustA1))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask hard", y = "", fill = "trustA1") +
+    scale_fill_manual("trustA1", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank()) 
+  
+  plotTrust_dMask_hard_A2_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA2",], aes(x=0,y = perc*100, fill = factor(trustA2))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask hard", y = "", fill = "trustA2") +
+    scale_fill_manual("trustA2", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_hard_A3_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustA3",], aes(x=0,y = perc*100, fill = factor(trustA3))) + guides(fill=FALSE) +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask hard", y = "", fill = "trustA3") +
+    scale_fill_manual("trustA3", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())
+  
+  plotTrust_dMask_hard_B_overAll <- ggplot(dfTrust_measurement_overAll[ dfTrust_measurement_overAll$trustType == "trustB",], aes(x=0,y = perc*100, fill = factor(trustB)))  +
+    geom_bar(stat="identity", width = 0.3) +
+    labs(x = "dMask hard", y = "", fill = "trustB") +
+    scale_fill_manual("Trust", values = c("0" = "#ffffb2", "1" = "#fed976", "2" = "#feb24c","3"="#fd8d3c","4"="#f03b20","5"="#bd0026")) +
+    theme_minimal(base_size = 10)+ 
+    theme(text = element_text(size = 10), axis.text.x = element_blank(), axis.text.y = element_blank())	
+  
+  
+  plotTrust_dMask_easy_A1_overAll + plotTrust_dMask_medium_A1_overAll + plotTrust_dMask_hard_A1_overAll +  
+    plotTrust_dMask_easy_A2_overAll + plotTrust_dMask_medium_A2_overAll +  plotTrust_dMask_hard_A2_overAll +  
+    plotTrust_dMask_easy_A3_overAll + plotTrust_dMask_medium_A3_overAll + plotTrust_dMask_hard_A3_overAll + 
+    plotTrust_dMask_easy_B_overAll + plotTrust_dMask_medium_B_overAll + plotTrust_dMask_hard_B_overAll + plot_layout(ncol = 12, widths = c(0.8, 1)) #  + geom_vline(xintercept = 0, aes(x = 10), position = "identity")
+}
+
+
+
 
 genAndPlot_correctB_measurement_mask <- function(d) {
   dfCorrectB_measurement_dMask <-genDF_measurement_correctB_dMask(d)

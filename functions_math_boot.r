@@ -133,29 +133,21 @@ make_gensMean_lowCI_highCI_distractorDependent <- function (d,question, focus=""
 bootQuestionsDifferences_conservative <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000){
   boot_d <- c();boot_d2 <- c();
   if (focus=="" & dMask=="" & dComplex_focus==""){
-    boot_d <- boot(d[[question]],samplemean,R)
-    boot_d2 <- boot(d2[[question]],samplemean,R)
+    boot_d <- boot(d[[question]],samplemean,R); boot_d2 <- boot(d2[[question]],samplemean,R);
   } else if (focus =="" & dMask != "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]][d$dMask==dMask],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$dMask==dMask],samplemean,R)
+    boot_d <- boot(d[[question]][d$dMask==dMask],samplemean,R); boot_d2 <- boot(d2[[question]][d2$dMask==dMask],samplemean,R);
   } else if (focus =="" & dMask == "" & dComplex_focus !=""){
-    boot_d <- boot(d[[question]][d$dComplex_focus==dComplex_focus],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$dComplex_focus==dComplex_focus],samplemean,R); boot_d2 <- boot(d2[[question]][d2$dComplex_focus==dComplex_focus],samplemean,R);
   } else if (focus =="" & dMask != "" & dComplex_focus !=""){
-    boot_d <- boot(d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R); boot_d2 <- boot(d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus],samplemean,R);
   } else if (focus !="" & dMask == "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]][d$focus==focus],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$focus==focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus==focus],samplemean,R); boot_d2 <- boot(d2[[question]][d2$focus==focus],samplemean,R);
   } else if (focus!="" & dMask != "" & dComplex_focus ==""){
-    boot_d <- boot(d[[question]][d$focus==focus & d$dMask==dMask],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dMask==dMask],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus==focus & d$dMask==dMask],samplemean,R); boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dMask==dMask],samplemean,R);
   } else if (focus!="" & dMask == "" & dComplex_focus !=""){
-    boot_d <- boot(d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus],samplemean,R); boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus],samplemean,R);
   } else {
-    boot_d <- boot(d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R)
-    boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R)
+    boot_d <- boot(d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus],samplemean,R); boot_d2 <- boot(d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus],samplemean,R);
   }
   
   sumD <- getMean_lowCI_highCI(boot_d)
@@ -167,89 +159,63 @@ bootQuestionsDifferences_conservative <- function(d,d2,question,focus="",dMask="
 
 # This approach is the same as Pena-Araya. (They don't use the logFunction)
 bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000, logFunction = FALSE ) {
-  boot_d <- c();boot_d2 <- c();
-  dSelect1 <- NULL; dSelect2 <- NULL;
+  boot_d <- c();boot_d2 <- c(); dSelect1 <- NULL; dSelect2 <- NULL;
   if (focus=="" & dMask=="" & dComplex_focus==""){
-    dSelect1 <- d[[question]]
-    dSelect2 <- d2[[question]]
+    dSelect1 <- d[[question]]; dSelect2 <- d2[[question]];
   } else if (focus =="" & dMask != "" & dComplex_focus ==""){
-    dSelect1 <- d[[question]][d$dMask==dMask]
-    dSelect2 <- d2[[question]][d2$dMask==dMask]
+    dSelect1 <- d[[question]][d$dMask==dMask]; dSelect2 <- d2[[question]][d2$dMask==dMask];
   } else if (focus =="" & dMask == "" & dComplex_focus !=""){
-    dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus];
   } else if (focus =="" & dMask != "" & dComplex_focus !=""){
-    dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus];
   } else if (focus !="" & dMask == "" & dComplex_focus ==""){
-    dSelect1 <- d[[question]][d$focus==focus]
-    dSelect2 <- d2[[question]][d2$focus==focus]
+    dSelect1 <- d[[question]][d$focus==focus]; dSelect2 <- d2[[question]][d2$focus==focus];
   } else if (focus!="" & dMask != "" & dComplex_focus ==""){
-    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]
-    dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask]
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask];
   } else if (focus!="" & dMask == "" & dComplex_focus !=""){
-    dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus];
   } else {
-    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
   }
   
   # To deal with selections of different sizes, we use the smallest It means loss of data but at least results are true (letting R loop over is wrong)...
   minSelecLength <- min(length(dSelect1),length(dSelect2));
-  # cat("\nminSelecLength: ",minSelecLength,", length(dSelect1): ",length(dSelect1),", length(dSelect2): ",length(dSelect2), ', min(length(dSelect1),length(dSelect2)): ',min(length(dSelect1),length(dSelect2)))
   if (!logFunction){
     diffSelec <- dSelect1[1:minSelecLength] - dSelect2[1:minSelecLength];
-  } 
+  }
   else {
     diffSelec <- log2( abs( dSelect1[1:minSelecLength] - dSelect2[1:minSelecLength] ) +1/8 ) # Cleveland and Gills approach
   }
-  # cat("\nlength of diffSelec: ",length(diffSelec)) # diffSelec <- dSelect1 - dSelect2;
   bootDiff <- boot(diffSelec,samplemean,R)
-  # structureD <- make_gensMean_lowCI_highCI(d=diffSelec,question=question,R=R);
-  
-  # sumAbsDiffs <- c(structureD[1], structureD[2], structureD[3])
+
   res <- getMean_lowCI_highCI(bootDiff)
-  # cat("\n~~bootQuestionsDifferences_directSubstract res: ",toString(res))
   return (res)
 }
 
-# not used in the end...
+# not used in the end... probably entirely wrong! selec1 - selec2 can result in groups with different lengths...
 bootQuestionsDifferences_TukeyHSD <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000){
-  
-  a1_measurement_dMask <- aov(correctB ~ dMask, data = d_measurement_filtered)
-  
-  boot_d <- c();boot_d2 <- c();
-  dSelect1 <- NULL; dSelect2 <- NULL;
+  # a1_measurement_dMask <- aov(correctB ~ dMask, data = d)
+  boot_d <- c();boot_d2 <- c(); dSelect1 <- NULL; dSelect2 <- NULL;
   if (focus=="" & dMask=="" & dComplex_focus==""){
-    dSelect1 <- d[[question]]
-    dSelect2 <- d2[[question]]
+    dSelect1 <- d[[question]]; dSelect2 <- d2[[question]];
   } else if (focus =="" & dMask != "" & dComplex_focus ==""){
-    dSelect1 <- d[[question]][d$dMask==dMask]
-    dSelect2 <- d2[[question]][d2$dMask==dMask]
+    dSelect1 <- d[[question]][d$dMask==dMask]; dSelect2 <- d2[[question]][d2$dMask==dMask];
   } else if (focus =="" & dMask == "" & dComplex_focus !=""){
-    dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus];
   } else if (focus =="" & dMask != "" & dComplex_focus !=""){
-    dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus];
   } else if (focus !="" & dMask == "" & dComplex_focus ==""){
-    dSelect1 <- d[[question]][d$focus==focus]
-    dSelect2 <- d2[[question]][d2$focus==focus]
+    dSelect1 <- d[[question]][d$focus==focus]; dSelect2 <- d2[[question]][d2$focus==focus];
   } else if (focus!="" & dMask != "" & dComplex_focus ==""){
-    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]
-    dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask]
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask];
   } else if (focus!="" & dMask == "" & dComplex_focus !=""){
-    dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus];
   } else {
-    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]
-    dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus]
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
   }
   
   diffSelec <- dSelect1 - dSelect2;
   structureD <- make_gensMean_lowCI_highCI(d=diffSelec,question=question,R=R);
-  
   sumAbsDiffs <- c(structureD[1], structureD[2], structureD[3])
   
   return (sumAbsDiffs)
@@ -335,6 +301,7 @@ bootQuestionsDifferences_unorthodox <- function(d,d2,question="",focus="",dMask=
 addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dComplex_focus"){
   arr_focus <- c("WHAT_Ql","WHAT_Qn","WHERE"); arr_dMask <- c("easy","medium","hard"); arr_dComplex_focus <- c("E","M","H"); arr_scaling <- c(0,1,2); arr_distractor <- c("h","n");
   arr_orderMaskComplex <- c("Mask Easy","Mask Medium","Mask Hard"); arr_orderFocusComplex <- c("Focus Easy","Focus Medium","Focus Hard")
+  arr_reverseB <- c(0,1)
   # get the factors from formula, and last one is made by distractor...
 
   # # for testing...
@@ -355,13 +322,13 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
   if (factorVariation == "focus"){arrVariation <- arr_focus} else if (factorVariation == "dMask"){ arrVariation <- arr_dMask } else if (factorVariation == "dComplex_focus"){arrVariation <- arr_dComplex_focus}
   if (factorVariation == "orderFocusComplex"){arrVariation <- arr_orderFocusComplex} else if (factorVariation == "orderMaskComplex"){arrVariation <- arr_orderMaskComplex}
   if (factorVariation == "distractor"){arrVariation <- arr_distractor} else if (factorVariation == "scaling"){arrVariation <- arr_scaling}
+  if (factorVariation == "reverseB"){arrVariation <- arr_reverseB}
   
   if (nchar(strFormula) > 0){
-  factor1 <- splitFormula[[1]][1]
+    factor1 <- splitFormula[[1]][1]
     if (factor1 == "focus"){arrFactor1 <- arr_focus} else if (factor1 == "dMask"){ arrFactor1 <- arr_dMask } else if (factor1 == "dComplex_focus"){arrFactor1 <- arr_dComplex_focus}
     if (factor1 == "orderFocusComplex"){arrFactor1 <- arr_orderFocusComplex} else if (factor1 == "orderMaskComplex"){arrFactor1 <- arr_orderMaskComplex}
     
-    # cat("\nfactor1: ",factor1);
     if(!plusPresence){
       factor2 <- factor1; arrFactor2 <- arrFactor1;
     } 
@@ -375,11 +342,13 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
   } else {
     factor1 <- factorVariation;factor2 <- factorVariation; arrFactor1 <- arrVariation; arrFactor2 <- arrVariation;
   }
-    
-  
   
   cat("\naddCountColumn--\nstrFormula: ",strFormula,", plusPresence: ",plusPresence,", factor1: ",factor1,", arrFactor1: ",arrFactor1,", factor2: ",factor2,", arrFactor2: ",arrFactor2,", factorVariation: ",factorVariation,", arrVariation: ",arrVariation)
-  
+  cat("\nlength(d$log_diffA3[d[[",factor1, "]]== ",arrFactor1[1]," & d[[ ",factor2," ]]== ",arrFactor2[1]," & d[[",variant,"]]==",arrVariation[1],"]): ", 
+      length(d$log_diffA3[ d[[factor1]]==arrFactor1[1] & d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]]) )
+  cat("\nlength(d$log_diffA3[d[[",factor1, "]]== ",arrFactor1[1]," & d[[ ",factor2," ]]== ",arrFactor2[1]," & d[[",variant,"]]==",arrVariation[2],"]): ", 
+      length(d$log_diffA3[ d[[factor1]]==arrFactor1[1] & d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]]) )
+    
   d$countFactor <- c();
   d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]])
   d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]])
@@ -409,6 +378,10 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
   d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[2]])
   d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[3] & d[[variant]]==arrVariation[3]])
   
+  # cat("\nd$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]]: ",d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]])
+  # cat("\nd$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]]: ",d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[2] & d[[variant]]==arrVariation[3]])
+  # cat("\nd$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]]: ",d$countFactor[d[[factor1]]==arrFactor1[3]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]])
+  # cat("\nd$countFactor:", toString(d$countFactor))
   return (d)
 }
 
