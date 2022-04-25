@@ -10,7 +10,9 @@ library(scales)
 # library(see) # buggy...
 
 
-setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
+# adapt this section according to the computer ran on (potential TODO adapt according to current posiiton)
+# setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
+setwd("C:/Users/keval/Documents/Programming/R/Study-Results-Analysis")
 source("functions_dataStudies.r")
 
 # original answers
@@ -38,19 +40,107 @@ summ_load <- read.table(file="tst_sum_d_measurement.csv",TRUE,",")
 # differences of stability (condition - no condition) 
 diffB_cntrQ <- read.table(file="data/glbl_diffB_cntrQ_all.csv",TRUE,",")
 
+# ~~~~ worst performances
 measurement_rigorous_withDiffB <- merge(d_measurement_all_noTikTok_filteredSemiRigorous, diffB_cntrQ)
 dim(d_measurement_all_noTikTok_filteredSemiRigorous)
 dim(measurement_rigorous_withDiffB)
+fcs_ql_measurement_rigorous_withDiffB <- measurement_rigorous_withDiffB[measurement_rigorous_withDiffB$focus=="WHAT_Ql",] ; 
+fcs_qn_measurement_rigorous_withDiffB <- measurement_rigorous_withDiffB[measurement_rigorous_withDiffB$focus=="WHAT_Qn",]
+fcs_where_measurement_rigorous_withDiffB <- measurement_rigorous_withDiffB[measurement_rigorous_withDiffB$focus=="WHERE",]
 
-# いいい Measurement いいい
+# ql A1, A2, A3
+d_ql <- fcs_ql_measurement_rigorous_withDiffB[order(as.numeric(as.character(fcs_ql_measurement_rigorous_withDiffB$log_diffA1)) ), ];
+arr_ql_CntrQ_focusWorst_A1 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
+d_ql <- d_ql[order(as.numeric(as.character(d_ql$log_diffA2)) ), ];
+arr_ql_CntrQ_focusWorst_A2 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
+d_ql <- d_ql[order(as.numeric(as.character( d_ql$log_diffA3)) ), ];
+arr_ql_CntrQ_focusWorst_A3 <- c( d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 2], d_ql$cntrQ[ length( d_ql$log_diffA1 ) - 1], d_ql$cntrQ[ length( d_ql$log_diffA1 )] )
+# qn A1, A2, A3
+d_qn <- fcs_qn_measurement_rigorous_withDiffB[order(as.numeric(as.character(fcs_qn_measurement_rigorous_withDiffB$log_diffA1)) ), ];
+arr_qn_CntrQ_focusWorst_A1 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+d_qn <- d_qn[order(as.numeric(as.character(d_qn$log_diffA2)) ), ];
+arr_qn_CntrQ_focusWorst_A2 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+d_qn <- d_qn[order(as.numeric(as.character( d_qn$log_diffA3)) ), ];
+arr_qn_CntrQ_focusWorst_A3 <- c( d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 2], d_qn$cntrQ[ length( d_qn$log_diffA1 ) - 1], d_qn$cntrQ[ length( d_qn$log_diffA1 )] )
+# where A1, A2, A3
+d_where <- fcs_where_measurement_rigorous_withDiffB[order(as.numeric(as.character(fcs_where_measurement_rigorous_withDiffB$log_diffA1)) ), ];
+arr_where_CntrQ_focusWorst_A1 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+d_where <- d_where[order(as.numeric(as.character(d_where$log_diffA2)) ), ];
+arr_where_CntrQ_focusWorst_A2 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+d_where <- d_where[order(as.numeric(as.character( d_where$log_diffA3)) ), ];
+arr_where_CntrQ_focusWorst_A3 <- c( d_where$cntrQ[ length( d_where$log_diffA1 ) - 2], d_where$cntrQ[ length( d_where$log_diffA1 ) - 1], d_where$cntrQ[ length( d_where$log_diffA1 )] )
+
+# worst SC
+# 1 - filter neither for SC
+d_noneither <- filter_neitherLikert(measurement_rigorous_withDiffB)
+# 2 - filter for focus
+d_noneither_ql <- d_noneither[d_noneither$focus=="WHAT_Ql",]
+d_noneither_qn <- d_noneither[d_noneither$focus=="WHAT_Qn",]
+d_noneither_where <- d_noneither[d_noneither$focus=="WHERE",]
+# 3 - order the returned df of getDF_WrongBCntrQ and get last 3
+df_noneither_ql <- getDF_WrongBCntrQ(d_noneither_ql)
+df_noneither_qn <- getDF_WrongBCntrQ(d_noneither_qn)
+df_noneither_where <- getDF_WrongBCntrQ(d_noneither_where)
+
+df_noneither_ql <- df_noneither_ql[order(df_noneither_ql$arr_amountWrong), ];
+df_noneither_qn <- df_noneither_qn[order(df_noneither_qn$arr_amountWrong), ];
+df_noneither_where <- df_noneither_where[order(df_noneither_where$arr_amountWrong), ];
+
+df_noneither_ql <- df_noneither_ql[!duplicated(df_noneither_ql), ]
+df_noneither_qn <- df_noneither_qn[!duplicated(df_noneither_qn), ]
+df_noneither_where <- df_noneither_where[!duplicated(df_noneither_where), ]
+
+
+
+# ~~~~~~ Raw Data Source ~~~~~~
+# rawData <- fromJSON(file="allStimuli_rawData.json")
+# rawData_WHAT_Ql <- fromJSON(file="allStimuli_rawData_WHAT_Ql.json")
+# rawData <- fromJSON(file="glbl_obj_cntrQ_1-486_shape.json")
+rawData <- fromJSON(file="glbl_allObjects_2022_03_03.json") 
+View(rawData)
+rawData[[1]]$bslnA1
+rawData[[1]]$bslnA2
+# rawData_WHAT_Ql <- rawData[rawData[["focus"]] == "WHAT_Ql"]; # returns an empty list...
+# plot(rawData_WHAT_Ql[[1]]$valQl)
+
+
+# we should mix tables together...?
+min_mwm_what_ql <- min(d_measurement_all_noTikTok_filteredSemiRigorous$log_diffA1[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql"])
+d_measurement_all_noTikTok_filteredSemiRigorous$cntrQ[d_measurement_all_noTikTok_filteredSemiRigorous$log_diffA1==min_mwm_what_ql]
+rawData[[440]]$cntrQ
+rawData[[441]]$cntrQ
+plot(rawData[[440]]$valQl)
+
+
+# ~~~~~~ Measurement ~~~~~~
 # ---- Data loading
 # d_measurement_all_noTikTok <- read.table(file="data/transformed/survey_measurement_all_headerAdapted_noTikTok.csv",TRUE,",")
-d_measurement_all_noTikTok <- read.table(file="data/transformed/survey_measurement_all_headerAdapted_noTikTok_withLog2.csv",TRUE,",")
+# d_measurement_all_noTikTok <- read.table(file="data/transformed/survey_measurement_all_headerAdapted_noTikTok_withLog2.csv",TRUE,",")
+d_measurement_all_noTikTok <- read.table(file="data/transformed/noFilter_measurement_all_2022_03_22.csv",TRUE,",")
 d_measurement_all_noTikTok <- enrich_absDiffs(d_measurement_all_noTikTok)
-length( d_measurement_all_noTikTok$ResponseId  )
+length( d_measurement_all_noTikTok$ResponseId)
 # d_measurement_all_noTikTok_filteredRigorous <- filter_someTrust0or5_impossibleQualAnswer(d_measurement_all_noTikTok)
 d_measurement_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibleQualAnswer(d_measurement_all_noTikTok)
-length( d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId ) 
+View(d_measurement_all_noTikTok_filteredSemiRigorous)
+# // Code for JavaScript code // with new data, we could see the prolific id we should keep in our JavaScript code... or can we use ResponseId?
+length(d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId)
+# make a list of responses that passed the semi rigorous filter
+l_all_second_filter <- unique(d_measurement_all_noTikTok$ResponseId)
+l_passed_second_filter <- unique(d_measurement_all_noTikTok_filteredSemiRigorous$ResponseId)
+l_failed_second_filter <- unique(d_measurement_all_noTikTok$ResponseId[ !d_measurement_all_noTikTok$ResponseId %in% l_passed_second_filter])
+# l_second_filter <- vector(mode="list", length=2)
+# l_second_filter[[1]] <- c(l_passed_second_filter)
+# l_second_filter[[2]] <- rep(TRUE, length(l_passed_second_filter))
+left_all_second_filter <- append ( l_passed_second_filter, l_failed_second_filter )
+right_all_second_filter <- append ( rep(TRUE, length(l_passed_second_filter)), rep(FALSE, length(l_failed_second_filter)) )
+l_second_filter <- vector(mode="list", length=2)
+l_second_filter[[1]] <- left_all_second_filter
+l_second_filter[[2]] <- right_all_second_filter
+jsonSecondFilter <- toJSON(l_second_filter)
+write(jsonSecondFilter, "responsesSecondFilter.json")
+
+
+
 d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
 length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId)
 length(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$ResponseId[d_measurement_all_noTikTok_filteredSemiRigorous_noNeither$dMask=="easy"] )
@@ -89,34 +179,34 @@ dim(d_scaling_all_noTikTok)
 # ---- Confidence intervals # dfCombinationCI_differences_test__CIandDiff_dFocusComplexity_factoredby_focus_dMask 
 
 dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
-                                                                          factorScaling=FALSE,
-                                                                          factorDistractor=FALSE,
-                                                                          factorDMask= TRUE,
-                                                                          factorFocus=TRUE,
-                                                                          factorDComplex_focus=FALSE,
-                                                                          factorDifference="dComplex_focus",
-                                                                          logFunction=FALSE,
-                                                                          useLogDiff=TRUE)
+                                                                            factorScaling=FALSE,
+                                                                            factorDistractor=FALSE,
+                                                                            factorDMask= TRUE,
+                                                                            factorFocus=TRUE,
+                                                                            factorDComplex_focus=FALSE,
+                                                                            factorDifference="dComplex_focus",
+                                                                            logFunction=FALSE,
+                                                                            useLogDiff=TRUE)
 
 dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
-                                                                          factorScaling=FALSE,
-                                                                          factorDistractor=FALSE,
-                                                                          factorDMask= TRUE,
-                                                                          factorFocus=TRUE,
-                                                                          factorDComplex_focus=FALSE,
-                                                                          factorDifference="dComplex_focus",
-                                                                          logFunction=FALSE,
-                                                                          useLogDiff=TRUE)
+                                                                                      factorScaling=FALSE,
+                                                                                      factorDistractor=FALSE,
+                                                                                      factorDMask= TRUE,
+                                                                                      factorFocus=TRUE,
+                                                                                      factorDComplex_focus=FALSE,
+                                                                                      factorDifference="dComplex_focus",
+                                                                                      logFunction=FALSE,
+                                                                                      useLogDiff=TRUE)
 
 dfCI_global_TikTok_measurement_factored_dComplex_focus_only <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
-                                                                          factorScaling=FALSE,
-                                                                          factorDistractor=FALSE,
-                                                                          factorDMask= FALSE,
-                                                                          factorFocus=FALSE,
-                                                                          factorDComplex_focus=FALSE,
-                                                                          factorDifference="focus",
-                                                                          logFunction=FALSE,
-                                                                          useLogDiff=TRUE)
+                                                                                                factorScaling=FALSE,
+                                                                                                factorDistractor=FALSE,
+                                                                                                factorDMask= FALSE,
+                                                                                                factorFocus=TRUE,
+                                                                                                factorDComplex_focus=FALSE,
+                                                                                                factorDifference="dMask",
+                                                                                                logFunction=FALSE,
+                                                                                                useLogDiff=TRUE)
 
 
 # ||||\\\\ test about display according to trust...
@@ -146,8 +236,9 @@ display_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok_filt
 # correctB... distribution of correct, neithers, incorrect
 distrib_performancesB <- performancesB_correct_neither_incorrect(measurement_rigorous_withDiffB, factorFocus = TRUE, factorDComplex_focus =  TRUE)
 
-# get worst cntrQ
+# get worst cntrQ # bits of this code is alright, but not the entirety
 res_best_worst_cntrQ <- get_best_worst_perfoms_cntrQ(measurement_rigorous_withDiffB)
+View(res_best_worst_cntrQ)
 
 View(d_measurement_all_noTikTok_filteredSemiRigorous)
 View(dfCI_global_TikTok_measurement_factored)
@@ -181,22 +272,24 @@ View(d_measurement_forViolin)
 
 # ---- CorrectB # looks weird with logFunction = TRUE
 # rabbits TO PRETTIFY
+
+
 dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
-                                            factorFocus = FALSE, 
-                                            factorDComplex_focus = FALSE, 
-                                            factorDMask = TRUE, 
-                                            factorDifference="dComplex_focus",
-                                            filterNeither = TRUE
-                                            )
+                                                             factorFocus = FALSE, 
+                                                             factorDComplex_focus = FALSE, 
+                                                             factorDMask = FALSE, 
+                                                             factorDifference="dComplex_focus",
+                                                             filterNeither = TRUE
+)
 
 # -- CorrectB filtere of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
 dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
-                                            factorFocus = TRUE, 
-                                            factorDComplex_focus = FALSE, 
-                                            factorDMask = TRUE, 
-                                            factorDifference="dComplex_focus",
-                                            filterNeither = TRUE
-                                            )
+                                                             factorFocus = TRUE, 
+                                                             factorDComplex_focus = FALSE, 
+                                                             factorDMask = TRUE, 
+                                                             factorDifference="dComplex_focus",
+                                                             filterNeither = TRUE
+)
 
 
 # Distributions of errors: get the numbers to get the CHI square
@@ -289,7 +382,7 @@ genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok_filteredSemiRigor
 # genAndPlotTrust_measurement_overall(d_measurement_all_noTikTok[d_measurement_all_noTikTok$focus=="WHAT_Ql",])
 
 
-# いいい Distractor いいい 
+# ~~~~~~ Distractor ~~~~~~ 
 d_distractor_all_noTikTok <- read.table(file="data/transformed/survey_distractor_all_headerAdapted_noTikTok_withLog2.csv",TRUE,",")
 length( unique (d_distractor_all_noTikTok$ResponseId ) )
 length( unique (d_distractor_all_noTikTok$ResponseId[d_distractor_all_noTikTok$distractor=="h"] ) )
@@ -317,9 +410,10 @@ dfCI_global_TikTok_distractor_factored <- combine_genPlot_CIandDifferences( d_di
 d_distractor_all_noTikTok_errorRates <- combine_genPlot_ErrorRate_CIandDifferences( 
   d=d_distractor_all_noTikTok_noneither,
   factorFocus = TRUE,
-  factorDComplex_focus = TRUE,
-  factorDMask = FALSE,
-  factorDifference="distractor", filterNeither = TRUE)
+  factorDComplex_focus = FALSE,
+  factorDMask = TRUE,
+  factorDifference="distractor", 
+  filterNeither = TRUE)
 
 d_distractor_all_noTikTok$correctB[d_distractor_all_noTikTok$focus=="WHAT_Qn" & d_distractor_all_noTikTok$dComplex_focus=="H"]
 
@@ -367,7 +461,7 @@ mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="n"]
 mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="h"]) - mean(d_distractor_all_noTikTok$trustB[d_distractor_all_noTikTok$distractor=="n"])
 
 
-# いいい Scaling いいい
+# ~~~~~~ Scaling ~~~~~~
 d_scaling_all_noTikTok <- read.table(file="data/transformed/survey_scaling_all_headerAdapted_noTikTok_withLog2.csv",TRUE,",")
 length( unique (d_scaling_all_noTikTok$ResponseId ) )
 d_scaling_all_noTikTok_filteredSemiRigorous <- filter_allTrust0or5_impossibleQualAnswer(d_scaling_all_noTikTok)
@@ -378,40 +472,40 @@ display_res_trust_violin <- gen_res_trust_violin(d_scaling_all_noTikTok, factorS
 d_scaling_all_noTikTok_noneither <- filter_neitherLikert(d_scaling_all_noTikTok)
 
 dfCombinationCI_differences_test__CIandDiff_distractor_factoredby_focus_dMask <- combine_genPlot_CIandDifferences(d_distractor_all_noTikTok,
-                                         factorScaling=FALSE,factorDistractor=FALSE,
-                                         factorDMask= FALSE,
-                                         factorFocus=TRUE,
-                                         factorDComplex_focus=FALSE, 
-                                         factorDifference="distractor",
-                                         useLogDiff=TRUE,
-                                         );
+                                                                                                                  factorScaling=FALSE,factorDistractor=FALSE,
+                                                                                                                  factorDMask= FALSE,
+                                                                                                                  factorFocus=TRUE,
+                                                                                                                  factorDComplex_focus=FALSE, 
+                                                                                                                  factorDifference="distractor",
+                                                                                                                  useLogDiff=TRUE,
+);
 
 
 dfCombinationCI_differences_distractor_factoredby_focus <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
-                                                           factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
-                                                           factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="scaling",
-                                                           useLogDiff=TRUE);
+                                                                                            factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
+                                                                                            factorFocus=TRUE,factorDComplex_focus=FALSE, factorDifference="scaling",
+                                                                                            useLogDiff=TRUE);
 
 
 dfCombinationCI_differences_distractor_factoredby_NA <- combine_genPlot_CIandDifferences(d_scaling_all_noTikTok,
-                                         factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
-                                         factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling",
-                                         useLogDiff=TRUE);
+                                                                                         factorScaling=FALSE,factorDistractor=FALSE,factorDMask= FALSE,
+                                                                                         factorFocus=FALSE,factorDComplex_focus=FALSE, factorDifference="scaling",
+                                                                                         useLogDiff=TRUE);
 
 dfCombination_errorRates_dMask_factoredby_scaling_focus <- combine_genPlot_ErrorRate_CIandDifferences(d_scaling_all_noTikTok_noneither,
-                                       factorScaling=FALSE, factorDistractor=FALSE,
-                                       factorDMask= FALSE,
-                                       factorFocus=TRUE,
-                                       factorDComplex_focus=TRUE, 
-                                       factorDifference="scaling");
+                                                                                                      factorScaling=FALSE, factorDistractor=FALSE,
+                                                                                                      factorDMask= FALSE,
+                                                                                                      factorFocus=TRUE,
+                                                                                                      factorDComplex_focus=TRUE, 
+                                                                                                      factorDifference="scaling");
 
 
 d_scaling_all_noTikTok_errorRates2 <- combine_genPlot_ErrorRate_CIandDifferences( d=d_scaling_all_noTikTok_noneither,
-                                      factorFocus = TRUE, 
-                                      factorDComplex_focus = FALSE, 
-                                      factorDMask = FALSE, 
-                                      factorDifference="scaling",
-                                      filterNeither = TRUE)
+                                                                                  factorFocus = TRUE, 
+                                                                                  factorDComplex_focus = FALSE, 
+                                                                                  factorDMask = FALSE, 
+                                                                                  factorDifference="scaling",
+                                                                                  filterNeither = TRUE)
 
 display_scaling_res_trust_violin <- gen_res_trust_violin(d_scaling_all_noTikTok)
 display_scaling_res_trust_violin <- gen_res_trust_violin(d_measurement_all_noTikTok_filteredSemiRigorous, factorFocus = TRUE)

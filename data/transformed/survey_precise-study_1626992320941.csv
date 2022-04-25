@@ -1,0 +1,4 @@
+StartDate,EndDate,Status,IPAddress,Progress,Duration (in seconds),Finished,RecordedDate,ResponseId,RecipientLastName,RecipientFirstName,RecipientEmail,ExternalReference,LocationLatitude,LocationLongitude,DistributionChannel,UserLanguage
+"22/07/2021 03:57","22/07/2021 03:58","IP Address","138.40.67.214","100","72","True","22/07/2021 03:58","R_3ml3gaAFFVYefJW","","","","","51.52690125","-0.099105835","anonymous","EN"
+"22/07/2021 04:00","22/07/2021 04:01","IP Address","138.40.67.214","100","82","True","22/07/2021 04:01","R_DOXgWqVGbYy7nsB","","","","","51.52690125","-0.099105835","anonymous","EN"
+"22/07/2021 04:16","22/07/2021 04:17","IP Address","138.40.68.43","100","76","True","22/07/2021 04:17","R_3ff0aXj0XEH6YZI","","","","","51.52690125","-0.099105835","anonymous","EN"

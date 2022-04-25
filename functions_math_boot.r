@@ -18,7 +18,9 @@ library(GGally, quietly = TRUE)
 
 # library(plotly) # not our version?!
 
-setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
+# adapt this section according to the computer ran on (potential TODO adapt according to current posiiton)
+# setwd("C:/Users/Kevin/Dropbox/Courses/PhD documents/R_studyResultsAnalysis")
+setwd("C:/Users/keval/Documents/Programming/R/Study-Results-Analysis")
 
 samplemean <- function(x, d) {
   return(mean(x[d]))
@@ -187,7 +189,7 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
     diffSelec <- log2( abs( dSelect1[1:minSelecLength] - dSelect2[1:minSelecLength] ) +1/8 ) # Cleveland and Gills approach
   }
   bootDiff <- boot(diffSelec,samplemean,R)
-
+  
   res <- getMean_lowCI_highCI(bootDiff)
   return (res)
 }
@@ -303,11 +305,11 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
   arr_orderMaskComplex <- c("Mask Easy","Mask Medium","Mask Hard"); arr_orderFocusComplex <- c("Focus Easy","Focus Medium","Focus Hard")
   arr_reverseB <- c(0,1)
   # get the factors from formula, and last one is made by distractor...
-
+  
   # # for testing...
   # arrFactor1 <- arr_dMask; arrFactor2 <- arr_focus; arrVariation <- arr_dComplex_focus;
   # factor1<- "dMask"; factor2 <- "focus"; variant <- "dComplex_focus";
-
+  
   variant <- factorVariation
   
   strFormula <- as.character(str_remove_all(strFormula," "));
@@ -318,7 +320,7 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
   cat("\nstrFormula: ",strFormula,", factorVariation: ",factorVariation,", variant: ",variant);
   splitFormula <-  strsplit(as.character(strFormula), "+", fixed=TRUE);
   # cat("\nsplitFormula: ",toString(splitFormula))
-
+  
   if (factorVariation == "focus"){arrVariation <- arr_focus} else if (factorVariation == "dMask"){ arrVariation <- arr_dMask } else if (factorVariation == "dComplex_focus"){arrVariation <- arr_dComplex_focus}
   if (factorVariation == "orderFocusComplex"){arrVariation <- arr_orderFocusComplex} else if (factorVariation == "orderMaskComplex"){arrVariation <- arr_orderMaskComplex}
   if (factorVariation == "distractor"){arrVariation <- arr_distractor} else if (factorVariation == "scaling"){arrVariation <- arr_scaling}
@@ -348,7 +350,7 @@ addCountColumn <- function (d, strFormula="~focus+dMask", factorVariation = "dCo
       length(d$log_diffA3[ d[[factor1]]==arrFactor1[1] & d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]]) )
   cat("\nlength(d$log_diffA3[d[[",factor1, "]]== ",arrFactor1[1]," & d[[ ",factor2," ]]== ",arrFactor2[1]," & d[[",variant,"]]==",arrVariation[2],"]): ", 
       length(d$log_diffA3[ d[[factor1]]==arrFactor1[1] & d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]]) )
-    
+  
   d$countFactor <- c();
   d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[1]])
   d$countFactor[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]] <-  length(d$log_diffA3[d[[factor1]]==arrFactor1[1]&d[[factor2]]==arrFactor2[1] & d[[variant]]==arrVariation[2]])
@@ -406,14 +408,21 @@ testDistribReal <- function(d_measurement_all_noTikTok_filteredSemiRigorous, str
     # geom_beeswarm( aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5),colour="blue", size=1, show.legend = FALSE ) +
     # geom_sina(aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5), size=1,col="green",fill="green", show.legend = FALSE) + # not working...
     # geom_quasirandom(aes (x= log_diffA3 , y = dComplex_focus, alpha = 0.5), size=1, col="purple",fill="purple") +
-        # make tests about the other potential distributions of points...?!
-    xlim(c(-3,6)) +
+    # make tests about the other potential distributions of points...?!
+  xlim(c(-3,6)) +
     ggtitle("Test display responses log_diffA3") +
     facet_wrap( as.formula(strFormula) , dir="v", ncol=1, strip.position = "right") + 
     labs(title = 'The test display responses log_diffA3', y = "" ) +
     # theme(axis.ticks.y = element_blank(), axis.text.y = element_blank(), legend.position="none") + 
     guides(fill = FALSE) + 
     guides(col = FALSE)
-
+  
   groupedPlotCI_3
+}
+
+
+# Need to think of what would be interesting calculations!
+get_WHAT_TO_SAY <- function (responses, input){
+  min_mwm_what_ql <- min(d_measurement_all_noTikTok_filteredSemiRigorous$log_diffA1[d_measurement_all_noTikTok_filteredSemiRigorous$focus=="WHAT_Ql"])
+  
 }
