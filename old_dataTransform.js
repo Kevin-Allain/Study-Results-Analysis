@@ -14,17 +14,9 @@ console.log(Math.random())
 // var csvFilePath='data/FullStudy_final_precise_noflip_automatedAnswers.csv'
 // var csvFilePath='data/test_reordered_question_20210721_1547.csv';
 // var csvFilePath="data/js_update_questions_reordereed_headFiltered_20210722_1136.csv"
-<<<<<<< HEAD
-// var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
-// var csvFilePath = "data/t16720211305_alt_focus_modif.csv"
-
-// var csvFilePath = 'data/t26720211035_attempt_flip1_header_adapted.csv'
-var csvFilePath = 'data/complete_20210828_noflip_headerAdapted.csv'
-=======
 
 // var csvFilePath = "data/new_generation_processing_headFiltered_20210730_1220.csv"
 var csvFilePath="data/t_distrib_20210824_1921_headfiltered.csv"
->>>>>>> 440affc (Updated the baseline file.)
 
 // $.getJSON("QIDtoFilename.json", function(json) {
 // let rawdata = fs.readFileSync('data/QIDtoFilename.json');

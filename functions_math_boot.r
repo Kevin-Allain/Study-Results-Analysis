@@ -194,6 +194,56 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
   return (res)
 }
 
+
+
+# Squaring the approach of Pena-Araya.
+bootQuestionsDifferences_directSubstract_squared <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000, logFunction = FALSE ) {
+  boot_d <- c();boot_d2 <- c(); dSelect1 <- NULL; dSelect2 <- NULL;
+  if (focus=="" & dMask=="" & dComplex_focus==""){
+    dSelect1 <- d[[question]]; dSelect2 <- d2[[question]];
+  } else if (focus =="" & dMask != "" & dComplex_focus ==""){
+    dSelect1 <- d[[question]][d$dMask==dMask]; dSelect2 <- d2[[question]][d2$dMask==dMask];
+  } else if (focus =="" & dMask == "" & dComplex_focus !=""){
+    dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus];
+  } else if (focus =="" & dMask != "" & dComplex_focus !=""){
+    dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus];
+  } else if (focus !="" & dMask == "" & dComplex_focus ==""){
+    dSelect1 <- d[[question]][d$focus==focus]; dSelect2 <- d2[[question]][d2$focus==focus];
+  } else if (focus!="" & dMask != "" & dComplex_focus ==""){
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask];
+  } else if (focus!="" & dMask == "" & dComplex_focus !=""){
+    dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus];
+  } else {
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
+  }
+  
+  # To deal with selections of different sizes, we use the smallest It means loss of data but at least results are true (letting R loop over is wrong)...
+  minSelecLength <- min(length(dSelect1),length(dSelect2));
+  diffSelec_squared <- c()
+  if (!logFunction){
+    for (diff1 in dSelect1) {
+      for (diff2 in dSelect2) {
+        diffSelec_squared <- append(diffSelec_squared, diff1-diff2)
+      }
+    }
+    
+  }
+  else {
+    for (diff1 in dSelect1) {
+      for (diff2 in dSelect2) {
+        diffSelec_squared <- append(diffSelec_squared, log2( abs( diff1 - diff2 ) +1/8 )) # Cleveland and Gills approach)
+      }
+    }
+    
+  }
+  bootDiff <- boot(diffSelec_squared,samplemean,R)
+  
+  res <- getMean_lowCI_highCI(bootDiff)
+  return (res)
+}
+
+
+
 # not used in the end... probably entirely wrong! selec1 - selec2 can result in groups with different lengths...
 bootQuestionsDifferences_TukeyHSD <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000){
   # a1_measurement_dMask <- aov(correctB ~ dMask, data = d)
