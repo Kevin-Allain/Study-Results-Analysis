@@ -226,7 +226,6 @@ bootQuestionsDifferences_directSubstract_squared <- function(d,d2,question,focus
         diffSelec_squared <- append(diffSelec_squared, diff1-diff2)
       }
     }
-    
   }
   else {
     for (diff1 in dSelect1) {
@@ -234,8 +233,8 @@ bootQuestionsDifferences_directSubstract_squared <- function(d,d2,question,focus
         diffSelec_squared <- append(diffSelec_squared, log2( abs( diff1 - diff2 ) +1/8 )) # Cleveland and Gills approach)
       }
     }
-    
   }
+  cat("\nsize of list 1: ",length(dSelect1),", size of list 2: ",length(dSelect2),", size of squared list: ",length(diffSelec_squared))
   bootDiff <- boot(diffSelec_squared,samplemean,R)
   
   res <- getMean_lowCI_highCI(bootDiff)

@@ -188,6 +188,33 @@ dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_me
                                                                             logFunction=FALSE,
                                                                             useLogDiff=TRUE)
 
+# verification with the squared data
+dfCI_global_TikTok_measurement_factored_squared <- combine_genPlot_CIandDifferences_squared(d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                            factorScaling=FALSE,
+                                                                            factorDistractor=FALSE,
+                                                                            factorDMask= TRUE,
+                                                                            factorFocus=TRUE,
+                                                                            factorDComplex_focus=FALSE,
+                                                                            factorDifference="dComplex_focus",
+                                                                            logFunction=FALSE,
+                                                                            useLogDiff=TRUE)
+
+# filter input data accoridng to stimuli numDiffSC (the value of the Stability Comparison)... ALPHA done... we need the data of numDiffSC calculated in a different file...
+dfCI_global_TikTok_measurement_factored_filterSC <- combine_genPlot_CIandDifferences_filterSC(d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                                            factorScaling=FALSE,
+                                                                                            factorDistractor=FALSE,
+                                                                                            factorDMask= TRUE,
+                                                                                            factorFocus=TRUE,
+                                                                                            factorDComplex_focus=FALSE,
+                                                                                            factorDifference="dComplex_focus",
+                                                                                            logFunction=FALSE,
+                                                                                            useLogDiff=TRUE,
+                                                                                            )
+
+
+
+
+
 dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
                                                                                       factorScaling=FALSE,
                                                                                       factorDistractor=FALSE,
