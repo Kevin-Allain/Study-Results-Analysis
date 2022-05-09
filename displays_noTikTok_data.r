@@ -27,14 +27,13 @@ length(answers_untransformed$Q11)
 length(answers_untransformed$Q11[answers_untransformed$Q11 =="Down" ])
 
 # summary attempts...
-length(d_measurement_all_noTikTok_filteredSemiRigorous$abs_diffA1)
-sum_d_measurement <- data.frame(unclass(summary(d_measurement_all_noTikTok_filteredSemiRigorous)), check.names = FALSE, stringsAsFactors = FALSE)
-View(sum_d_measurement)
-sum_d_measurement$`  abs_diffA1`[4]
-
-write.csv(sum_d_measurement , file = 'tst_sum_d_measurement.csv')
-summ_load <- read.table(file="tst_sum_d_measurement.csv",TRUE,",")
-
+# length(d_measurement_all_noTikTok_filteredSemiRigorous$abs_diffA1)
+# sum_d_measurement <- data.frame(unclass(summary(d_measurement_all_noTikTok_filteredSemiRigorous)), check.names = FALSE, stringsAsFactors = FALSE)
+# View(sum_d_measurement)
+# sum_d_measurement$`  abs_diffA1`[4]
+# 
+# write.csv(sum_d_measurement , file = 'tst_sum_d_measurement.csv')
+# summ_load <- read.table(file="tst_sum_d_measurement.csv",TRUE,",")
 
 
 # differences of stability (condition - no condition) 
@@ -137,8 +136,7 @@ l_second_filter <- vector(mode="list", length=2)
 l_second_filter[[1]] <- left_all_second_filter
 l_second_filter[[2]] <- right_all_second_filter
 jsonSecondFilter <- toJSON(l_second_filter)
-write(jsonSecondFilter, "responsesSecondFilter.json")
-
+# write(jsonSecondFilter, "responsesSecondFilter.json")
 
 
 d_measurement_all_noTikTok_filteredSemiRigorous_noNeither <- filter_neitherLikert(d_measurement_all_noTikTok_filteredSemiRigorous)
@@ -203,10 +201,10 @@ dfCI_global_TikTok_measurement_factored_squared <- combine_genPlot_CIandDifferen
 dfCI_global_TikTok_measurement_factored_filterSC <- combine_genPlot_CIandDifferences_filterSC(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                                             factorScaling=FALSE,
                                                                                             factorDistractor=FALSE,
-                                                                                            factorDMask= TRUE,
-                                                                                            factorFocus=TRUE,
+                                                                                            factorDMask= FALSE,
+                                                                                            factorFocus=FALSE,
                                                                                             factorDComplex_focus=FALSE,
-                                                                                            factorDifference="dComplex_focus",
+                                                                                            factorDifference="focus",
                                                                                             logFunction=FALSE,
                                                                                             useLogDiff=TRUE,
                                                                                             )
@@ -215,7 +213,7 @@ dfCI_global_TikTok_measurement_factored_filterSC <- combine_genPlot_CIandDiffere
 
 
 
-dfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+pdfCI_global_TikTok_measurement_factored_dMaskOnly <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
                                                                                       factorScaling=FALSE,
                                                                                       factorDistractor=FALSE,
                                                                                       factorDMask= TRUE,
@@ -309,7 +307,16 @@ dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all
                                                              filterNeither = TRUE
 )
 
-# -- CorrectB filtere of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
+# filter according to stability comparison for ER
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences_filterSC(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+                                                             factorFocus = FALSE, 
+                                                             factorDComplex_focus = FALSE, 
+                                                             factorDMask = FALSE, 
+                                                             factorDifference="focus",
+                                                             filterNeither = TRUE
+                                                             )
+
+# -- CorrectB filtered of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
 dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
                                                              factorFocus = TRUE, 
                                                              factorDComplex_focus = FALSE, 

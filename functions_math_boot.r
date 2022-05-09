@@ -60,14 +60,14 @@ genBoot <- function(d,question,focus="",dMask="",dComplex_focus="",R=10000){
 }
 
 getMean_lowCI_highCI <- function (boot_d){
-  # cat("\n--getMean_lowCI_highCI--")
+  cat("\n--getMean_lowCI_highCI--")
   ci <- boot.ci(boot.out = boot_d, type = c("norm", "basic", "perc", "bca"));
-  # cat("\nci: ",toString(ci))
+  cat("\nci: ",toString(ci))
   mean <- boot_d$t0;
   l_ci <- ci$normal[2];
   h_ci <- ci$normal[3];
   res <- c(mean,l_ci,h_ci)
-  # cat("\n in getMean_lowCI_highCI, mean: ",mean,", l_ci:",l_ci,", h_ci: ",h_ci);
+  cat("\n in getMean_lowCI_highCI, mean: ",mean,", l_ci:",l_ci,", h_ci: ",h_ci);
   return (res);
 }
 
@@ -180,6 +180,8 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
     dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
   }
   
+  cat("\nin the bootQuestionsDifferences_directSubstract function, dSelect1: ",dSelect1,", dSelect2: ",dSelect2)
+  
   # To deal with selections of different sizes, we use the smallest It means loss of data but at least results are true (letting R loop over is wrong)...
   minSelecLength <- min(length(dSelect1),length(dSelect2));
   if (!logFunction){
@@ -188,12 +190,70 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
   else {
     diffSelec <- log2( abs( dSelect1[1:minSelecLength] - dSelect2[1:minSelecLength] ) +1/8 ) # Cleveland and Gills approach
   }
+  
+  cat("\ndiffSelec: ",diffSelec)
+  
+  if(all(diffSelec==0) || all(diffSelec==1)){
+    diffSelec[1]<- 0.00000001
+    cat("\nnew diffSelec: ",diffSelec)
+  }
+  
   bootDiff <- boot(diffSelec,samplemean,R)
+  
+  cat("\nin the bootQuestionsDifferences_directSubstract function, bootDiff[[1]]: ",bootDiff[[1]])
   
   res <- getMean_lowCI_highCI(bootDiff)
   return (res)
 }
 
+
+# Randomizing the differences
+bootQuestionsDifferences_directSubstract_random_differences <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000, logFunction = FALSE ) {
+  boot_d <- c();boot_d2 <- c(); dSelect1 <- NULL; dSelect2 <- NULL;
+  if (focus=="" & dMask=="" & dComplex_focus==""){
+    dSelect1 <- d[[question]]; dSelect2 <- d2[[question]];
+  } else if (focus =="" & dMask != "" & dComplex_focus ==""){
+    dSelect1 <- d[[question]][d$dMask==dMask]; dSelect2 <- d2[[question]][d2$dMask==dMask];
+  } else if (focus =="" & dMask == "" & dComplex_focus !=""){
+    dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus];
+  } else if (focus =="" & dMask != "" & dComplex_focus !=""){
+    dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus];
+  } else if (focus !="" & dMask == "" & dComplex_focus ==""){
+    dSelect1 <- d[[question]][d$focus==focus]; dSelect2 <- d2[[question]][d2$focus==focus];
+  } else if (focus!="" & dMask != "" & dComplex_focus ==""){
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask];
+  } else if (focus!="" & dMask == "" & dComplex_focus !=""){
+    dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus];
+  } else {
+    dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
+  }
+  
+  cat("\nin the bootQuestionsDifferences_directSubstract_random_differences function, dSelect1: ",dSelect1,", dSelect2: ",dSelect2)
+  
+  # To deal with selections of different sizes, we use the smallest It means loss of data but at least results are true (letting R loop over is wrong)...
+  # maxSelecLength <- max(length(dSelect1),length(dSelect2));
+  dSelect1 <- sample(dSelect1)
+  dSelect2 <- sample(dSelect2)
+  if (!logFunction){
+    diffSelec <- dSelect1 - dSelect2;
+  }
+  else {
+    diffSelec <- log2( abs( dSelect1 - dSelect2 ) +1/8 ) # Cleveland and Gills approach
+  }
+  
+  cat("\ndiffSelec: ",diffSelec)
+  if(all(diffSelec==0) || all(diffSelec==1)){
+    diffSelec[1]<- 0.00000001
+    cat("\nnew diffSelec: ",diffSelec)
+  }
+  
+  bootDiff <- boot(diffSelec,samplemean,R)
+  
+  cat("\nin the bootQuestionsDifferences_directSubstract function, bootDiff[[1]]: ",bootDiff[[1]])
+  
+  res <- getMean_lowCI_highCI(bootDiff)
+  return (res)
+}
 
 
 # Squaring the approach of Pena-Araya.
