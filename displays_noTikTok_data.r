@@ -179,7 +179,7 @@ dim(d_scaling_all_noTikTok)
 dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                             factorScaling=FALSE,
                                                                             factorDistractor=FALSE,
-                                                                            factorDMask= TRUE,
+                                                                            factorDMask= FALSE,
                                                                             factorFocus=TRUE,
                                                                             factorDComplex_focus=FALSE,
                                                                             factorDifference="dComplex_focus",
@@ -187,7 +187,7 @@ dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_me
                                                                             useLogDiff=TRUE)
 
 # verification with the squared data
-dfCI_global_TikTok_measurement_factored_squared <- combine_genPlot_CIandDifferences_squared(d_measurement_all_noTikTok_filteredSemiRigorous,
+dfCI_global_TikTok_measurement_factored_squared <- combine_genPlot_CIandDifferences_random_differences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                             factorScaling=FALSE,
                                                                             factorDistractor=FALSE,
                                                                             factorDMask= TRUE,
@@ -208,6 +208,19 @@ dfCI_global_TikTok_measurement_factored_filterSC <- combine_genPlot_CIandDiffere
                                                                                             logFunction=FALSE,
                                                                                             useLogDiff=TRUE,
                                                                                             )
+
+
+# filter according to random selections of differences for CI
+dfCI_global_TikTok_measurement_factored_rndm_differences <- combine_genPlot_CIandDifferences_random_differences(d=d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                                                            factorScaling=FALSE,
+                                                                                            factorDistractor=FALSE,
+                                                                                            factorDMask= FALSE,
+                                                                                            factorFocus=FALSE,
+                                                                                            factorDComplex_focus=FALSE,
+                                                                                            factorDifference="focus",
+                                                                                            logFunction=FALSE,
+                                                                                            useLogDiff=TRUE,
+)
 
 
 
@@ -308,13 +321,25 @@ dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all
 )
 
 # filter according to stability comparison for ER
-dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences_filterSC(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+dfci_global_er_SC_based <- combine_genPlot_ErrorRate_CIandDifferences_filterSC(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
                                                              factorFocus = FALSE, 
                                                              factorDComplex_focus = FALSE, 
                                                              factorDMask = FALSE, 
                                                              factorDifference="focus",
                                                              filterNeither = TRUE
                                                              )
+
+
+# filter according to random selections of differences for ER
+dfci_global_er_rndm_differences <- combine_genPlot_ErrorRate_CIandDifferences_rndm_differences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+                                                                      factorFocus = TRUE, 
+                                                                      factorDComplex_focus = FALSE, 
+                                                                      factorDMask = FALSE, 
+                                                                      factorDifference="dComplex_focus",
+                                                                      filterNeither = TRUE
+)
+
+
 
 # -- CorrectB filtered of neither # d_measurement_all_noTikTok_filteredSemiRigorous_noNeither
 dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,

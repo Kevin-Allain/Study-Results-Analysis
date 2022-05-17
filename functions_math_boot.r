@@ -161,26 +161,36 @@ bootQuestionsDifferences_conservative <- function(d,d2,question,focus="",dMask="
 
 # This approach is the same as Pena-Araya. (They don't use the logFunction)
 bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMask="",dComplex_focus="",R=10000, logFunction = FALSE ) {
+  cat("\nlength(d): ",length(d),", length(d2): ",length(d2),", question: ",question,", focus: ",focus,", dMask: ",dMask,", dComplex_focus: ",dComplex_focus)
+  
   boot_d <- c();boot_d2 <- c(); dSelect1 <- NULL; dSelect2 <- NULL;
   if (focus=="" & dMask=="" & dComplex_focus==""){
+    cat('\nfocus=="" & dMask=="" & dComplex_focus==""')
     dSelect1 <- d[[question]]; dSelect2 <- d2[[question]];
-  } else if (focus =="" & dMask != "" & dComplex_focus ==""){
+  } 
+  else if (focus =="" & dMask != "" & dComplex_focus ==""){
     dSelect1 <- d[[question]][d$dMask==dMask]; dSelect2 <- d2[[question]][d2$dMask==dMask];
-  } else if (focus =="" & dMask == "" & dComplex_focus !=""){
+  } 
+  else if (focus =="" & dMask == "" & dComplex_focus !=""){
     dSelect1 <- d[[question]][d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dComplex_focus==dComplex_focus];
-  } else if (focus =="" & dMask != "" & dComplex_focus !=""){
+  } 
+  else if (focus =="" & dMask != "" & dComplex_focus !=""){
     dSelect1 <- d[[question]][d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$dMask==dMask &d$dComplex_focus==dComplex_focus];
-  } else if (focus !="" & dMask == "" & dComplex_focus ==""){
+  } 
+  else if (focus !="" & dMask == "" & dComplex_focus ==""){
     dSelect1 <- d[[question]][d$focus==focus]; dSelect2 <- d2[[question]][d2$focus==focus];
-  } else if (focus!="" & dMask != "" & dComplex_focus ==""){
+  } 
+  else if (focus!="" & dMask != "" & dComplex_focus ==""){
     dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask];
-  } else if (focus!="" & dMask == "" & dComplex_focus !=""){
+  } 
+  else if (focus!="" & dMask == "" & dComplex_focus !=""){
     dSelect1 <- d[[question]][d$focus==focus & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dComplex_focus==dComplex_focus];
-  } else {
+  } 
+  else {
     dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
   }
   
-  cat("\nin the bootQuestionsDifferences_directSubstract function, dSelect1: ",dSelect1,", dSelect2: ",dSelect2)
+  cat("\nin the bootQuestionsDifferences_directSubstract function. question: ",question,", focus:",focus ,", dSelect1: ",dSelect1,", dSelect2: ",dSelect2)
   
   # To deal with selections of different sizes, we use the smallest It means loss of data but at least results are true (letting R loop over is wrong)...
   minSelecLength <- min(length(dSelect1),length(dSelect2));

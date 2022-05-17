@@ -14,36 +14,20 @@ var csvFilePath = 'data/complete_20210828_noflip_headerAdapted.csv'
 // Update for First Language English
 // complete_measurement_f_2021_09_18_October_22_headerAdapted
 // complete_measurement_nf_2021_09_18_October_22_headerAdapted
-var csvFilePathArray_fluent = [];
-csvFilePathArray_fluent.push(
-    "data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted_MMM_replaced.csv",
-    "data/participants_answers_headerAdapted_untransformed/complete_distractor_n_2021_09_18_headerAdapted_MMM_replaced.csv",
-    "data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted_MMM_replaced.csv",
-    "data/participants_answers_headerAdapted_untransformed/complete_scaling_1_2021_09_19_headerAdapted_MMM_replaced.csv", 
-    "data/participants_answers_headerAdapted_untransformed/complete_scaling_2_2021_09_19_headerAdapted_MMM_replaced.csv"
-)
-var csvFilePathArray_FirstLanguage = [];
-csvFilePathArray_FirstLanguage.push(
-    "data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_October_22_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_October_22_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/full_distractor_h_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/full_distractor_n_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/full_scaling_0_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/full_scaling_1_headerAdapted.csv",
-    "data/participants_answers_headerAdapted_untransformed/full_scaling_2_headerAdapted.csv"
-)
+// var csvFilePathArray_fluent = [];
+// csvFilePathArray_fluent.push( "data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/complete_distractor_h_2021_09_18_headerAdapted_MMM_replaced.csv", "data/participants_answers_headerAdapted_untransformed/complete_distractor_n_2021_09_18_headerAdapted_MMM_replaced.csv", "data/participants_answers_headerAdapted_untransformed/complete_scaling_0_2021_09_19_headerAdapted_MMM_replaced.csv", "data/participants_answers_headerAdapted_untransformed/complete_scaling_1_2021_09_19_headerAdapted_MMM_replaced.csv",  "data/participants_answers_headerAdapted_untransformed/complete_scaling_2_2021_09_19_headerAdapted_MMM_replaced.csv" )
+// var csvFilePathArray_FirstLanguage = [];
+// csvFilePathArray_FirstLanguage.push( "data/participants_answers_headerAdapted_untransformed/complete_measurement_f_2021_09_18_October_22_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/complete_measurement_nf_2021_09_18_October_22_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/full_distractor_h_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/full_distractor_n_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/full_scaling_0_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/full_scaling_1_headerAdapted.csv", "data/participants_answers_headerAdapted_untransformed/full_scaling_2_headerAdapted.csv" )
 
 var csvFilePathArray_noTikTok = [];
 csvFilePathArray_noTikTok.push(
     "Studies_2021_11_12/Results/measurement_f_headerAdapted.csv",
     "Studies_2021_11_12/Results/measurement_nf_headerAdapted.csv",
-    "Studies_2021_11_12/Results/distractor_h_headerAdapted.csv",
-    "Studies_2021_11_12/Results/distractor_n_headerAdapted.csv",
-    "Studies_2021_11_12/Results/scaling_0_headerAdapted.csv",
-    "Studies_2021_11_12/Results/scaling_1_headerAdapted.csv",
-    "Studies_2021_11_12/Results/scaling_2_headerAdapted.csv"
+    // "Studies_2021_11_12/Results/distractor_h_headerAdapted.csv",
+    // "Studies_2021_11_12/Results/distractor_n_headerAdapted.csv",
+    // "Studies_2021_11_12/Results/scaling_0_headerAdapted.csv",
+    // "Studies_2021_11_12/Results/scaling_1_headerAdapted.csv",
+    // "Studies_2021_11_12/Results/scaling_2_headerAdapted.csv"
 )
 
 var csvFilePathArray_withJason = [];
@@ -220,8 +204,11 @@ function writeNoFilterWrongAnswersToIntro(csvFilePath, fileEnd=""){
             }
             console.log("endOf then. toFilterProlificIds: ",toFilterProlificIds)
 
+            var d = new Date();
+            var strTime = d.getFullYear()+"_"+(d.getMonth()+1)+"_"+d.getUTCDate()+"_"+d.getHours();
+            
             csvFilePath = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
-            var toFilter_JSONpath = "data/toFilter/notToFilter_"+csvFilePath+".json"
+            var toFilter_JSONpath = "data/toFilter/notToFilter_"+csvFilePath+"_"+strTime+".json"
             console.log("writing ",toFilter_JSONpath)
             // console.log("hashmap_toKeepProlificIds: ",hashmap_toKeepProlificIds,", toFilter_JSONpath: ", toFilter_JSONpath)
             fs.writeFile(toFilter_JSONpath, JSON.stringify(hashmap_toKeepProlificIds), function (err, data) {
@@ -594,10 +581,14 @@ function newNoFilterGenerateModifiedCSV(QIDtoFilename, csvFilePath, fileHashmapT
                 ...items.map(row => header.map(fieldName => JSON.stringify(row[fieldName], replacer)).join(','))
             ].join('\r\n')
 
+            // let's write according to date
+            var d = new Date();
+            var strTime = d.getFullYear()+"_"+(d.getMonth()+1)+"_"+d.getUTCDate()+"_"+d.getHours();
+
             var fileStudyBit = csvFilePath.split('/')[csvFilePath.split('/').length-1].substring(0,csvFilePath.split('/')[csvFilePath.split('/').length-1].length-4);            
             var t = new Date(); var fileNameTime = (addRandomInfoToFillVoid) ? "randomlyfilled_" + t.getTime() : fileStudyBit;
-            console.log("writing " + "data/transformed/noFilter_survey_" + fileNameTime + fileEnd  + ".csv")
-            fs.writeFile("data/transformed/noFilter_survey_" + fileNameTime +fileEnd + ".csv", csvOutput, function (err, data) {
+            console.log("writing " + "data/transformed/noFilter_survey_" + fileNameTime + fileEnd +"_"+strTime+ ".csv")
+            fs.writeFile("data/transformed/noFilter_survey_" + fileNameTime +fileEnd+"_"+strTime + ".csv", csvOutput, function (err, data) {
                 if (err) console.log('error', err);
             });
         })
@@ -638,6 +629,10 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
         }
     }
 
+    // let's write according to date
+    var d = new Date();
+    var strTime = d.getFullYear()+"_"+(d.getMonth()+1)+"_"+d.getUTCDate()+"_"+d.getHours();
+
     var itemsN = objGenerated;
     var replacerN = (key, value) => value === null ? '' : value // specify how you want to handle null values here
     var headerN = Object.keys(itemsN[0])
@@ -646,8 +641,8 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
         headerN.join(','), // header row first
         ...itemsN.map(row => headerN.map(fieldName => JSON.stringify(row[fieldName], replacerN)).join(','))
     ].join('\r\n')
-    console.log("writing : " + "data/transformed/baselines/baselines_"+additionNameBaseline+".csv")
-    fs.writeFile("data/transformed/baselines/baselines_"+additionNameBaseline+".csv", csvOutputN, function (err, data) {
+    console.log("writing : " + "data/transformed/baselines/baselines_"+additionNameBaseline+"_"+strTime+".csv")
+    fs.writeFile("data/transformed/baselines/baselines_"+additionNameBaseline+"_"+strTime+".csv", csvOutputN, function (err, data) {
         if (err) console.log('error', err);
     });
 }
@@ -684,11 +679,11 @@ function generateBaselineCSV(QIDtoFilename,additionNameBaseline="") {
 // -- noTikTok (& withJason)
 let data_measurement_nf = fs.readFileSync("Studies_2021_11_12/measurement_nf/QIDtoFilename_measurement_nf.json")
 let data_measurement_f = fs.readFileSync("Studies_2021_11_12/measurement_f/QIDtoFilename_measurement_f.json")
-let data_distractor_h = fs.readFileSync("Studies_2021_11_12/distractor_h/QIDtoFilename_distractor_h.json")
-let data_distractor_n = fs.readFileSync("Studies_2021_11_12/distractor_n/QIDtoFilename_distractor_n.json")
-let data_scaling_0 = fs.readFileSync("Studies_2021_11_12/scaling_0/QIDtoFilename_scaling_0.json")
-let data_scaling_1 = fs.readFileSync("Studies_2021_11_12/scaling_1/QIDtoFilename_scaling_1.json")
-let data_scaling_2 = fs.readFileSync("Studies_2021_11_12/scaling_2/QIDtoFilename_scaling_2.json")
+// let data_distractor_h = fs.readFileSync("Studies_2021_11_12/distractor_h/QIDtoFilename_distractor_h.json")
+// let data_distractor_n = fs.readFileSync("Studies_2021_11_12/distractor_n/QIDtoFilename_distractor_n.json")
+// let data_scaling_0 = fs.readFileSync("Studies_2021_11_12/scaling_0/QIDtoFilename_scaling_0.json")
+// let data_scaling_1 = fs.readFileSync("Studies_2021_11_12/scaling_1/QIDtoFilename_scaling_1.json")
+// let data_scaling_2 = fs.readFileSync("Studies_2021_11_12/scaling_2/QIDtoFilename_scaling_2.json")
 
 
 // Fluent only
@@ -748,11 +743,11 @@ let data_scaling_2 = fs.readFileSync("Studies_2021_11_12/scaling_2/QIDtoFilename
 // listStrFilesBsln_noTikTok.push("noTikTok_scaling_2");
 
 var listQIDtoFileName_noTikTok_withJason = []; 
-// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_measurement_nf)); 
+listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_measurement_nf)); 
 listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_measurement_f));
-listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_distractor_h)); 
+// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_distractor_h)); 
 // listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_distractor_n));
-listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_0)); 
+// listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_0)); 
 // listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_1));
 // listQIDtoFileName_noTikTok_withJason.push(JSON.parse(data_scaling_2)); 
 
@@ -828,7 +823,7 @@ listStrFilesBsln_noTikTok_withJason.push("withJason_scaling_0");
 // // // ---- Generate structured files of answers
 console.log("---- Generate structured files of answers, csvFilePathArray_withJason: ",csvFilePathArray_noTikTok)
 for (var i=0; i < listQIDtoFileName_noTikTok_withJason.length; i++){
-    console.log("csvFilePathArray_withJason[i]: ",csvFilePathArray_withJason[i]);
-    newNoFilterGenerateModifiedCSV(listQIDtoFileName_noTikTok_withJason[i], csvFilePathArray_withJason[i])
+    console.log("csvFilePathArray_noTikTok[i]: ",csvFilePathArray_noTikTok[i]);
+    newNoFilterGenerateModifiedCSV(listQIDtoFileName_noTikTok_withJason[i], csvFilePathArray_noTikTok[i])
     //newGenerateModifiedCSV (listQIDtoFileName_noTikTok_withJason[i], csvFilePathArray_withJason[i], "" , false, "_withJason_withLog2" )
 }
