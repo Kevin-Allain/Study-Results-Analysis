@@ -165,7 +165,7 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
   
   boot_d <- c();boot_d2 <- c(); dSelect1 <- NULL; dSelect2 <- NULL;
   if (focus=="" & dMask=="" & dComplex_focus==""){
-    cat('\nfocus=="" & dMask=="" & dComplex_focus==""')
+    # cat('\nfocus=="" & dMask=="" & dComplex_focus==""')
     dSelect1 <- d[[question]]; dSelect2 <- d2[[question]];
   } 
   else if (focus =="" & dMask != "" & dComplex_focus ==""){
@@ -190,7 +190,7 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
     dSelect1 <- d[[question]][d$focus==focus & d$dMask==dMask & d$dComplex_focus==dComplex_focus]; dSelect2 <- d2[[question]][d2$focus==focus & d2$dMask==dMask & d2$dComplex_focus==dComplex_focus];
   }
   
-  cat("\nin the bootQuestionsDifferences_directSubstract function. question: ",question,", focus:",focus ,", dSelect1: ",dSelect1,", dSelect2: ",dSelect2)
+  # cat("\nin the bootQuestionsDifferences_directSubstract function. question: ",question,", focus:",focus ,", dSelect1: ",dSelect1,", dSelect2: ",dSelect2)
   
   # To deal with selections of different sizes, we use the smallest It means loss of data but at least results are true (letting R loop over is wrong)...
   minSelecLength <- min(length(dSelect1),length(dSelect2));
@@ -201,16 +201,16 @@ bootQuestionsDifferences_directSubstract <- function(d,d2,question,focus="",dMas
     diffSelec <- log2( abs( dSelect1[1:minSelecLength] - dSelect2[1:minSelecLength] ) +1/8 ) # Cleveland and Gills approach
   }
   
-  cat("\ndiffSelec: ",diffSelec)
+  # cat("\ndiffSelec: ",diffSelec)
   
   if(all(diffSelec==0) || all(diffSelec==1)){
     diffSelec[1]<- 0.00000001
-    cat("\nnew diffSelec: ",diffSelec)
+    # cat("\nnew diffSelec: ",diffSelec)
   }
   
   bootDiff <- boot(diffSelec,samplemean,R)
   
-  cat("\nin the bootQuestionsDifferences_directSubstract function, bootDiff[[1]]: ",bootDiff[[1]])
+  # cat("\nin the bootQuestionsDifferences_directSubstract function, bootDiff[[1]]: ",bootDiff[[1]])
   
   res <- getMean_lowCI_highCI(bootDiff)
   return (res)

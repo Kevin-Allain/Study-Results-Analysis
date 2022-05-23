@@ -62,7 +62,7 @@ dfCI_measurement_factored <- combine_genPlot_CIandDifferences(answers_measuremen
                                                                           factorDMask= FALSE,
                                                                           factorFocus=FALSE,
                                                                           factorDComplex_focus=FALSE,
-                                                                          factorDifference="focus",
+                                                                          factorDifference="dComplex_focus",
                                                                           logFunction=FALSE,
                                                                           useLogDiff=TRUE)
 
@@ -76,7 +76,6 @@ dfCI_base_and_differences_measurement_factored <- combine_genPlot_CIandDifferenc
                                                               factorDifference="dComplex_focus",
                                                               logFunction=FALSE,
                                                               useLogDiff=TRUE)
-View(dfCI_base_and_differences_measurement_factored)
 
 dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_measurement_all_noTikTok_filteredSemiRigorous,
                                                                             factorScaling=FALSE,
@@ -89,10 +88,91 @@ dfCI_global_TikTok_measurement_factored <- combine_genPlot_CIandDifferences(d_me
                                                                             useLogDiff=TRUE)
 
 
+# ~~~~ Confidence intervals according to filter by stability comparison
+dfCI_base_and_differences_measurement_factored <- combine_genPlot_CIandDifferences_filterSC(answers_measurement_finished_passedIntro_noImpossibleQualAnswer_notAllTrust0or5_enrich_absDiffs_same,
+                                                                                   factorScaling=FALSE,
+                                                                                   factorDistractor=FALSE,
+                                                                                   factorDMask= FALSE,
+                                                                                   factorFocus=FALSE,
+                                                                                   factorDComplex_focus=FALSE,
+                                                                                   factorDifference="focus",
+                                                                                   logFunction=FALSE,
+                                                                                   useLogDiff=TRUE)
+arrValsFilter <- c(0,5,10,15,20,25,30,35,40,45,50)
+# arrValsFilter <- c(5,10)
+dfCI_all <- data.frame()
+strFactDiff <- "focus"
+boolFactDMask <- FALSE
+boolFactFocus <- FALSE
+boolFactDComplexFocus <- FALSE
+for(i in arrValsFilter){
+  cat("\ni: ",i)
+  dfCI_I <- combine_genPlot_CIandDifferences_filterSC(d=answers_measurement_finished_passedIntro_noImpossibleQualAnswer_notAllTrust0or5_enrich_absDiffs_same,
+                                                        factorFocus = boolFactFocus, 
+                                                        factorDComplex_focus = boolFactDComplexFocus, 
+                                                        factorDMask = boolFactDMask, 
+                                                        factorDifference=strFactDiff,
+                                                        useLogDiff=TRUE,                                                                
+                                                        filterType = "p",filterValue = i
+  )
+  dfCI_all <- bind_rows(dfCI_all,dfCI_I) %>% group_by(filterType)
+  
+}
+# data_er <- data.frame(dfER_arr)
+strFilename <-paste("confidence_interval_filter_percentile_",strFactDiff,"_boolFactFocus_",boolFactFocus,"_boolFactDComplexFocus_",boolFactDComplexFocus,"_boolFactDMask_",boolFactDMask,".csv",sep="")
+write.csv(dfCI_all,paste("Data_2022_05_12/Filtering/",strFilename,sep=""))
+
+
+
+
+# ~~~~ Error rate # TODO old but important to check based on new approach: note that the results are the same for d_measurement_all_noTikTok_filteredSemiRigorous and d_measurement_all_noTikTok_filteredSemiRigorous_noNeither. FIX!
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences(d=d_measurement_all_noTikTok_filteredSemiRigorous,
+                                                             factorFocus = FALSE, 
+                                                             factorDComplex_focus = FALSE, 
+                                                             factorDMask = FALSE, 
+                                                             factorDifference="focus",
+                                                             filterNeither = TRUE
+)
+
+
+
+
+# ~~~~ Error rate according to filter by stability comparison
+dfci_global_er <- combine_genPlot_ErrorRate_CIandDifferences_filterSC(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+                                                             factorFocus = FALSE, 
+                                                             factorDComplex_focus = FALSE, 
+                                                             factorDMask = FALSE, 
+                                                             factorDifference="focus",
+                                                             filterNeither = TRUE
+)
+
+
+arrValsFilter <- c(0,5,10,15,20,25,30,35,40,45,50)
+dfER_all <- data.frame()
+strFactDiff <- "dComplex_focus"
+boolFactDMask <- FALSE
+boolFactFocus <- TRUE
+boolFactDComplexFocus <- FALSE
+for(i in arrValsFilter){
+  cat("\ni: ",i)
+  dfER_I <- combine_genPlot_ErrorRate_CIandDifferences_filterSC(d=d_measurement_all_noTikTok_filteredSemiRigorous_noNeither,
+                                                                factorFocus = boolFactFocus, 
+                                                                factorDComplex_focus = boolFactDComplexFocus, 
+                                                                factorDMask = boolFactDMask, 
+                                                                factorDifference=strFactDiff,
+                                                                filterNeither = TRUE,
+                                                                filterType = "p",filterValue = i
+  )
+  dfER_all <- bind_rows(dfER_all,dfER_I) %>% group_by(filterType)
+  
+}
+strFilename <-paste("error_rate_filter_percentile_",strFactDiff,"_boolFactFocus_",boolFactFocus,"_boolFactDComplexFocus_",boolFactDComplexFocus,"_boolFactDMask_",boolFactDMask,".csv",sep="")
+write.csv(dfER_all,paste("Data_2022_05_12/Filtering/",strFilename,sep=""))
+
 # Further TODO
 # Add another point for different methods of statistically significant 
 # Add indication of the data set used for stimuli?! Sort of done, but looks weird
   
-  
+
   
   

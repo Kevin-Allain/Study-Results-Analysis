@@ -20,6 +20,8 @@ library(ggbeeswarm)
 # library(plotly) # not our version?!
 library(FSA)
 library(rjson)
+library(png)
+
 
 
 
@@ -3846,13 +3848,16 @@ loadUpDataTotal <- function(path="data/update_2022_post_writing/",filename="file
 # Function to adapt according to filter. Not great because it expects values in all categories
 combine_genPlot_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, 
                                                        factorTrust = FALSE, factorDifference="dMask", arrMixOrderFormula=c(), logFunction=FALSE,useLogDiff = FALSE,
-                                                       path="data/update_2022_post_writing/",filename="fileData2022_4_28.json"){
-  
-  cat("Do you want to filter by percentage or absolute value?\n")
-  filterType <- readline(prompt="Reply (a/p): ")
-  cat("What's the value of your filter?\n")
-  filterValue <- as.numeric(readline(prompt="Enter a number: "))
-  
+                                                       path="data/update_2022_post_writing/",filename="fileData2022_4_28.json",
+                                                       filterType="",filterValue=""){
+  if(filterType==""){
+    cat("Do you want to filter by percentage or absolute value?\n")
+    filterType <- readline(prompt="Reply (a/p): ")
+  }
+  if(filterValue==""){
+    cat("What's the value of your filter?\n")
+    filterValue <- as.numeric(readline(prompt="Enter a number: "))
+  }
   if (filterType != "a" && filterType != "p" )
   {
     cat("wrong inputfor type of filter!\n")
@@ -4042,6 +4047,10 @@ combine_genPlot_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,fac
     # 
     if(factor4=="focus"){dfCI_global_differences$focus[0] <- 0}; if(factor4=="scaling"){dfCI_global_differences$scaling[0] <- 0}; if(factor4=="dComplex_focus"){dfCI_global_differences$dComplex_focus[0] <- 0}
   }
+  
+  selec1 <- NULL
+  selec2 <- NULL
+  selec3 <- NULL
   
   for (i in arrQuestions){
     cat("\nLoop questions. i: ",i)
@@ -4438,6 +4447,14 @@ combine_genPlot_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,fac
       # cat("\ndfTest_CI$category_combination: ",dfTest_CI$category_combination)
       dfTest_CI_differences <- data.frame(t(dfTest_CI_differences)); dfTest_CI_differences <- rename(dfTest_CI_differences,mean_CI=X1); dfTest_CI_differences <- rename(dfTest_CI_differences,low_CI=X2); dfTest_CI_differences <- rename(dfTest_CI_differences,high_CI=X3); dfTest_CI_differences <- rename(dfTest_CI_differences,"category_combination"=X4); dfTest_CI_differences$question <- i;
       
+      # Attempt to indicate in the resulting data structure the number of responses... Seems close enough but isn't right!
+      # lSelec1 <- length(selec1)
+      # lSelec2 <- length(selec2)
+      # lSelec3 <- length(selec3)
+      # dfTest_CI$numResponses[dfTest_CI$category_combination == paste(factorVariation,",",arrFactorVariations[1])] <- lSelec1
+      # dfTest_CI$numResponses[dfTest_CI$category_combination == paste(factorVariation,",",arrFactorVariations[2])] <- lSelec2
+      # dfTest_CI$numResponses[dfTest_CI$category_combination == paste(factorVariation,",",arrFactorVariations[3])] <- lSelec3
+      
       cols <- c("mean_CI","low_CI","high_CI");
       dfTest_CI[,cols] <- lapply( dfTest_CI[,cols],as.numeric);
       leftEdgeGraph <- min(-0.15, min(dfTest_CI$low_CI) -0.1 ); 
@@ -4456,13 +4473,19 @@ combine_genPlot_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,fac
     }
   }
   
+  cat("\n~~~~\t Are selections long? ####")
+  cat("\nlength of selec1: ",length(selec1))
+  cat("\nlength of selec2: ",length(selec2))
+  cat("\nlength of selec3: ",length(selec3))
+  cat("\n~~~~\t ####")
+  
   # we should have the dfCI_global loaded now, but still need to display it.
   cat("\n####about to draw")
-  cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question), "\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
+  # cat("\nwhat of the global structure variations... ",dim(dfCI_global),", and their questions: ",length(dfCI_global$question), "\nwhat of the global structure differences... ",dim(dfCI_global_differences),", and their questions: ",length(dfCI_global_differences$question))
   class(dfCI_global$category_combination); class(dfCI_global$mean_CI); dfCI_global$mean_CI <- as.numeric(dfCI_global$mean_CI); class(dfCI_global$mean_CI); class(dfCI_global$low_CI); dfCI_global$low_CI <- as.numeric(dfCI_global$low_CI); class(dfCI_global$low_CI); class(dfCI_global$high_CI); dfCI_global$high_CI <- as.numeric(dfCI_global$high_CI); class(dfCI_global$high_CI); class(dfCI_global_differences$category_combination); class(dfCI_global_differences$mean_CI); dfCI_global_differences$mean_CI <- as.numeric(dfCI_global_differences$mean_CI); class(dfCI_global_differences$mean_CI); class(dfCI_global_differences$low_CI); dfCI_global_differences$low_CI <- as.numeric(dfCI_global_differences$low_CI); class(dfCI_global_differences$low_CI); class(dfCI_global_differences$high_CI); dfCI_global_differences$high_CI <- as.numeric(dfCI_global_differences$high_CI); class(dfCI_global_differences$high_CI);
   dfCI_global <- renameGroupedData(dfCI_global); dfCI_global_differences <- renameGroupedData(dfCI_global_differences);
   
-  cat("\n\t---01---\tunique(dfCI_global$category_combination): ",unique(dfCI_global$category_combination)) # seems fine still. There are several of them, but I guess that's fine.
+  # cat("\n\t---01---\tunique(dfCI_global$category_combination): ",unique(dfCI_global$category_combination)) # seems fine still. There are several of them, but I guess that's fine.
   if (numFactor ==3 ){
     if (factor1=="scaling" | factor2=="scaling" | factor3=="scaling"){
       dfCI_global$scaling[dfCI_global$scaling==0] <- "Scaling 0";dfCI_global$scaling[dfCI_global$scaling==1] <- "Scaling 1";dfCI_global$scaling[dfCI_global$scaling==2] <- "Scaling 2";
@@ -4484,7 +4507,7 @@ combine_genPlot_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,fac
   
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI)); # very odd. but should be fine...
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences)); # very odd. but should be fine...
-  cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,",minLow_cI_differences: ",minLow_cI_differences,", maxHigh_CI_differences: ",maxHigh_CI_differences,",edgeSize_differences: ",edgeSize_differences)
+  # cat("\n====The vals of minLow_cI: ",minLow_cI,", maxHigh_CI: ",maxHigh_CI,", edgeSize: ",edgeSize,",minLow_cI_differences: ",minLow_cI_differences,", maxHigh_CI_differences: ",maxHigh_CI_differences,",edgeSize_differences: ",edgeSize_differences)
   minLow_cI <- max(abs(dfCI_global$low_CI));maxHigh_CI <- max(abs(dfCI_global$high_CI)); edgeSize_CI <- max(0.1+abs(minLow_cI),0.1+abs(maxHigh_CI));
   minLow_cI_differences <- max(abs(dfCI_global_differences$low_CI));maxHigh_CI_differences <- max(abs(dfCI_global_differences$high_CI)); edgeSize_differences <- max(0.1+abs(minLow_cI_differences),0.1+abs(maxHigh_CI_differences));
   min_log_diffA1 <- min(d[["log_diffA1"]]);max_log_diffA1 <- max(d[["log_diffA1"]]);min_log_diffA2 <- min(d[["log_diffA2"]]);max_log_diffA2 <- max(d[["log_diffA2"]]);min_log_diffA3 <- min(d[["log_diffA3"]]);max_log_diffA3 <- max(d[["log_diffA3"]]);
@@ -4771,12 +4794,25 @@ combine_genPlot_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,fac
   cat("\n\n\t\t WTH!!! toString( unique(dfCI_global$orderCategoryCombination) ): ", toString (unique(dfCI_global$orderCategoryCombination) )," dfCI_global$orderCategoryCombination[1]: ",dfCI_global$orderCategoryCombination[1])
   
   cat("\nThe plots are generated. But are they fine?\n")
-  grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1,
+  
+  # img <- readPNG(system.file("img", "Rlogo.png", package="png"))
+  # g <- rasterGrob(img, interpolate=TRUE)
+  
+  grob <- grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1,
                           groupedPlotCI_2,groupedPlotCI_differences2,
                           groupedPlotCI_3,groupedPlotCI_differences3), ncol=6,top=textGrob( strTitleTotal ) )
-  # cat("not sure what to return")
-  # return (dfCI_global_differences)
-  return (dfCI_global)
+
+  strFilename = paste("ci_",factorVariation,"_factorFocus_",factorFocus,"_factorDComplex_focus_",factorDComplex_focus,"_factorDMask_",factorDMask,"_filterType_",filterType,"_filterValue_",filterValue,sep="")
+  ggsave(filename = paste("Data_2022_05_12/Filtering/",strFilename,".png",sep=""),plot = grob ,device = "png")
+  
+  dfCI_global$filterType=filterType
+  dfCI_global$filterValue=filterValue
+  dfCI_global_differences$filterType=filterType
+  dfCI_global_differences$filterValue=filterValue
+  
+  dfci_both <- bind_rows(dfCI_global,dfCI_global_differences) %>% group_by(orderCategoryCombination)
+  return(dfci_both)
+  
 }
 
 
@@ -10458,16 +10494,20 @@ combine_genPlot_CIandDifferences_random_differences  <- function (d,factorScalin
 
 # error rate_filterSC 
 combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling=FALSE,factorDistractor=FALSE, factorFocus=FALSE, factorDMask= FALSE, factorDComplex_focus=FALSE, factorDifference="dMask", logFunction=FALSE,
-                                                        filterNeither=FALSE,path="data/update_2022_post_writing/",filename="fileData2022_4_28.json"){
+                                                        filterNeither=FALSE,path="data/update_2022_post_writing/",filename="fileData2022_4_28.json", filterType="", filterValue=""){
 
-  cat("Do you want to filter by percentage or absolute value?\n")
-  filterType <- readline(prompt="Reply (a/p): ")
-  cat("What's the value of your filter?\n")
-  filterValue <- as.numeric(readline(prompt="Enter a number: "))
+  if(filterType==""){
+    cat("Do you want to filter by percentile or absolute value?\n")
+    filterType <- readline(prompt="Reply (a/p): ")
+  }
+  if(filterValue==""){
+    cat("What's the value of your filter?\n")
+    filterValue <- as.numeric(readline(prompt="Enter a number: "))
+  }
   
   if (filterType != "a" && filterType != "p" )
   {
-    cat("wrong inputfor type of filter!\n")
+    cat("wrong input for type of filter!\n")
     return(-1)
   }
   else if (typeof(filterValue) != "double")
@@ -10490,22 +10530,34 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
     }
   } 
   else {
-    cat("percentage approach\n")
-    # filter per percentage according to focus
+    cat("percentile approach\n")
+    # filter per percentile according to focus
     # loop through the file to get maximum absolute numDiffSC
     maxSC_Ql <- 0
     maxSC_Qn <- 0
     maxSC_Where <- 0
+    arrSC_Ql <- c()
+    arrSC_Qn <- c()
+    arrSC_Where <- c()
     for(n in 1:length(fullFileData))
     {
-      if (fullFileData[[n]]$focus=="WHAT_Ql" & abs(fullFileData[[n]]$numDiffSC)>=maxSC_Ql){
-        maxSC_Ql <- abs(fullFileData[[n]]$numDiffSC)
-      } 
-      else if (fullFileData[[n]]$focus=="WHAT_Qn" & abs(fullFileData[[n]]$numDiffSC)>=maxSC_Qn){
-        maxSC_Qn <- abs(fullFileData[[n]]$numDiffSC)
+      if (fullFileData[[n]]$focus=="WHAT_Ql"){
+        arrSC_Ql<- append(arrSC_Ql,abs(fullFileData[[n]]$numDiffSC))
+        if (abs(fullFileData[[n]]$numDiffSC)>=maxSC_Ql){
+          maxSC_Ql <- abs(fullFileData[[n]]$numDiffSC)
+        }
       }
-      else if (fullFileData[[n]]$focus=="WHERE" & abs(fullFileData[[n]]$numDiffSC)>=maxSC_Where){
-        maxSC_Where <- abs(fullFileData[[n]]$numDiffSC)
+      else if (fullFileData[[n]]$focus=="WHAT_Qn"){
+        arrSC_Qn<- append(arrSC_Qn,abs(fullFileData[[n]]$numDiffSC))
+        if (abs(fullFileData[[n]]$numDiffSC)>=maxSC_Qn){
+          maxSC_Qn <- abs(fullFileData[[n]]$numDiffSC)
+        }
+      }
+      else if (fullFileData[[n]]$focus=="WHERE"){
+        arrSC_Where<- append(arrSC_Where,abs(fullFileData[[n]]$numDiffSC))
+        if (abs(fullFileData[[n]]$numDiffSC)>=maxSC_Where){
+          maxSC_Where <- abs(fullFileData[[n]]$numDiffSC)
+        }
       }
     }
     cat("passed the search of the maximums. maxSC_Ql: ",maxSC_Ql,", maxSC_Qn: ",maxSC_Qn,", maxSC_Where: ",maxSC_Where,"\n")
@@ -10513,12 +10565,27 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
     for (n in 1:length(fullFileData)){
       curF <- fullFileData[[n]]$focus
       maxSC_curF <- 0
-      if (curF=="WHAT_Qn"){maxSC_curF <- maxSC_Qn}
-      else if (curF=="WHAT_Ql"){maxSC_curF <- maxSC_Ql} 
-      else if (curF=="WHERE"){maxSC_curF <- maxSC_Where}
+      filterSCpercentile <- -1
+      if (curF=="WHAT_Qn"){
+          maxSC_curF <- maxSC_Qn
+          filterSCpercentile<- quantile(arrSC_Qn, probs = filterValue/100 )
+      }
+      else if (curF=="WHAT_Ql"){
+        maxSC_curF <- maxSC_Ql
+        filterSCpercentile<- quantile(arrSC_Ql, probs = filterValue/100 )
+      }
+      else if (curF=="WHERE"){
+        maxSC_curF <- maxSC_Where
+        filterSCpercentile<- quantile(arrSC_Where, probs = filterValue/100 )
+      }
+      cat("\nfilterSCpercentile: ",filterSCpercentile,", for curF: ",curF)
       # cat("maxSC_curF: ",maxSC_curF)
-      filterSCpercentage <- maxSC_curF * filterValue/100
-      d <- d[d$cntrQ!=fullFileData[[n]]$cntrQ | fullFileData[[n]]$numDiffSC >= filterSCpercentage,]
+      # filterSCpercentage <- maxSC_curF * filterValue/100
+      # ~~~~ still need a fix
+      # filterSCpercentile <- quantile(maxSC_curF, probs = filterValue/100 )
+      # d <- d[d$cntrQ!=fullFileData[[n]]$cntrQ | fullFileData[[n]]$numDiffSC >= filterSCpercentage,]
+      d <- d[d$cntrQ!=fullFileData[[n]]$cntrQ | fullFileData[[n]]$numDiffSC >= filterSCpercentile,]
+      cat("\nlength of d: ",length(d$ResponseId),", filterSCpercentile: ",filterSCpercentile,", for curF: ",curF)
     }
   }
   
@@ -11339,7 +11406,6 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
     d$orderCategoryCombination[d$dMask=="hard"] <- "Mask: Hard"; } 
   }
   
-  View(d); View(dfCI_global);
   d <- prettyEnrichOrderCategory(d,dfCI_global);
   
   cat("\n\n\t....Added column for unique(d$orderCategoryCombination): ",unique(d$orderCategoryCombination),
@@ -11353,7 +11419,6 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
   }
   
   d <- orderData(d);
-  View(d);
   cat("\nunique(d$category_combination): ",unique(d$category_combination),", unique(d$dComplex_focus): ",unique(d$dComplex_focus),", unique(d$orderFocusComplex): ",unique(d$orderFocusComplex))
   if ( is.na(d$dComplex_focus[1]) & factorVariation=="dComplex_focus" ){
     cat("\nMessed up here... Let's see")
@@ -11388,18 +11453,23 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
   # we end up with d not having orderCategoryCombination...
   d <- addCountColumn(d, strFormula = strFormula, factorVariation = factorVariation);
   cat("\nAdded count column...unique $countFactor: ",unique(d$countFactor),", factorVariation: ",factorVariation,", strFormula: ", strFormula);
-  View(dfCI_global);
-  View(d);
-  
+
   # the transformations require to retransform numbers accordingly for specific cases: i.e. distractor with two factors... those should be divided by two...
   if (factorVariation=="distractor" & numFactor == 2) { #& (factor1 == "dComplex_focus" | factor2 == "dComplex_focus")
     cat("\n need to deal with the cases with too few elements and fix the values... factorVariation: ",factorVariation,", factor1: ",factor1,", factor2: ",factor2 )
     d$countFactor <- d$countFactor/2
   }
   
+  filterTypeStr <- ""
+  if (filterType == "a"){
+    filterTypeStr <-"absolute"
+  } else {
+    filterTypeStr <- "percentile"
+  }
+  
   strTitleTotal <- NULL;
   if (numFactor!=0){ 
-    strTitleTotal <- paste("Error rates and differences for ",factorDifference,", factored by ",toString(factorArr)," with filter ",filterType," of value ",filterValue,sep="")
+    strTitleTotal <- paste("Error rates and differences for ",factorDifference,", factored by ",toString(factorArr)," with filter ",filterTypeStr," of value ",filterValue,sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="reverseB",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_label(data=d, label= factor(d$countFactor) , x=-0.1, size=4) +
       geom_vline(xintercept = 0) +
@@ -11433,7 +11503,7 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
   } 
   else {
     cat("\n))))numFactor==0. dim(dfCI_global):  ",dim(dfCI_global) )
-    strTitleTotal <- paste("Error rates and differences for ",factorDifference," with filter ",filterType," of value ",filterValue,sep="")
+    strTitleTotal <- paste("Error rates and differences for ",factorDifference," with filter ",filterTypeStr," of value ",filterValue,sep="")
     groupedPlotCI_1 <- ggplot(dfCI_global[dfCI_global$question=="reverseB",], aes(x=mean_CI,y=orderCategoryCombination )) +
       geom_label(data=d, label= factor(d$countFactor) , x=-0.1, size=4) +
       geom_vline(xintercept = 0) +
@@ -11463,9 +11533,19 @@ combine_genPlot_ErrorRate_CIandDifferences_filterSC <- function (d,factorScaling
       )
   }
   cat("\nThe plots are generated. But are they fine?\n")
-  grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1), ncol=2,top=textGrob( strTitleTotal ) )
-  # cat("not sure what to return")
-  return (dfCI_global)
+  grob <- grid.arrange(grobs=list(groupedPlotCI_1,groupedPlotCI_differences1), ncol=2,top=textGrob( strTitleTotal ) )
+  
+  dfCI_global$filterType = filterType
+  dfCI_global$filterValue = filterValue
+  dfCI_global_differences$filterType = filterType
+  dfCI_global_differences$filterValue = filterValue
+  
+  strFilename = paste("er_",factorVariation,"_factorFocus_",factorFocus,"_factorDComplex_focus_",factorDComplex_focus,"_factorDMask_",factorDMask,"_filterType_",filterType,"_filterValue_",filterValue,sep="")
+  ggsave(filename = paste("Data_2022_05_12/Filtering/",strFilename,".png",sep=""),plot = grob ,device = "png")
+  
+  
+  dfci_both <- bind_rows(dfCI_global,dfCI_global_differences) %>% group_by(orderCategoryCombination)
+  return(dfci_both)
 }
 
 
