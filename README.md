@@ -96,21 +96,6 @@ We also aim to look at the stacked bar charts colored according to self-reported
 ![image-20210717005216096](C:\Users\Kevin\AppData\Roaming\Typora\typora-user-images\image-20210717005216096.png)
 
 
-
-## TODO
-
-- Make a function that generates the graphs according to the desired categories
-- Write the code for the matrix of error bars according to the categories selected.
-- Write the code for the matrix of stacked bar charts according to the categories selected .
-
-
-
-## Done
-
-- Update the JavaScript that transforms the raw Qualtrics data. Will not influence the R code. 
-
-
-
 ## References
 
 
